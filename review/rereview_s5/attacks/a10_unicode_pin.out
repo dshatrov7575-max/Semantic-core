@@ -1,0 +1,3 @@
+A10 python 3.11.15 unicode 14.0.0 | validate(мир) -> [] | text_digest_of(эмодзи U+1FAE8) = None db=NULL
+A10 python 3.12.3 unicode 15.0.0 | validate(мир) -> ['VALIDATOR_INTERNAL_ERROR'] | text_digest_of(эмодзи U+1FAE8) = sha256:8179e3aa91ccee7 db=NULL
+A10 python 3.13.13 unicode 15.1.0 | validate(мир) -> ['VALIDATOR_INTERNAL_ERROR'] | text_digest_of(эмодзи U+1FAE8) = sha256:8179e3aa91ccee7 db=NULL

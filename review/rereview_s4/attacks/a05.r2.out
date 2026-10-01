@@ -1,0 +1,3 @@
+    validator errors=NONE warnings=['CONTRADICTION_SINGLE_VALUED']
+--- strict, без неотображённых отношений:
+[двойники внутри артефакта, strict=True] ADAPTER_ERROR возможные дубли: [('x2', 'ent_ts_33a46158cba58f3e01b83e96')]

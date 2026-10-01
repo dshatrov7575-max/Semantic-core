@@ -1,0 +1,17 @@
+== C1: object registered WITHOUT a surviving OK check: fire the deferred trigger early, then roll the check back
+  savepoint + SET CONSTRAINTS IMMEDIATE + ROLLBACK TO: rc=3 out='' err=ERROR:  ORIGINAL_INVALID: sha256:d0f631ca1ddba8db3bcfcb9e057cdc98d0379f1bee00e75a545147a27dadd982: объект реги
+  SET CONSTRAINTS IMMEDIATE inside savepoint, release, no rollback of object: rc=3 out='' err=ERROR:  ORIGINAL_INVALID: sha256:45ba3058c10e3a5f918695ac94678469de0c8cb7d1c6546b4d2e737acc61a503: объект реги
+  OK then CORRUPT in the registering transaction (latest is CORRUPT): rc=0 out='CORRUPT' err=
+== C2: who is recorded as the actor (session_user) under SET ROLE vs SET SESSION AUTHORIZATION
+  SET ROLE ac_storage by postgres: rc=0 out='postgres' err=
+== C3: what the application role can read from the registry (all tenants)
+  ac_loader reads registry of every tenant: rc=0 out='5|1' err=
+  ac_loader tries SET ROLE ac_storage: rc=3 out='' err=ERROR:  permission denied to set role "ac_storage"
+  ac_migrator tries SET ROLE ac_storage: rc=3 out='' err=ERROR:  permission denied to set role "ac_storage"
+  ac_loader observation UPDATE original: rc=3 out='' err=ERROR:  permission denied for table source_observations
+  ac_migrator historical: observation with original, observed in 2026-09 but object stored today: rc=0 out='1' err=
+== C4: observation naming an object with wrong length 0 / NULL parts
+  object without length: rc=3 out='' err=ERROR:  ORIGINAL_INVALID: оригинал повреждён или утрачен по последней проверке
+  length without object: rc=3 out='' err=ERROR:  new row for relation "source_observations" violates check constraint "observation_original_whole"
+  type only: rc=3 out='' err=ERROR:  new row for relation "source_observations" violates check constraint "observation_original_whole"
+  negative length: rc=3 out='' err=ERROR:  ORIGINAL_INVALID: длина оригинала не совпадает с зарегистрированной

@@ -1,0 +1,2 @@
+D1 FINDING | два загрузчика (наблюдение своего забора + публикация своего издания): взаимоблокировка, одна транзакция прервана | ERROR:  deadlock detected DETAIL:  Process 8797 waits for ExclusiveLock on advisory lock [2172290,2718516663,2321090083,1]; blocked by process 8799. Process 8799 waits for ExclusiveLock on advisory lock [2172290,178537012,3077619859,1]; blocked by process 8797
+D1   записано публикаций из двух: 1

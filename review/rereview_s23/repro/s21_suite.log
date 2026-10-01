@@ -1,0 +1,26 @@
+### 0. load reference world
+LOAD: OK checks=4 claims=29 decisions=2 entities=27 entity_keys=43 evidence=32 projects=6 receipts=1 reviews=8 seals=1 sources=13
+KEYS PARITY (DB-derived == validator): OK rows=43
+### 1. parity fuzz (SQL vs Python identity normalisation)
+cases=466 divergences=0
+### 2. author + reviewer regression suites
+attacks=82 legit=7 failures=0
+S2_RESULT=PASS
+regression held/ok rows: 20
+### 3. S21-01 halfwidth duplicate (expect count=2 => FINDING)
+EQUIPMENT в site_ns2 с NFKC-эквивалентным тегом (валидатор считает их одной сущностью): 0
+### 4. P0 fix confirmation battery
+--- RS-01 direct entity_keys write
+ERROR:  permission denied for table entity_keys
+--- RS-01 delete a key then dup
+ERROR:  permission denied for table entity_keys
+--- RS-02 direct claim_evidence write
+ERROR:  permission denied for table claim_evidence
+--- RS-04 update source marking
+ERROR:  permission denied for table sources
+--- RS-04 delete source bytes
+ERROR:  permission denied for table source_bytes
+--- RS-03 complete check w/ REFUTED claim (UPDATE path)
+ERROR:  CHECK_CLOSED: закрытая Проверка не меняется
+SQL statement "SELECT ac.fail('CHECK_CLOSED', 'закрытая Проверка не меняется')"
+--- NEW merge chain: retire survivor then merge it onward

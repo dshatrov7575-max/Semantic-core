@@ -1,0 +1,420 @@
+[
+ {
+  "id": "N01",
+  "expected_errors": [
+   "SCHEMA_INVALID"
+  ],
+  "desc": "дробное число (confidence 0.9) вне профиля: только целые",
+  "dataset_sha256": "57b41063ce8d86ce56e688b84e68b7bfec6765fb62e96b57b98d2d816ea806d4"
+ },
+ {
+  "id": "N02",
+  "expected_errors": [
+   "SCHEMA_INVALID"
+  ],
+  "desc": "несуществующая дата 2026-02-30 проходит regex, но не календарь",
+  "dataset_sha256": "be292258c04f1cb09ffb010e1612bed4ed64847c5a0b82c8d38c30b83971b042"
+ },
+ {
+  "id": "N03",
+  "expected_errors": [
+   "DUPLICATE_ID"
+  ],
+  "desc": "одна и та же сущность записана дважды",
+  "dataset_sha256": "47d282152dff50409da99dc8aa638d747b8fe0ee63d3ea43410ca91bdc45adf5"
+ },
+ {
+  "id": "N04",
+  "expected_errors": [
+   "REF_UNRESOLVED"
+  ],
+  "desc": "утверждение о несуществующей сущности",
+  "dataset_sha256": "153d7fb8d871b974116edac6b10940199f27806e7a94e8a5ef3c1d3599566d2e"
+ },
+ {
+  "id": "N05",
+  "expected_errors": [
+   "CROSS_SCOPE_REFERENCE"
+  ],
+  "desc": "утверждение досье ссылается на сущность проекта Compliance",
+  "dataset_sha256": "d0cdc611613fbc34ebede321f7a7f0d6576c05459cf944b75dab417393940670"
+ },
+ {
+  "id": "N06",
+  "expected_errors": [
+   "SOURCE_DIGEST_MISMATCH"
+  ],
+  "desc": "содержимое источника изменено после адресации",
+  "dataset_sha256": "291611fe00770b59469a7e96b96aa2bea30dda89875b614f55777771cc57d0f9"
+ },
+ {
+  "id": "N07",
+  "expected_errors": [
+   "CLAIM_ID_MISMATCH"
+  ],
+  "desc": "утверждение изменено без пересчёта claim_id",
+  "dataset_sha256": "20172386eeb9c4d875eec594288e15736911384f390c2ac4de1d656f17b1d4f2"
+ },
+ {
+  "id": "N45",
+  "expected_errors": [
+   "DUPLICATE_ID"
+  ],
+  "desc": "Web Monitoring: одна статья записана вторым источником вместо новой observation",
+  "dataset_sha256": "fb6aee8fc12ada8163c0eaf31087a25b121d52ec56bf954e465aad1560bbf7b2"
+ },
+ {
+  "id": "N46",
+  "expected_errors": [
+   "CROSS_SCOPE_REFERENCE"
+  ],
+  "desc": "источник другого tenant в доказательствах",
+  "dataset_sha256": "b1cb955e7e8c6d1e37723079c826d817091304db39565b65afcdf471ae9c3abb"
+ },
+ {
+  "id": "N08",
+  "expected_errors": [
+   "IDENTIFIER_CHECKSUM_INVALID"
+  ],
+  "desc": "ИНН юрлица с неверной контрольной цифрой",
+  "dataset_sha256": "258c649ec11b2625a87017213324687a4c6dbd74252d0c13b7a125bfe76e6700"
+ },
+ {
+  "id": "N09",
+  "expected_errors": [
+   "IDENTIFIER_CHECKSUM_INVALID"
+  ],
+  "desc": "ОГРН с неверной контрольной цифрой",
+  "dataset_sha256": "235ba2ce83af40798b4dd1632f137a6226aa4c1b3fdc6d9350c2890bcfe1565f"
+ },
+ {
+  "id": "N10",
+  "expected_errors": [
+   "ENTITY_IDENTITY_INSUFFICIENT"
+  ],
+  "desc": "российская организация без ОГРН и ИНН",
+  "dataset_sha256": "f83c992ef055cb5e209aa330c609adf95098d13c577eaedb21a35560edb28706"
+ },
+ {
+  "id": "N47",
+  "expected_errors": [
+   "ENTITY_IDENTITY_INSUFFICIENT"
+  ],
+  "desc": "физлицо без ИНН, даты рождения и disambiguator",
+  "dataset_sha256": "af29b3d11ca41fb6d5ec7e73514b623a7f1c449ecfdc9d4b59b7e755a3cf26e8"
+ },
+ {
+  "id": "N11",
+  "expected_errors": [
+   "ENTITY_DUPLICATE_IN_PROJECT"
+  ],
+  "desc": "Dossier: вторая ACTIVE организация с тем же ИНН",
+  "dataset_sha256": "0296bb10b0d0f83ff3bd5bd255e92ec18736e406d98e82be1a991f10eb949dc3"
+ },
+ {
+  "id": "N12",
+  "expected_errors": [
+   "ENTITY_DUPLICATE_IN_PROJECT"
+  ],
+  "desc": "Dossier: тот же человек, «ЛОМОВ … Семенович» (регистр, ё/е) + та же дата рождения",
+  "dataset_sha256": "f327517e19cc47602f2fce70321cd153e8508e3487272173a8d1fdd05208387f"
+ },
+ {
+  "id": "N13",
+  "expected_errors": [
+   "ENTITY_MERGE_INVALID"
+  ],
+  "desc": "слияние физлица в организацию",
+  "dataset_sha256": "1310de49374510cd687bd55dbffe4834aa88991ba6acbf4cc873286db74684a7"
+ },
+ {
+  "id": "N14",
+  "expected_errors": [
+   "PREDICATE_UNKNOWN"
+  ],
+  "desc": "предикат вне реестра",
+  "dataset_sha256": "af76e0fc162fa5bc2b0832b27a9e3c5062677c7d4dd43773d574afecf294a816"
+ },
+ {
+  "id": "N15",
+  "expected_errors": [
+   "PREDICATE_DOMAIN_VIOLATION"
+  ],
+  "desc": "организация как руководитель организации",
+  "dataset_sha256": "157445ffd9890b6d7b21374de51f59e9267177bbb078a9f90d333e5e7a39c54d"
+ },
+ {
+  "id": "N16",
+  "expected_errors": [
+   "PREDICATE_RANGE_VIOLATION"
+  ],
+  "desc": "дата рождения строкой",
+  "dataset_sha256": "92f1e1a900a47caad3cebfa0f0db78c97deb3438cf6d70ca194b9327707765b9"
+ },
+ {
+  "id": "N17",
+  "expected_errors": [
+   "QUALIFIER_INVALID"
+  ],
+  "desc": "доля 120%",
+  "dataset_sha256": "431f43ee7d901466fe72139cbb3e738187f96bb0fb9270215801f23fbdf6d396"
+ },
+ {
+  "id": "N18",
+  "expected_errors": [
+   "QUALIFIER_INVALID"
+  ],
+  "desc": "нет обязательного квалификатора parameter",
+  "dataset_sha256": "8f8ea4fbb043ec63db7e6d6afb10193bdbe0e4db5304fa135823f709cb2ef4e6"
+ },
+ {
+  "id": "N19",
+  "expected_errors": [
+   "TEMPORAL_ORDER_INVALID"
+  ],
+  "desc": "valid_from позже valid_to",
+  "dataset_sha256": "f32071cba509bdaff2c4f252154f11d0c862ebc3ba6a0f11e27507021ccc132f"
+ },
+ {
+  "id": "N20",
+  "expected_errors": [
+   "TEMPORAL_ORDER_INVALID"
+  ],
+  "desc": "утверждение записано раньше получения источника",
+  "dataset_sha256": "5fc5f93033840c411c44dcf91343f4d0e98d61b7073f00a987a8c2b896c82290"
+ },
+ {
+  "id": "N48",
+  "expected_errors": [
+   "TEMPORAL_ORDER_INVALID"
+  ],
+  "desc": "проверка утверждения раньше его записи",
+  "dataset_sha256": "3c41bc174c1ae4652281e27bfa0ca50c5a764e52edff5220d9865236d33fe3f5"
+ },
+ {
+  "id": "N49",
+  "expected_errors": [
+   "TEMPORAL_ORDER_INVALID"
+  ],
+  "desc": "Проверка завершена раньше запроса",
+  "dataset_sha256": "7982c926c3cd88bf1e206132be856a90a7c7df05cfc6362c322fdd26a06c2a77"
+ },
+ {
+  "id": "N21",
+  "expected_errors": [
+   "EVIDENCE_SPAN_INVALID"
+  ],
+  "desc": "фрагмент за пределами источника",
+  "dataset_sha256": "cd085b67e5044520ddbf61d7bea07536793a113590728dcea5609df20695f051"
+ },
+ {
+  "id": "N22",
+  "expected_errors": [
+   "EVIDENCE_SPAN_INVALID"
+  ],
+  "desc": "граница фрагмента режет кириллический символ (UTF-8)",
+  "dataset_sha256": "b17e05eb229237eb088566298c1578f9a840e7b7b472b1f2312d1bdcf135611c"
+ },
+ {
+  "id": "N23",
+  "expected_errors": [
+   "EVIDENCE_SPAN_INVALID"
+  ],
+  "desc": "quote_sha256 не совпадает с фрагментом",
+  "dataset_sha256": "7e97ee7042117eac3db631536d4c5e5f3e230a8bfbb8e6e24c85f2c938e5450e"
+ },
+ {
+  "id": "N24",
+  "expected_errors": [
+   "MARKING_BROADER_THAN_INPUT"
+  ],
+  "desc": "PUBLIC-утверждение из INTERNAL-документа",
+  "dataset_sha256": "6baf8fd0cb571b7897a2b6452ca0c5a82edd1650103a33b3d81d9165c72df5f1"
+ },
+ {
+  "id": "N25",
+  "expected_errors": [
+   "MARKING_BROADER_THAN_INPUT"
+  ],
+  "desc": "Проверка без PERSONAL_DATA включает утверждение о физлице",
+  "dataset_sha256": "e596109b9edb48143ec08a481c96b7d5fa94a5d7348f08d9834e2dce794b2e3b"
+ },
+ {
+  "id": "N26",
+  "expected_errors": [
+   "MARKING_PD_MISSING"
+  ],
+  "desc": "утверждение о физлице без PERSONAL_DATA",
+  "dataset_sha256": "d43cec7ed414a7d02f998a7a5245e2e3cd5bfc9ccae7587e7b0f078745d6e3a8"
+ },
+ {
+  "id": "N27",
+  "expected_errors": [
+   "MARKING_PD_MISSING"
+  ],
+  "desc": "физлицо без PERSONAL_DATA",
+  "dataset_sha256": "c65a30429ef46bca0c39efee4b1039371660c562e27ec98e26706b16f99a6c7d"
+ },
+ {
+  "id": "N28",
+  "expected_errors": [
+   "CHECK_PROJECT_NOT_COMPLIANCE"
+  ],
+  "desc": "Проверка в проекте Dossier",
+  "dataset_sha256": "3f5ceb0e19ed4f0859f22b42f372a172d5abea416e7c9313757cfe953394346d"
+ },
+ {
+  "id": "N29",
+  "expected_errors": [
+   "CHECK_SUBJECT_INVALID"
+  ],
+  "desc": "субъект Проверки — земельный участок",
+  "dataset_sha256": "5d8babe9cd54b57d6e3077b63dc5dc458aef548dc352d6f3f177b06a49a0c3d3"
+ },
+ {
+  "id": "N30",
+  "expected_errors": [
+   "CHECK_DIMENSION_OUTSIDE_PROFILE"
+  ],
+  "desc": "в Проверке «только тендеры» — негатив",
+  "dataset_sha256": "bd3b0c50016e6d9759d2ab3c72797da6fd18b59f100fd29d8092f568f03e52e0"
+ },
+ {
+  "id": "N31",
+  "expected_errors": [
+   "CHECK_DIMENSION_MISSING"
+  ],
+  "desc": "полная Проверка завершена без результата по судам",
+  "dataset_sha256": "7310d4587cc819cec717b139577a190797c8df5203bce8565959f2a8289fcc5e"
+ },
+ {
+  "id": "N32",
+  "expected_errors": [
+   "CHECK_FINDING_INCONSISTENT"
+  ],
+  "desc": "FOUND без утверждений",
+  "dataset_sha256": "5839f2637252ae8a9d16e4886ebc19b04f4cf479fe8aa32535a7d0a81b42c3f9"
+ },
+ {
+  "id": "N33",
+  "expected_errors": [
+   "CHECK_FINDING_INCONSISTENT"
+  ],
+  "desc": "итоговый риск не равен максимуму",
+  "dataset_sha256": "277f567cde3f5ebb1cc071e143c3d0317fd2ec0bfdd5f72c56c19dc43c750679"
+ },
+ {
+  "id": "N34",
+  "expected_errors": [
+   "CHECK_CLAIM_NOT_ABOUT_SUBJECT"
+  ],
+  "desc": "Проверка физлица включает тендер организации",
+  "dataset_sha256": "db78b2b7eec6d3970b68b131a82d5acba6601c119123926028a6389a7499b63c"
+ },
+ {
+  "id": "N35",
+  "expected_errors": [
+   "CHECK_CLAIM_DIMENSION_MISMATCH"
+  ],
+  "desc": "негативное упоминание в измерении «тендеры»",
+  "dataset_sha256": "f5adabf3c49631544d8b501f968bc6b790e33fcfffb93ed0c0bd2acc0b160612"
+ },
+ {
+  "id": "N36",
+  "expected_errors": [
+   "CHECK_CLAIM_NOT_ACCEPTED_AT_COMPLETION"
+  ],
+  "desc": "утверждение принято после завершения экспресс-проверки (ретроактивность)",
+  "dataset_sha256": "8e22ce258a1a887eea0926b1c668e6fb51cb09f049d0af96b991848633ef15d6"
+ },
+ {
+  "id": "N37",
+  "expected_errors": [
+   "CHECK_PREVIOUS_INVALID"
+  ],
+  "desc": "предыдущая Проверка позже текущей",
+  "dataset_sha256": "60284721a184e08a4a087dda70d29fca7ace16d0177dedad8e384eabd0617894"
+ },
+ {
+  "id": "N38",
+  "expected_errors": [
+   "CLAIM_REVIEW_AMBIGUOUS"
+  ],
+  "desc": "ACCEPTED и DISPUTED в одну секунду",
+  "dataset_sha256": "90520e3b0887b7c8b18b126b880720f3b2f8587250a3172df5b8d040bc159fe2"
+ },
+ {
+  "id": "N39",
+  "expected_errors": [
+   "RECEIPT_ID_MISMATCH"
+  ],
+  "desc": "receipt изменён после подписи",
+  "dataset_sha256": "d6dd1fe54c3b53e8c6c6ae15555cd6718d750cd5850df5f6b8af20673fedbc1e"
+ },
+ {
+  "id": "N40",
+  "expected_errors": [
+   "RECEIPT_SIGNATURE_INVALID"
+  ],
+  "desc": "подпись незарегистрированным ключом",
+  "dataset_sha256": "83636342d04bc45cee4abb9047e68b30660fcbc24518c8c9bc99fd350e737f12"
+ },
+ {
+  "id": "N41",
+  "expected_errors": [
+   "RECEIPT_KEY_INVALID"
+  ],
+  "desc": "ключ отозван до выдачи receipt",
+  "dataset_sha256": "931b76325f02b11e80b84038792b4d7c25a5dc1e52bc7a1eacc5bbdd0dc23530"
+ },
+ {
+  "id": "N42",
+  "expected_errors": [
+   "RECEIPT_KEY_INVALID"
+  ],
+  "desc": "issued_at == not_after (полуоткрытый интервал)",
+  "dataset_sha256": "232da7c32d77c66c66fafe871dfd82233de3f0eb2a0d7db2fa2e3e5ab836d377"
+ },
+ {
+  "id": "N50",
+  "expected_errors": [
+   "RECEIPT_KEY_INVALID"
+  ],
+  "desc": "ключ другой службы",
+  "dataset_sha256": "246eabbf53cbec5f464c2f8741511edb662b7b7e8edf75a9638128f95a793088"
+ },
+ {
+  "id": "N43",
+  "expected_errors": [
+   "RECEIPT_CLAIM_BINDING_INVALID"
+  ],
+  "desc": "PIPELINE-утверждение не входит ни в один receipt",
+  "dataset_sha256": "f1de8e9f26a3efbaee44c9787e9d725a7bd1fbc0364f35493f49cc4059531915"
+ },
+ {
+  "id": "N44",
+  "expected_errors": [
+   "RECEIPT_CLAIM_BINDING_INVALID"
+  ],
+  "desc": "доказательство из источника, которого нет во входах receipt",
+  "dataset_sha256": "a67f6b3d5e7cb5343ad4dec7063d30c0dc92359869ed651733f506e326b24a31"
+ },
+ {
+  "id": "P01",
+  "expected_errors": [],
+  "desc": "issued_at = not_after − 1 с — ключ ещё действует",
+  "dataset_sha256": "813e1392ca2792cc3056f8aacb2e3d175b2cc86c0cd0b1a3f88083154be2c738"
+ },
+ {
+  "id": "P02",
+  "expected_errors": [],
+  "desc": "ACCEPTED ровно в момент завершения Проверки — допустимо (≤)",
+  "dataset_sha256": "279d18261c4d9fb15eda4dfc6d3f4a7fa3e9692065d2f514effe1f65ce871960"
+ },
+ {
+  "id": "P03",
+  "expected_errors": [],
+  "desc": "без оспаривания c20 — результат не меняется (статус берётся на момент завершения)",
+  "dataset_sha256": "a4992ab3b659bc605def5b51df93f7c1c93da778c9a794ccd42de5e6cf0605d1"
+ }
+]

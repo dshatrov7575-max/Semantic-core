@@ -1,0 +1,88 @@
+### s23_previous_open.py
+Traceback (most recent call last):
+  File "/home/claude/s24/s23_attacks_adapted/s23_previous_open.py", line 19, in <module>
+    C.ok("BEGIN;\n" + new_check("chk_closed_k2", "EXPRESS_NEGATIVE", TODAY, "chk_prev_open") + """
+  File "/home/claude/s24/s23_attacks_adapted/common.py", line 50, in ok
+    raise RuntimeError(f"[{user}] {r.stderr.strip()}")
+RuntimeError: [ac_loader] ERROR:  CHECK_PREVIOUS_INVALID: предыдущая Проверка завершена до запроса новой (S23-01)
+CONTEXT:  PL/pgSQL function fail(text,text) line 2 at RAISE
+SQL statement "SELECT ac.fail('CHECK_PREVIOUS_INVALID', 'предыдущая Проверка завершена до запроса новой (S23-01)')"
+PL/pgSQL function checks_guard() line 39 at PERFORM
+EXIT 0
+### s23_historical_escalation.py
+ac_app member of ac_migrator: f
+entity insert: (выполнено) | created_at, status_changed_at, now: 2026-10-01 02:17:27.926855+03|2026-10-01 02:17:27.926855+03|2026-10-01 02:17:27.969712+03
+check insert: ERROR:  CHECK_SEARCH_MISSING: chk_backdated/NEGATIVE | requested_at, completed_at, now: 
+control (claim_reviews, INVOKER trigger): (выполнено) | recorded_at = reviewed_at + 1 s (system time used): 00:00:01.002592
+S23-13: held | ac_app пишет историческое (задним числом) системное время через SECURITY DEFINER-триггеры
+EXIT 0
+### s23_check_text.py
+S23-03: held | отменённая Проверка: итоги (HIGH на оспоренном утверждении, «Не выявлено.» по поиску за 400 дней до запроса) без пометки черновика
+S23-04 draft True | fact: (нет факта) | status: - | in dossier: False
+S23-04: held | черновик отчёта выдаёт ОПРОВЕРГНУТОЕ утверждение как факт (в досье оно скрыто)
+Traceback (most recent call last):
+  File "/home/claude/s24/s23_attacks_adapted/s23_check_text.py", line 56, in <module>
+    C.ok(f"""BEGIN; INSERT INTO ac.check_searches VALUES ('chk_open2', 'COURT', 0, now() + interval '30 days', 'tnt_demo', NULL,
+  File "/home/claude/s24/s23_attacks_adapted/common.py", line 50, in ok
+    raise RuntimeError(f"[{user}] {r.stderr.strip()}")
+RuntimeError: [ac_loader] ERROR:  TEMPORAL_ORDER_INVALID: поиск из будущего (S23-05)
+CONTEXT:  PL/pgSQL function ac.fail(text,text) line 2 at RAISE
+SQL statement "SELECT ac.fail('TEMPORAL_ORDER_INVALID', 'поиск из будущего (S23-05)')"
+PL/pgSQL function ac.check_searches_guard() line 7 at PERFORM
+EXIT 0
+### s23_oracle.py
+ac_rd_public | existing Check: ERROR:  ACCESS_DENIED: нет допуска 
+   | missing Check: ERROR:  ACCESS_DENIED: нет допуска 
+   | existing claim: ERROR:  ACCESS_DENIED: нет допуска 
+   | missing claim: ERROR:  ACCESS_DENIED: нет допуска
+S23-06/ac_rd_public: held | ответ отличает существующую Проверку/утверждение от несуществующего и называет проект
+ac_rd_none | existing Check: ERROR:  ACCESS_DENIED: нет допуска 
+   | missing Check: ERROR:  ACCESS_DENIED: нет допуска 
+   | existing claim: ERROR:  ACCESS_DENIED: нет допуска 
+   | missing claim: ERROR:  ACCESS_DENIED: нет допуска
+S23-06/ac_rd_none: held | ответ отличает существующую Проверку/утверждение от несуществующего и называет проект
+S23-06/dossier: held | досье: существующая vs несуществующая сущность: ERROR:  ACCESS_DENIED: нет допуска
+EXIT 0
+### s23_projection_dos.py
+before: (выполнено) | ac_app insert: ERROR:  QUALIFIER_INVALID: corp.founder_of: квалификатор вне реестра, неверного типа или без обязательного | dossier(lomov): (выполнено) | dossier(trub): (выполнено)
+S23-08a: held | строка ac_app со строковым share_bp ломает досье для всех читателей
+valid_from 2021-02-30 insert: ERROR:  new row for relation "claims" violates check constraint "claim_dates_valid" | dossier: (выполнено)
+S23-08b: held | valid_from «2021-02-30» принят базой и ломает досье
+insert: (выполнено) | text: ['Ломов Аркадий Семёнович — {O} и {O} ООО «Северный Трубопрокат».']
+S23-09: held | плейсхолдер внутри значения квалификатора раскрывается шаблоном
+EXIT 0
+### s23_disputed_text.py
+Вид Проверки: государственные закупки. Состояние: не завершена (черновик). Сведения на 29.09.2026. Гриф: конфиденциально (персональные данные, коммерческая тайна).
+Предыдущая Проверка (полная) на 25.09.2026: итоговый риск средний.
+
+## 1. Государственные закупки
+
+Поиск не выполнялся.
+
+Проверка по этому направлению не завершена.
+
+
+Контрольная 
+S23-12b: held | текст открытой Проверки: нет пометки «черновик», «риск — —», «Поиск: .»
+EXIT 0
+### s23_asof.py
+insert (recorded_at = now - 4 min): (выполнено)
+as_of=2026-10-01 02:16:43.863596+03: sha256:db8befc65ab3f345d1d8afb78cf94e9388ef10712fa0f2f7f533a574d78940fc -> sha256:7bcad7ddf75037c5a6c0b7f83019f1daaaf7e83611dd3ccd76411a7eddecda77
+as_of=2026-10-02 02:17:43.89251+03: sha256:fd5a14a667e9d30eb367dc8f62ae5d20a2a25fbfcfeae360d534bdab53baf52c -> sha256:3d317e84b41f868e596516df331fa665aad119126845b064a1a4efe8d4adbca3
+S23-07: FINDING | досье «на момент as_of» в прошлом (окно 5 мин) и в будущем меняется задним числом
+EXIT 0
+### s23_s22_bypass.py
+B-04d: held | отмена и завершение одной Проверки в одной транзакции: ERROR:  CHECK_CLOSED: закрытая Проверка не меняется
+B-04e: held | строка в закрытую Проверку из подтранзакции: ERROR:  CHECK_CLOSED: в закрытую Проверку нельзя дописывать след поиска
+B-04f: held | Проверка, вставленная сразу COMPLETED: поздняя строка: ERROR:  CHECK_CLOSED: в закрытую Проверку нельзя дописывать след поиска
+B-05: held | рецензия задним числом под отменённую Проверку: ERROR:  TEMPORAL_ORDER_INVALID: рецензия задним числом под закрытую Проверку, ко
+B-06a: held | marking_ok на краевых формах: dup=false case=false extra=false nested=false nullcat=false nulllevel=false numlevel=false unkcat=false array=false null=false / валидные: t
+Traceback (most recent call last):
+  File "/home/claude/s24/s23_attacks_adapted/s23_s22_bypass.py", line 114, in <module>
+    C.ok("""SET ROLE ac_trust_admin; INSERT INTO ac_trust.clearances (role_name, project_id, level, categories)
+  File "/home/claude/s24/s23_attacks_adapted/common.py", line 50, in ok
+    raise RuntimeError(f"[{user}] {r.stderr.strip()}")
+RuntimeError: [None] ERROR:  new row for relation "clearances" violates check constraint "clearances_categories_check"
+DETAIL:  Failing row contains (ac_rd_none, prj_wiki_whales, PUBLIC, {public_data}, 2026-10-01 02:17:51.525156+03, ac_trust_admin).
+EXIT 0
+DONE

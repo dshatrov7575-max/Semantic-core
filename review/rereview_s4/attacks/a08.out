@@ -1,0 +1,3 @@
+[узел 'H-101', утверждения о СЛИТОЙ ent_ts_pump_lat (после слияния)] validator=CLEAN warn=['CONTRADICTION_SINGLE_VALUED'] | db=REJECTED: ERROR:  CLAIM_ABOUT_MERGED_ENTITY: после слияния утверждения пишутся о выжившей сущности
+[узел 'H-101', утверждения о выжившей ent_ts_pump (как делает адаптер)] validator=['GRAPH_NODE_INVALID'] warn=['CONTRADICTION_SINGLE_VALUED'] | db=REJECTED: ERROR:  GRAPH_NODE_INVALID: узел n10: субъект не совпадает с узлом-аргументом
+[ACTION-узел с U+0000 в тексте (свободный текст)] validator=CLEAN warn=['CONTRADICTION_SINGLE_VALUED'] | db=REJECTED: ERROR:  ARTIFACT_INVALID: артефакт не JSON в UTF-8

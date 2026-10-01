@@ -1,0 +1,1999 @@
+{
+ "dataset_format": "core-dataset/0.1",
+ "ontology_version": "core-ontology/0.1",
+ "records": [
+  {
+   "kind": "Project",
+   "project_id": "prj_compliance",
+   "tenant_id": "tnt_demo",
+   "product": "COMPLIANCE",
+   "title": "Проверки заёмщиков банка",
+   "created_at": "2026-09-01T09:00:00Z",
+   "default_marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA",
+     "COMMERCIAL_SECRET"
+    ]
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Project",
+   "project_id": "prj_conflict_land",
+   "tenant_id": "tnt_demo",
+   "product": "CONFLICTOLOGY",
+   "title": "Конфликт вокруг участка на ул. Заречной",
+   "created_at": "2026-09-01T09:00:00Z",
+   "default_marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA"
+    ]
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Project",
+   "project_id": "prj_dossier",
+   "tenant_id": "tnt_demo",
+   "product": "DOSSIER",
+   "title": "Досье: участники застройки ул. Заречной",
+   "created_at": "2026-09-01T09:00:00Z",
+   "default_marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA"
+    ]
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Project",
+   "project_id": "prj_ts_pumps",
+   "tenant_id": "tnt_demo",
+   "product": "TECHSENSE",
+   "title": "Насосная станция НС-2",
+   "created_at": "2026-09-01T09:00:00Z",
+   "default_marking": {
+    "level": "INTERNAL",
+    "categories": []
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Project",
+   "project_id": "prj_wiki_whales",
+   "tenant_id": "tnt_demo",
+   "product": "SEMANTIC_WIKI",
+   "title": "База знаний по китам",
+   "created_at": "2026-09-01T09:00:00Z",
+   "default_marking": {
+    "level": "PUBLIC",
+    "categories": []
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Project",
+   "project_id": "prj_wm_region",
+   "tenant_id": "tnt_demo",
+   "product": "WEB_MONITORING",
+   "title": "Мониторинг СМИ: Заречный район",
+   "created_at": "2026-09-01T09:00:00Z",
+   "default_marking": {
+    "level": "PUBLIC",
+    "categories": []
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Source",
+   "tenant_id": "tnt_demo",
+   "source_kind": "DOCUMENT",
+   "media_type": "text/plain; charset=utf-8",
+   "language": "ru",
+   "title": "Инструкция по эксплуатации насосной станции НС-2 (фрагмент)",
+   "content_inline": "Насос Н-101 входит в состав насосной станции НС-2. Максимальное рабочее давление насоса Н-101 — 16 бар. При давлении выше 16 бар остановить насос Н-101 и сообщить дежурному инженеру.",
+   "marking": {
+    "level": "INTERNAL",
+    "categories": []
+   },
+   "observations": [
+    {
+     "observed_at": "2026-09-02T08:00:00Z",
+     "origin_uri": "urn:demo:s1",
+     "observed_by": "svc_webmon"
+    }
+   ],
+   "schema_version": "core-ontology/0.1",
+   "byte_length": 317,
+   "source_id": "src:sha256:3d0e1f7dbfd48b0da0176a74aea0b4847c3cfa6593f80191aada97bc028f8800"
+  },
+  {
+   "kind": "Source",
+   "tenant_id": "tnt_demo",
+   "source_kind": "DOCUMENT",
+   "media_type": "text/plain; charset=utf-8",
+   "language": "ru",
+   "title": "Статья «Синий кит»",
+   "content_inline": "Синий кит — вид усатых китов. Длина синего кита достигает 30 метров, а масса — 150 тонн.",
+   "marking": {
+    "level": "PUBLIC",
+    "categories": []
+   },
+   "observations": [
+    {
+     "observed_at": "2026-09-02T09:00:00Z",
+     "origin_uri": "urn:demo:s10",
+     "observed_by": "svc_webmon"
+    }
+   ],
+   "schema_version": "core-ontology/0.1",
+   "byte_length": 154,
+   "source_id": "src:sha256:4a9a0b098cda28aedfc4d866bfde9b3b7ef1fcda381e23cbf6917323bfcf15cc"
+  },
+  {
+   "kind": "Source",
+   "tenant_id": "tnt_demo",
+   "source_kind": "REGISTRY_EXTRACT",
+   "media_type": "text/plain; charset=utf-8",
+   "language": "ru",
+   "title": "Сведения о регистрации транспортного средства",
+   "content_inline": "Сведения о регистрации транспортного средства: легковой автомобиль, VIN XTA210990Y1234567, владелец Ломов Аркадий Семёнович, дата регистрации 03.06.2024.",
+   "marking": {
+    "level": "PUBLIC",
+    "categories": [
+     "PERSONAL_DATA"
+    ]
+   },
+   "observations": [
+    {
+     "observed_at": "2026-09-04T10:00:00Z",
+     "origin_uri": "urn:demo:s11",
+     "observed_by": "svc_webmon"
+    }
+   ],
+   "schema_version": "core-ontology/0.1",
+   "byte_length": 256,
+   "source_id": "src:sha256:2781cb1dd28944306fc30d72e4ec8948c63687040fba36d29c1820965394fd1f"
+  },
+  {
+   "kind": "Source",
+   "tenant_id": "tnt_demo",
+   "source_kind": "MEDIA_ARTICLE",
+   "media_type": "text/plain; charset=utf-8",
+   "language": "ru",
+   "title": "Жители Заречной улицы против застройки",
+   "content_inline": "ООО «Заречье-Девелопмент» получило разрешение на строительство жилого комплекса на участке 50:12:0101001:245. Жители Заречной улицы выступили против застройки. Генеральный директор компании Аркадий Ломов заявил, что работы начнутся весной.",
+   "marking": {
+    "level": "PUBLIC",
+    "categories": []
+   },
+   "observations": [
+    {
+     "observed_at": "2026-09-02T10:00:00Z",
+     "origin_uri": "https://news.example/zarechye",
+     "observed_by": "svc_webmon"
+    },
+    {
+     "observed_at": "2026-09-02T10:00:00Z",
+     "origin_uri": "https://news.example/amp/zarechye",
+     "observed_by": "svc_webmon"
+    },
+    {
+     "observed_at": "2026-09-02T10:00:00Z",
+     "origin_uri": "https://agg.example/r/123",
+     "observed_by": "svc_webmon"
+    }
+   ],
+   "published_at": "2026-09-02T07:30:00Z",
+   "schema_version": "core-ontology/0.1",
+   "byte_length": 430,
+   "source_id": "src:sha256:cea88d19d3576a2f35f8a14331dbc035cb201d7851d3e1dfe702cd92f51d37f8"
+  },
+  {
+   "kind": "Source",
+   "tenant_id": "tnt_demo",
+   "source_kind": "SOCIAL_POST",
+   "media_type": "text/plain; charset=utf-8",
+   "language": "ru",
+   "title": "Пост инициативной группы «Заречная, 12»",
+   "content_inline": "Инициативная группа «Заречная, 12» начала сбор подписей против застройки участка. Депутат городского совета Нина Грачёва поддержала жителей и направила запрос в администрацию.",
+   "marking": {
+    "level": "PUBLIC",
+    "categories": []
+   },
+   "observations": [
+    {
+     "observed_at": "2026-09-03T12:00:00Z",
+     "origin_uri": "urn:demo:s3",
+     "observed_by": "svc_webmon"
+    }
+   ],
+   "schema_version": "core-ontology/0.1",
+   "byte_length": 324,
+   "source_id": "src:sha256:d16654f6ee054be2ad3b9aa6ee3567b5a2cc3d96bd3b098056dcfab48bb29761"
+  },
+  {
+   "kind": "Source",
+   "tenant_id": "tnt_demo",
+   "source_kind": "REGISTRY_EXTRACT",
+   "media_type": "text/plain; charset=utf-8",
+   "language": "ru",
+   "title": "Выписка ЕГРЮЛ: ООО «Заречье-Девелопмент»",
+   "content_inline": "ООО «Заречье-Девелопмент», ОГРН 1215000007310, ИНН 5012007313. Генеральный директор: Ломов Аркадий Семёнович, ИНН 695203141810, дата рождения 14.03.1971, с 12.02.2021. Учредители: Ломов Аркадий Семёнович — 60%; ООО «Северный Трубопрокат» (ОГРН 1102900017440) — 40%.",
+   "marking": {
+    "level": "PUBLIC",
+    "categories": [
+     "PERSONAL_DATA"
+    ]
+   },
+   "observations": [
+    {
+     "observed_at": "2026-09-04T09:00:00Z",
+     "origin_uri": "urn:demo:s4",
+     "observed_by": "svc_webmon"
+    }
+   ],
+   "schema_version": "core-ontology/0.1",
+   "byte_length": 414,
+   "source_id": "src:sha256:3f0249d6a9b5b36a53aa971808fe498958848e9f596abe34650251158584fd56"
+  },
+  {
+   "kind": "Source",
+   "tenant_id": "tnt_demo",
+   "source_kind": "REGISTRY_EXTRACT",
+   "media_type": "text/plain; charset=utf-8",
+   "language": "ru",
+   "title": "Выписка ЕГРН: 50:12:0101001:245",
+   "content_inline": "Земельный участок с кадастровым номером 50:12:0101001:245, адрес: Московская обл., г. Заречный, ул. Заречная, уч. 12. Правообладатель: ООО «Заречье-Девелопмент», собственность.",
+   "marking": {
+    "level": "PUBLIC",
+    "categories": []
+   },
+   "observations": [
+    {
+     "observed_at": "2026-09-04T09:30:00Z",
+     "origin_uri": "urn:demo:s5",
+     "observed_by": "svc_webmon"
+    }
+   ],
+   "schema_version": "core-ontology/0.1",
+   "byte_length": 301,
+   "source_id": "src:sha256:19b1af35453eba97ade27931308aedaa8d8ad55966e71afabe57e4fbc1b98080"
+  },
+  {
+   "kind": "Source",
+   "tenant_id": "tnt_demo",
+   "source_kind": "MEDIA_ARTICLE",
+   "media_type": "text/plain; charset=utf-8",
+   "language": "ru",
+   "title": "Суд принял иск к застройщику",
+   "content_inline": "Арбитражный суд Московской области принял к производству иск к ООО «Заречье-Девелопмент» о взыскании задолженности по договору подряда. Делу присвоен номер А41-12345/2026.",
+   "marking": {
+    "level": "PUBLIC",
+    "categories": []
+   },
+   "observations": [
+    {
+     "observed_at": "2026-09-05T08:00:00Z",
+     "origin_uri": "urn:demo:s6",
+     "observed_by": "svc_webmon"
+    }
+   ],
+   "schema_version": "core-ontology/0.1",
+   "byte_length": 306,
+   "source_id": "src:sha256:1eba26d25f01ed897f4220dc255aec9ef44a28048bf9d3cbff8ad3bcf64b76e2"
+  },
+  {
+   "kind": "Source",
+   "tenant_id": "tnt_demo",
+   "source_kind": "DOCUMENT",
+   "media_type": "text/plain; charset=utf-8",
+   "language": "ru",
+   "title": "Протокол подведения итогов аукциона № 0148300000126000017",
+   "content_inline": "Протокол подведения итогов электронного аукциона № 0148300000126000017 от 15.08.2026. Победитель: ООО «Заречье-Девелопмент» (ИНН 5012007313). Цена контракта: 12 500 000,00 руб.",
+   "marking": {
+    "level": "PUBLIC",
+    "categories": []
+   },
+   "observations": [
+    {
+     "observed_at": "2026-09-05T09:00:00Z",
+     "origin_uri": "urn:demo:s7",
+     "observed_by": "svc_webmon"
+    }
+   ],
+   "schema_version": "core-ontology/0.1",
+   "byte_length": 276,
+   "source_id": "src:sha256:9b8539ce2ed5dd84e4e78bf3a06508b37475ecb36bc93ce72fc6a9f1e4bbe8f3"
+  },
+  {
+   "kind": "Source",
+   "tenant_id": "tnt_demo",
+   "source_kind": "SOCIAL_POST",
+   "media_type": "text/plain; charset=utf-8",
+   "language": "ru",
+   "title": "Telegram-канал ООО «Заречье-Девелопмент»",
+   "content_inline": "Официальный канал ООО «Заречье-Девелопмент» в Telegram: @zarechye_dev. Новости строительства и ответы на вопросы жителей.",
+   "marking": {
+    "level": "PUBLIC",
+    "categories": []
+   },
+   "observations": [
+    {
+     "observed_at": "2026-09-05T10:00:00Z",
+     "origin_uri": "urn:demo:s8",
+     "observed_by": "svc_webmon"
+    }
+   ],
+   "schema_version": "core-ontology/0.1",
+   "byte_length": 204,
+   "source_id": "src:sha256:ea874e15a65ce5de1241ae92019ef308dc40748df4745ce7d4e648e9b96a897a"
+  },
+  {
+   "kind": "Source",
+   "tenant_id": "tnt_demo",
+   "source_kind": "MEDIA_ARTICLE",
+   "media_type": "text/plain; charset=utf-8",
+   "language": "ru",
+   "title": "Интервью: Аркадий Ломов о планах компании",
+   "content_inline": "Аркадий Семёнович Ломов родился 14 марта 1972 года в Твери. С 2021 года он руководит компанией «Заречье-Девелопмент».",
+   "marking": {
+    "level": "PUBLIC",
+    "categories": []
+   },
+   "observations": [
+    {
+     "observed_at": "2026-09-05T11:00:00Z",
+     "origin_uri": "urn:demo:s9",
+     "observed_by": "svc_webmon"
+    }
+   ],
+   "schema_version": "core-ontology/0.1",
+   "byte_length": 205,
+   "source_id": "src:sha256:705369c343542aced49356bcf0f376e4374bcabaf177017875b6e267c719eabb"
+  },
+  {
+   "kind": "Entity",
+   "entity_id": "ent_c_conflict",
+   "project_id": "prj_conflict_land",
+   "entity_type": "CONFLICT",
+   "identity": {
+    "title": "Застройка участка на ул. Заречной",
+    "started_on": "2026-09-02"
+   },
+   "display_name": "Конфликт: застройка ул. Заречной",
+   "status": "ACTIVE",
+   "created_at": "2026-09-05T12:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA"
+    ]
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Entity",
+   "entity_id": "ent_c_developer",
+   "project_id": "prj_conflict_land",
+   "entity_type": "ORGANIZATION",
+   "identity": {
+    "name": "ООО «Заречье-Девелопмент»",
+    "jurisdiction": "RU",
+    "ogrn": "1215000007310",
+    "inn": "5012007313"
+   },
+   "display_name": "ООО «Заречье-Девелопмент»",
+   "status": "ACTIVE",
+   "created_at": "2026-09-05T12:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA"
+    ]
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Entity",
+   "entity_id": "ent_c_grachyova",
+   "project_id": "prj_conflict_land",
+   "entity_type": "PERSON",
+   "identity": {
+    "surname": "Грачёва",
+    "given_name": "Нина",
+    "disambiguator": "deputy-city-council"
+   },
+   "display_name": "Грачёва Нина",
+   "status": "ACTIVE",
+   "created_at": "2026-09-05T12:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA"
+    ]
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Entity",
+   "entity_id": "ent_c_initiative",
+   "project_id": "prj_conflict_land",
+   "entity_type": "ORGANIZATION",
+   "identity": {
+    "name": "Инициативная группа «Заречная, 12»",
+    "jurisdiction": "RU",
+    "informal": true,
+    "disambiguator": "zarechnaya-12"
+   },
+   "display_name": "Инициативная группа «Заречная, 12»",
+   "status": "ACTIVE",
+   "created_at": "2026-09-05T12:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA"
+    ]
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Entity",
+   "entity_id": "ent_c_lomov",
+   "project_id": "prj_conflict_land",
+   "entity_type": "PERSON",
+   "identity": {
+    "surname": "Ломов",
+    "given_name": "Аркадий",
+    "disambiguator": "director-zarechye"
+   },
+   "display_name": "Ломов Аркадий",
+   "status": "ACTIVE",
+   "created_at": "2026-09-05T12:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA"
+    ]
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Entity",
+   "entity_id": "ent_d_car",
+   "project_id": "prj_dossier",
+   "entity_type": "MOVABLE_PROPERTY",
+   "identity": {
+    "subtype": "VEHICLE",
+    "vin": "XTA210990Y1234567",
+    "description": "легковой автомобиль"
+   },
+   "display_name": "Автомобиль VIN XTA210990Y1234567",
+   "status": "ACTIVE",
+   "created_at": "2026-09-05T12:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA"
+    ]
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Entity",
+   "entity_id": "ent_d_developer",
+   "project_id": "prj_dossier",
+   "entity_type": "ORGANIZATION",
+   "identity": {
+    "name": "ООО «Заречье-Девелопмент»",
+    "jurisdiction": "RU",
+    "ogrn": "1215000007310",
+    "inn": "5012007313"
+   },
+   "display_name": "ООО «Заречье-Девелопмент»",
+   "status": "ACTIVE",
+   "created_at": "2026-09-05T12:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA"
+    ]
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Entity",
+   "entity_id": "ent_d_land",
+   "project_id": "prj_dossier",
+   "entity_type": "REAL_ESTATE",
+   "identity": {
+    "cadastral_number": "50:12:0101001:245",
+    "address": "Московская обл., г. Заречный, ул. Заречная, уч. 12"
+   },
+   "display_name": "Участок 50:12:0101001:245",
+   "status": "ACTIVE",
+   "created_at": "2026-09-05T12:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA"
+    ]
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Entity",
+   "entity_id": "ent_d_lomov",
+   "project_id": "prj_dossier",
+   "entity_type": "PERSON",
+   "identity": {
+    "surname": "Ломов",
+    "given_name": "Аркадий",
+    "patronymic": "Семёнович",
+    "birth_date": "1971-03-14",
+    "inn": "695203141810"
+   },
+   "display_name": "Ломов Аркадий Семёнович",
+   "status": "ACTIVE",
+   "created_at": "2026-09-05T12:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA"
+    ]
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Entity",
+   "entity_id": "ent_d_lomov_media",
+   "project_id": "prj_dossier",
+   "entity_type": "PERSON",
+   "identity": {
+    "surname": "Ломов",
+    "given_name": "Аркадий",
+    "disambiguator": "from-s9"
+   },
+   "display_name": "Аркадий Ломов (из СМИ)",
+   "status": "MERGED",
+   "created_at": "2026-09-05T12:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA"
+    ]
+   },
+   "merged_into": "ent_d_lomov",
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Entity",
+   "entity_id": "ent_d_trub",
+   "project_id": "prj_dossier",
+   "entity_type": "ORGANIZATION",
+   "identity": {
+    "name": "ООО «Северный Трубопрокат»",
+    "jurisdiction": "RU",
+    "ogrn": "1102900017440",
+    "inn": "2901001740"
+   },
+   "display_name": "ООО «Северный Трубопрокат»",
+   "status": "ACTIVE",
+   "created_at": "2026-09-05T12:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA"
+    ]
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Entity",
+   "entity_id": "ent_k_developer",
+   "project_id": "prj_compliance",
+   "entity_type": "ORGANIZATION",
+   "identity": {
+    "name": "ООО «Заречье-Девелопмент»",
+    "jurisdiction": "RU",
+    "ogrn": "1215000007310",
+    "inn": "5012007313"
+   },
+   "display_name": "ООО «Заречье-Девелопмент»",
+   "status": "ACTIVE",
+   "created_at": "2026-09-05T12:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "COMMERCIAL_SECRET"
+    ]
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Entity",
+   "entity_id": "ent_k_land",
+   "project_id": "prj_compliance",
+   "entity_type": "REAL_ESTATE",
+   "identity": {
+    "cadastral_number": "50:12:0101001:245",
+    "address": "Московская обл., г. Заречный, ул. Заречная, уч. 12"
+   },
+   "display_name": "Участок 50:12:0101001:245",
+   "status": "ACTIVE",
+   "created_at": "2026-09-05T12:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "COMMERCIAL_SECRET"
+    ]
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Entity",
+   "entity_id": "ent_k_lomov",
+   "project_id": "prj_compliance",
+   "entity_type": "PERSON",
+   "identity": {
+    "surname": "Ломов",
+    "given_name": "Аркадий",
+    "patronymic": "Семёнович",
+    "birth_date": "1971-03-14",
+    "inn": "695203141810"
+   },
+   "display_name": "Ломов Аркадий Семёнович",
+   "status": "ACTIVE",
+   "created_at": "2026-09-05T12:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA",
+     "COMMERCIAL_SECRET"
+    ]
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Entity",
+   "entity_id": "ent_k_tender",
+   "project_id": "prj_compliance",
+   "entity_type": "EVENT",
+   "identity": {
+    "title": "Электронный аукцион № 0148300000126000017",
+    "date": "2026-08-15"
+   },
+   "display_name": "Аукцион № 0148300000126000017",
+   "status": "ACTIVE",
+   "created_at": "2026-09-05T12:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "COMMERCIAL_SECRET"
+    ]
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Entity",
+   "entity_id": "ent_ts_pump",
+   "project_id": "prj_ts_pumps",
+   "entity_type": "EQUIPMENT",
+   "identity": {
+    "site_id": "site_ns2",
+    "tag": "Н-101",
+    "description": "насос"
+   },
+   "display_name": "Насос Н-101",
+   "status": "ACTIVE",
+   "created_at": "2026-09-05T12:00:00Z",
+   "marking": {
+    "level": "INTERNAL",
+    "categories": []
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Entity",
+   "entity_id": "ent_ts_station",
+   "project_id": "prj_ts_pumps",
+   "entity_type": "EQUIPMENT",
+   "identity": {
+    "site_id": "site_ns2",
+    "tag": "НС-2",
+    "description": "насосная станция"
+   },
+   "display_name": "Насосная станция НС-2",
+   "status": "ACTIVE",
+   "created_at": "2026-09-05T12:00:00Z",
+   "marking": {
+    "level": "INTERNAL",
+    "categories": []
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Entity",
+   "entity_id": "ent_w_developer",
+   "project_id": "prj_wm_region",
+   "entity_type": "ORGANIZATION",
+   "identity": {
+    "name": "ООО «Заречье-Девелопмент»",
+    "jurisdiction": "RU",
+    "ogrn": "1215000007310",
+    "inn": "5012007313"
+   },
+   "display_name": "ООО «Заречье-Девелопмент»",
+   "status": "ACTIVE",
+   "created_at": "2026-09-05T12:00:00Z",
+   "marking": {
+    "level": "PUBLIC",
+    "categories": []
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Entity",
+   "entity_id": "ent_w_initiative",
+   "project_id": "prj_wm_region",
+   "entity_type": "ORGANIZATION",
+   "identity": {
+    "name": "Инициативная группа «Заречная, 12»",
+    "jurisdiction": "RU",
+    "informal": true,
+    "disambiguator": "zarechnaya-12"
+   },
+   "display_name": "Инициативная группа «Заречная, 12»",
+   "status": "ACTIVE",
+   "created_at": "2026-09-05T12:00:00Z",
+   "marking": {
+    "level": "PUBLIC",
+    "categories": []
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Entity",
+   "entity_id": "ent_wk_baleen",
+   "project_id": "prj_wiki_whales",
+   "entity_type": "CONCEPT",
+   "identity": {
+    "label": "Усатые киты",
+    "lang": "ru",
+    "namespace": "whales"
+   },
+   "display_name": "Усатые киты",
+   "status": "ACTIVE",
+   "created_at": "2026-09-05T12:00:00Z",
+   "marking": {
+    "level": "PUBLIC",
+    "categories": []
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Entity",
+   "entity_id": "ent_wk_blue",
+   "project_id": "prj_wiki_whales",
+   "entity_type": "CONCEPT",
+   "identity": {
+    "label": "Синий кит",
+    "lang": "ru",
+    "namespace": "whales"
+   },
+   "display_name": "Синий кит",
+   "status": "ACTIVE",
+   "created_at": "2026-09-05T12:00:00Z",
+   "marking": {
+    "level": "PUBLIC",
+    "categories": []
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Claim",
+   "project_id": "prj_ts_pumps",
+   "subject": "ent_ts_pump",
+   "predicate": "ts.part_of",
+   "object": {
+    "entity": "ent_ts_station"
+   },
+   "evidence": [
+    {
+     "source_id": "src:sha256:3d0e1f7dbfd48b0da0176a74aea0b4847c3cfa6593f80191aada97bc028f8800",
+     "span": {
+      "start": 0,
+      "end": 85
+     },
+     "quote": "Насос Н-101 входит в состав насосной станции НС-2",
+     "quote_sha256": "b5c58320499dc0a4c7d8485edbd0e5f7b307f54f8065b7c5c0d7b84ca52aa61c"
+    }
+   ],
+   "produced_by": {
+    "kind": "PIPELINE",
+    "service_id": "svc_techsense",
+    "run_id": "run_ts_0001"
+   },
+   "recorded_at": "2026-09-06T09:59:00Z",
+   "marking": {
+    "level": "INTERNAL",
+    "categories": []
+   },
+   "schema_version": "core-ontology/0.1",
+   "claim_id": "clm:sha256:5eb804148e071eff558095811308287ee2dfb7fc69931e4b85400e56aecd724f"
+  },
+  {
+   "kind": "Claim",
+   "project_id": "prj_dossier",
+   "subject": "ent_d_lomov",
+   "predicate": "corp.director_of",
+   "object": {
+    "entity": "ent_d_developer"
+   },
+   "evidence": [
+    {
+     "source_id": "src:sha256:3f0249d6a9b5b36a53aa971808fe498958848e9f596abe34650251158584fd56",
+     "span": {
+      "start": 93,
+      "end": 178
+     },
+     "quote": "Генеральный директор: Ломов Аркадий Семёнович",
+     "quote_sha256": "88e75dd241ad11824955d993222a345756161ab70cda2a1b5f7160b23ae2d7b9"
+    },
+    {
+     "source_id": "src:sha256:3f0249d6a9b5b36a53aa971808fe498958848e9f596abe34650251158584fd56",
+     "span": {
+      "start": 239,
+      "end": 252
+     },
+     "quote": "с 12.02.2021",
+     "quote_sha256": "2115acd8870605e8a5c1ae6ff4064e1c0e703aa260d3532e9933a0bea7e64c70"
+    }
+   ],
+   "produced_by": {
+    "kind": "HUMAN",
+    "actor_id": "usr_analyst1"
+   },
+   "recorded_at": "2026-09-06T14:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA"
+    ]
+   },
+   "qualifiers": {
+    "title": "генеральный директор"
+   },
+   "valid_from": "2021-02-12",
+   "schema_version": "core-ontology/0.1",
+   "claim_id": "clm:sha256:a527c547acce31ae4c8b36abe55ef2e1cc69d71bf666d94116d3d9442b89ec54"
+  },
+  {
+   "kind": "Claim",
+   "project_id": "prj_dossier",
+   "subject": "ent_d_lomov",
+   "predicate": "corp.founder_of",
+   "object": {
+    "entity": "ent_d_developer"
+   },
+   "evidence": [
+    {
+     "source_id": "src:sha256:3f0249d6a9b5b36a53aa971808fe498958848e9f596abe34650251158584fd56",
+     "span": {
+      "start": 276,
+      "end": 328
+     },
+     "quote": "Ломов Аркадий Семёнович — 60%",
+     "quote_sha256": "ea97d27c6ad621b550572e87289bd7fbe72ec7381cd41bce0f6558de3b4683f6"
+    }
+   ],
+   "produced_by": {
+    "kind": "HUMAN",
+    "actor_id": "usr_analyst1"
+   },
+   "recorded_at": "2026-09-06T14:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA"
+    ]
+   },
+   "qualifiers": {
+    "share_bp": 6000
+   },
+   "schema_version": "core-ontology/0.1",
+   "claim_id": "clm:sha256:10de72849706c2516572ccdad174ac49dafd421966906434dbf9dd894caaa86a"
+  },
+  {
+   "kind": "Claim",
+   "project_id": "prj_dossier",
+   "subject": "ent_d_trub",
+   "predicate": "corp.founder_of",
+   "object": {
+    "entity": "ent_d_developer"
+   },
+   "evidence": [
+    {
+     "source_id": "src:sha256:3f0249d6a9b5b36a53aa971808fe498958848e9f596abe34650251158584fd56",
+     "span": {
+      "start": 330,
+      "end": 413
+     },
+     "quote": "ООО «Северный Трубопрокат» (ОГРН 1102900017440) — 40%",
+     "quote_sha256": "c0761e4470cff0ca350b1f011dd6e7e9514261f326b93c2fe2dbd3df364fcf83"
+    }
+   ],
+   "produced_by": {
+    "kind": "HUMAN",
+    "actor_id": "usr_analyst1"
+   },
+   "recorded_at": "2026-09-06T14:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA"
+    ]
+   },
+   "qualifiers": {
+    "share_bp": 4000
+   },
+   "schema_version": "core-ontology/0.1",
+   "claim_id": "clm:sha256:0bf3297c17de21b97dbb5c1cb5e3acde710e6da0ad210906969f9c44329f2c33"
+  },
+  {
+   "kind": "Claim",
+   "project_id": "prj_dossier",
+   "subject": "ent_d_lomov",
+   "predicate": "person.birth_date",
+   "object": {
+    "literal": {
+     "type": "DATE",
+     "value": "1971-03-14"
+    }
+   },
+   "evidence": [
+    {
+     "source_id": "src:sha256:3f0249d6a9b5b36a53aa971808fe498958848e9f596abe34650251158584fd56",
+     "span": {
+      "start": 201,
+      "end": 237
+     },
+     "quote": "дата рождения 14.03.1971",
+     "quote_sha256": "a9cf3bc4d795579168c7c4b5eb1d3579f2baab12c574cf6cd616e3d2198519d6"
+    }
+   ],
+   "produced_by": {
+    "kind": "HUMAN",
+    "actor_id": "usr_analyst1"
+   },
+   "recorded_at": "2026-09-06T14:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA"
+    ]
+   },
+   "schema_version": "core-ontology/0.1",
+   "claim_id": "clm:sha256:efff668cf49f26b836c3f0f4a8c6d3485a7af299a24da26ba9122c0c792ea459"
+  },
+  {
+   "kind": "Claim",
+   "project_id": "prj_dossier",
+   "subject": "ent_d_lomov_media",
+   "predicate": "person.birth_date",
+   "object": {
+    "literal": {
+     "type": "DATE",
+     "value": "1972-03-14"
+    }
+   },
+   "evidence": [
+    {
+     "source_id": "src:sha256:705369c343542aced49356bcf0f376e4374bcabaf177017875b6e267c719eabb",
+     "span": {
+      "start": 45,
+      "end": 87
+     },
+     "quote": "родился 14 марта 1972 года",
+     "quote_sha256": "f446ec8e81823e29f80fb9b94085d7c57d512053afbe6c5e889fc51f749e36be"
+    }
+   ],
+   "produced_by": {
+    "kind": "HUMAN",
+    "actor_id": "usr_analyst1"
+   },
+   "recorded_at": "2026-09-06T14:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA"
+    ]
+   },
+   "schema_version": "core-ontology/0.1",
+   "claim_id": "clm:sha256:c34649b8b66ddd4f68824bd664194dbb78f49f5402f228f351747217eb92c624"
+  },
+  {
+   "kind": "Claim",
+   "project_id": "prj_dossier",
+   "subject": "ent_d_developer",
+   "predicate": "prop.owns",
+   "object": {
+    "entity": "ent_d_land"
+   },
+   "evidence": [
+    {
+     "source_id": "src:sha256:19b1af35453eba97ade27931308aedaa8d8ad55966e71afabe57e4fbc1b98080",
+     "span": {
+      "start": 192,
+      "end": 300
+     },
+     "quote": "Правообладатель: ООО «Заречье-Девелопмент», собственность",
+     "quote_sha256": "5f00cd163515a666adb28039d284a3bdb12f2f95c3d77827e1869782fab909bd"
+    }
+   ],
+   "produced_by": {
+    "kind": "HUMAN",
+    "actor_id": "usr_analyst1"
+   },
+   "recorded_at": "2026-09-06T14:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA"
+    ]
+   },
+   "schema_version": "core-ontology/0.1",
+   "claim_id": "clm:sha256:e302e48319895c7a5d8068cddb93dae55e43d74cdd4d889cc900dbb9883e290e"
+  },
+  {
+   "kind": "Claim",
+   "project_id": "prj_dossier",
+   "subject": "ent_d_lomov",
+   "predicate": "prop.owns",
+   "object": {
+    "entity": "ent_d_car"
+   },
+   "evidence": [
+    {
+     "source_id": "src:sha256:2781cb1dd28944306fc30d72e4ec8948c63687040fba36d29c1820965394fd1f",
+     "span": {
+      "start": 127,
+      "end": 255
+     },
+     "quote": "VIN XTA210990Y1234567, владелец Ломов Аркадий Семёнович, дата регистрации 03.06.2024",
+     "quote_sha256": "ba10f0d363f19b0f5ea14bc7320122bca608a9056afd76cbc791ff6d1d1bad07"
+    }
+   ],
+   "produced_by": {
+    "kind": "HUMAN",
+    "actor_id": "usr_analyst1"
+   },
+   "recorded_at": "2026-09-06T14:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA"
+    ]
+   },
+   "valid_from": "2024-06-03",
+   "schema_version": "core-ontology/0.1",
+   "claim_id": "clm:sha256:4f9786adaa44f88fff26985adbcf0d459dfa589eceffc4bcc6bcc311ff8ba35b"
+  },
+  {
+   "kind": "Claim",
+   "project_id": "prj_compliance",
+   "subject": "ent_k_developer",
+   "predicate": "media.negative_mention",
+   "object": {
+    "literal": {
+     "type": "STRING",
+     "value": "иск о взыскании задолженности по договору подряда"
+    }
+   },
+   "evidence": [
+    {
+     "source_id": "src:sha256:1eba26d25f01ed897f4220dc255aec9ef44a28048bf9d3cbff8ad3bcf64b76e2",
+     "span": {
+      "start": 66,
+      "end": 251
+     },
+     "quote": "принял к производству иск к ООО «Заречье-Девелопмент» о взыскании задолженности по договору подряда",
+     "quote_sha256": "43a1b12081839134d56bf592084387413bf38a6c7263bbc87a648fadf8692b59"
+    }
+   ],
+   "produced_by": {
+    "kind": "HUMAN",
+    "actor_id": "usr_analyst1"
+   },
+   "recorded_at": "2026-09-07T10:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "COMMERCIAL_SECRET"
+    ]
+   },
+   "qualifiers": {
+    "severity": "MEDIUM"
+   },
+   "schema_version": "core-ontology/0.1",
+   "claim_id": "clm:sha256:d208e3995d95d70a48285c4708e1b1ec2875e35cf4aebf6704cf5c28e80ed69f"
+  },
+  {
+   "kind": "Claim",
+   "project_id": "prj_compliance",
+   "subject": "ent_k_developer",
+   "predicate": "court.party_to_case",
+   "object": {
+    "literal": {
+     "type": "IDENTIFIER",
+     "scheme": "ru.arbitr",
+     "value": "А41-12345/2026"
+    }
+   },
+   "evidence": [
+    {
+     "source_id": "src:sha256:1eba26d25f01ed897f4220dc255aec9ef44a28048bf9d3cbff8ad3bcf64b76e2",
+     "span": {
+      "start": 107,
+      "end": 165
+     },
+     "quote": "иск к ООО «Заречье-Девелопмент»",
+     "quote_sha256": "32ae2ed993a27cf195a38d53016dc8da43263f23b70c25bc4966469d49088967"
+    },
+    {
+     "source_id": "src:sha256:1eba26d25f01ed897f4220dc255aec9ef44a28048bf9d3cbff8ad3bcf64b76e2",
+     "span": {
+      "start": 253,
+      "end": 305
+     },
+     "quote": "Делу присвоен номер А41-12345/2026",
+     "quote_sha256": "fe4a13dacf0397b72f4b787b1eda898d93a60f04584f0247b04df990847b6751"
+    }
+   ],
+   "produced_by": {
+    "kind": "HUMAN",
+    "actor_id": "usr_analyst1"
+   },
+   "recorded_at": "2026-09-07T10:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "COMMERCIAL_SECRET"
+    ]
+   },
+   "qualifiers": {
+    "role": "DEFENDANT"
+   },
+   "schema_version": "core-ontology/0.1",
+   "claim_id": "clm:sha256:c448a7938a1f44a93b565323783d78e69de987d9a7a0e76b3cbd7ac21fce3c5b"
+  },
+  {
+   "kind": "Claim",
+   "project_id": "prj_ts_pumps",
+   "subject": "ent_ts_pump",
+   "predicate": "ts.has_parameter",
+   "object": {
+    "literal": {
+     "type": "QUANTITY",
+     "value": "16",
+     "unit": "bar"
+    }
+   },
+   "evidence": [
+    {
+     "source_id": "src:sha256:3d0e1f7dbfd48b0da0176a74aea0b4847c3cfa6593f80191aada97bc028f8800",
+     "span": {
+      "start": 87,
+      "end": 177
+     },
+     "quote": "Максимальное рабочее давление насоса Н-101 — 16 бар",
+     "quote_sha256": "d4d3fa0d8478397ca214fcbbb75118a002e35c2b27ab6bc428792dd01d09fced"
+    }
+   ],
+   "produced_by": {
+    "kind": "PIPELINE",
+    "service_id": "svc_techsense",
+    "run_id": "run_ts_0001"
+   },
+   "recorded_at": "2026-09-06T09:59:00Z",
+   "marking": {
+    "level": "INTERNAL",
+    "categories": []
+   },
+   "qualifiers": {
+    "parameter": "max_working_pressure"
+   },
+   "schema_version": "core-ontology/0.1",
+   "claim_id": "clm:sha256:a54c5332af333df48e11374b3ec89fd54a169b28c25278bc24c656f48bdf68d4"
+  },
+  {
+   "kind": "Claim",
+   "project_id": "prj_compliance",
+   "subject": "ent_k_developer",
+   "predicate": "tender.participated",
+   "object": {
+    "entity": "ent_k_tender"
+   },
+   "evidence": [
+    {
+     "source_id": "src:sha256:9b8539ce2ed5dd84e4e78bf3a06508b37475ecb36bc93ce72fc6a9f1e4bbe8f3",
+     "span": {
+      "start": 134,
+      "end": 204
+     },
+     "quote": "Победитель: ООО «Заречье-Девелопмент»",
+     "quote_sha256": "6731569749053437c5f7e20524c278de389e82ea17645354104fa8f9f7bffa61"
+    },
+    {
+     "source_id": "src:sha256:9b8539ce2ed5dd84e4e78bf3a06508b37475ecb36bc93ce72fc6a9f1e4bbe8f3",
+     "span": {
+      "start": 226,
+      "end": 276
+     },
+     "quote": "Цена контракта: 12 500 000,00 руб.",
+     "quote_sha256": "d3f5dc7e2c19afef4f2b4d1220c52932b7ba74ac2763d4b39e6565ba39c6e3e4"
+    }
+   ],
+   "produced_by": {
+    "kind": "HUMAN",
+    "actor_id": "usr_analyst1"
+   },
+   "recorded_at": "2026-09-07T10:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "COMMERCIAL_SECRET"
+    ]
+   },
+   "qualifiers": {
+    "outcome": "WON",
+    "contract_amount_minor": 1250000000,
+    "currency": "RUB"
+   },
+   "schema_version": "core-ontology/0.1",
+   "claim_id": "clm:sha256:396b5b6426a522640017f6bd459bc851f3e995b64a62306fc8ac1b39836b9e52"
+  },
+  {
+   "kind": "Claim",
+   "project_id": "prj_compliance",
+   "subject": "ent_k_developer",
+   "predicate": "social.account",
+   "object": {
+    "literal": {
+     "type": "IDENTIFIER",
+     "scheme": "telegram",
+     "value": "@zarechye_dev"
+    }
+   },
+   "evidence": [
+    {
+     "source_id": "src:sha256:ea874e15a65ce5de1241ae92019ef308dc40748df4745ce7d4e648e9b96a897a",
+     "span": {
+      "start": 0,
+      "end": 109
+     },
+     "quote": "Официальный канал ООО «Заречье-Девелопмент» в Telegram: @zarechye_dev",
+     "quote_sha256": "4abdbe155974338cfc1c3a8c9f60461dc00095f6dc0578c2ce31628c2c68b21e"
+    }
+   ],
+   "produced_by": {
+    "kind": "HUMAN",
+    "actor_id": "usr_analyst1"
+   },
+   "recorded_at": "2026-09-07T10:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "COMMERCIAL_SECRET"
+    ]
+   },
+   "schema_version": "core-ontology/0.1",
+   "claim_id": "clm:sha256:5395a8d6821c7935ce2c2264e08590024a33c355448f8b678616c78ae105901b"
+  },
+  {
+   "kind": "Claim",
+   "project_id": "prj_compliance",
+   "subject": "ent_k_developer",
+   "predicate": "prop.owns",
+   "object": {
+    "entity": "ent_k_land"
+   },
+   "evidence": [
+    {
+     "source_id": "src:sha256:19b1af35453eba97ade27931308aedaa8d8ad55966e71afabe57e4fbc1b98080",
+     "span": {
+      "start": 192,
+      "end": 300
+     },
+     "quote": "Правообладатель: ООО «Заречье-Девелопмент», собственность",
+     "quote_sha256": "5f00cd163515a666adb28039d284a3bdb12f2f95c3d77827e1869782fab909bd"
+    }
+   ],
+   "produced_by": {
+    "kind": "HUMAN",
+    "actor_id": "usr_analyst1"
+   },
+   "recorded_at": "2026-09-07T10:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "COMMERCIAL_SECRET"
+    ]
+   },
+   "schema_version": "core-ontology/0.1",
+   "claim_id": "clm:sha256:b5722475e4bcf7cdb36dd068629856eadd9c2b206d43f85230fa4036d922dfc4"
+  },
+  {
+   "kind": "Claim",
+   "project_id": "prj_compliance",
+   "subject": "ent_k_lomov",
+   "predicate": "corp.director_of",
+   "object": {
+    "entity": "ent_k_developer"
+   },
+   "evidence": [
+    {
+     "source_id": "src:sha256:3f0249d6a9b5b36a53aa971808fe498958848e9f596abe34650251158584fd56",
+     "span": {
+      "start": 93,
+      "end": 178
+     },
+     "quote": "Генеральный директор: Ломов Аркадий Семёнович",
+     "quote_sha256": "88e75dd241ad11824955d993222a345756161ab70cda2a1b5f7160b23ae2d7b9"
+    }
+   ],
+   "produced_by": {
+    "kind": "HUMAN",
+    "actor_id": "usr_analyst1"
+   },
+   "recorded_at": "2026-09-07T10:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA",
+     "COMMERCIAL_SECRET"
+    ]
+   },
+   "valid_from": "2021-02-12",
+   "schema_version": "core-ontology/0.1",
+   "claim_id": "clm:sha256:357e338c1c8729840a9704cb8eeee914c2c39611763ef38331fbe7ccf44ac658"
+  },
+  {
+   "kind": "Claim",
+   "project_id": "prj_wiki_whales",
+   "subject": "ent_wk_blue",
+   "predicate": "wiki.is_a",
+   "object": {
+    "entity": "ent_wk_baleen"
+   },
+   "evidence": [
+    {
+     "source_id": "src:sha256:4a9a0b098cda28aedfc4d866bfde9b3b7ef1fcda381e23cbf6917323bfcf15cc",
+     "span": {
+      "start": 0,
+      "end": 52
+     },
+     "quote": "Синий кит — вид усатых китов",
+     "quote_sha256": "dcf5a33b7e2c3bcd67b3c9f371090f85048400cfa725b9f5d7840ccfc8463401"
+    }
+   ],
+   "produced_by": {
+    "kind": "HUMAN",
+    "actor_id": "usr_analyst1"
+   },
+   "recorded_at": "2026-09-03T09:00:00Z",
+   "marking": {
+    "level": "PUBLIC",
+    "categories": []
+   },
+   "schema_version": "core-ontology/0.1",
+   "claim_id": "clm:sha256:994eecf48e36dd15a24f3585db3d0da35e098e52a74991e568074439e635c82e"
+  },
+  {
+   "kind": "Claim",
+   "project_id": "prj_wiki_whales",
+   "subject": "ent_wk_blue",
+   "predicate": "wiki.property",
+   "object": {
+    "literal": {
+     "type": "QUANTITY",
+     "value": "30",
+     "unit": "m"
+    }
+   },
+   "evidence": [
+    {
+     "source_id": "src:sha256:4a9a0b098cda28aedfc4d866bfde9b3b7ef1fcda381e23cbf6917323bfcf15cc",
+     "span": {
+      "start": 54,
+      "end": 121
+     },
+     "quote": "Длина синего кита достигает 30 метров",
+     "quote_sha256": "89f5e8538ce10dba535c81e60aee88516a5e171bb88f450d8aa2c49452e1921c"
+    }
+   ],
+   "produced_by": {
+    "kind": "HUMAN",
+    "actor_id": "usr_analyst1"
+   },
+   "recorded_at": "2026-09-03T09:00:00Z",
+   "marking": {
+    "level": "PUBLIC",
+    "categories": []
+   },
+   "qualifiers": {
+    "property": "max_length"
+   },
+   "schema_version": "core-ontology/0.1",
+   "claim_id": "clm:sha256:654be91b9ce6da9f09745e970948caf14ea3ddecde1d959cf6b5f37da40728a2"
+  },
+  {
+   "kind": "Claim",
+   "project_id": "prj_wiki_whales",
+   "subject": "ent_wk_blue",
+   "predicate": "wiki.property",
+   "object": {
+    "literal": {
+     "type": "QUANTITY",
+     "value": "150",
+     "unit": "t"
+    }
+   },
+   "evidence": [
+    {
+     "source_id": "src:sha256:4a9a0b098cda28aedfc4d866bfde9b3b7ef1fcda381e23cbf6917323bfcf15cc",
+     "span": {
+      "start": 126,
+      "end": 153
+     },
+     "quote": "масса — 150 тонн",
+     "quote_sha256": "84f13472a554b5f0bd5c6ef1f73cfc1aff7bc2ea61a971bb8b906e211def79a5"
+    }
+   ],
+   "produced_by": {
+    "kind": "HUMAN",
+    "actor_id": "usr_analyst1"
+   },
+   "recorded_at": "2026-09-03T09:00:00Z",
+   "marking": {
+    "level": "PUBLIC",
+    "categories": []
+   },
+   "qualifiers": {
+    "property": "max_mass"
+   },
+   "schema_version": "core-ontology/0.1",
+   "claim_id": "clm:sha256:6b1ba18684872c1dce567ff9659e981ae4cbdca56a5c525171b18aabbf1ca3cc"
+  },
+  {
+   "kind": "Claim",
+   "project_id": "prj_ts_pumps",
+   "subject": "ent_ts_pump",
+   "predicate": "ts.requires_action",
+   "object": {
+    "literal": {
+     "type": "STRING",
+     "value": "остановить насос и сообщить дежурному инженеру"
+    }
+   },
+   "evidence": [
+    {
+     "source_id": "src:sha256:3d0e1f7dbfd48b0da0176a74aea0b4847c3cfa6593f80191aada97bc028f8800",
+     "span": {
+      "start": 179,
+      "end": 316
+     },
+     "quote": "При давлении выше 16 бар остановить насос Н-101 и сообщить дежурному инженеру",
+     "quote_sha256": "4cc29fdb84c9f18e3adb3c0f2dcf3b9a11988f80db63b815402629601c297d30"
+    }
+   ],
+   "produced_by": {
+    "kind": "PIPELINE",
+    "service_id": "svc_techsense",
+    "run_id": "run_ts_0001"
+   },
+   "recorded_at": "2026-09-06T09:59:00Z",
+   "marking": {
+    "level": "INTERNAL",
+    "categories": []
+   },
+   "qualifiers": {
+    "condition": "давление > 16 бар"
+   },
+   "schema_version": "core-ontology/0.1",
+   "claim_id": "clm:sha256:f892cfbbc0cf1f4744ce45a603b648230d49638e01f54f1b929e2ccbeb742529"
+  },
+  {
+   "kind": "Claim",
+   "project_id": "prj_conflict_land",
+   "subject": "ent_c_developer",
+   "predicate": "conflict.party_to",
+   "object": {
+    "entity": "ent_c_conflict"
+   },
+   "evidence": [
+    {
+     "source_id": "src:sha256:cea88d19d3576a2f35f8a14331dbc035cb201d7851d3e1dfe702cd92f51d37f8",
+     "span": {
+      "start": 49,
+      "end": 188
+     },
+     "quote": "получило разрешение на строительство жилого комплекса на участке 50:12:0101001:245",
+     "quote_sha256": "0d2141fdcadf5e447cfe0de87569fee79d834aa25345cea2fd415abbbaadde35"
+    }
+   ],
+   "produced_by": {
+    "kind": "HUMAN",
+    "actor_id": "usr_analyst1"
+   },
+   "recorded_at": "2026-09-06T12:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA"
+    ]
+   },
+   "qualifiers": {
+    "role": "PARTY"
+   },
+   "schema_version": "core-ontology/0.1",
+   "claim_id": "clm:sha256:86812800317c8df452c379d165f22a5d7989c570fb94803800dc963eb4d8d6f6"
+  },
+  {
+   "kind": "Claim",
+   "project_id": "prj_conflict_land",
+   "subject": "ent_c_initiative",
+   "predicate": "conflict.party_to",
+   "object": {
+    "entity": "ent_c_conflict"
+   },
+   "evidence": [
+    {
+     "source_id": "src:sha256:d16654f6ee054be2ad3b9aa6ee3567b5a2cc3d96bd3b098056dcfab48bb29761",
+     "span": {
+      "start": 0,
+      "end": 148
+     },
+     "quote": "Инициативная группа «Заречная, 12» начала сбор подписей против застройки участка",
+     "quote_sha256": "b0f0b008335ac9a0d39d5a255fd1bda702789460effbcd5cf76d3e11f4b82715"
+    }
+   ],
+   "produced_by": {
+    "kind": "HUMAN",
+    "actor_id": "usr_analyst1"
+   },
+   "recorded_at": "2026-09-06T12:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA"
+    ]
+   },
+   "qualifiers": {
+    "role": "PARTY"
+   },
+   "schema_version": "core-ontology/0.1",
+   "claim_id": "clm:sha256:b414d117572c793af6816ecf72fff63a9cbb8c53c641a1c3c2d0911f0d01e21b"
+  },
+  {
+   "kind": "Claim",
+   "project_id": "prj_conflict_land",
+   "subject": "ent_c_grachyova",
+   "predicate": "conflict.influences",
+   "object": {
+    "entity": "ent_c_conflict"
+   },
+   "evidence": [
+    {
+     "source_id": "src:sha256:d16654f6ee054be2ad3b9aa6ee3567b5a2cc3d96bd3b098056dcfab48bb29761",
+     "span": {
+      "start": 199,
+      "end": 323
+     },
+     "quote": "Нина Грачёва поддержала жителей и направила запрос в администрацию",
+     "quote_sha256": "9c668c7f05d06b93921145f1a29e366f1c9cbd5117aeb3672a6bbdfe7343666b"
+    }
+   ],
+   "produced_by": {
+    "kind": "HUMAN",
+    "actor_id": "usr_analyst1"
+   },
+   "recorded_at": "2026-09-06T12:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA"
+    ]
+   },
+   "qualifiers": {
+    "mode": "EXPLICIT",
+    "channel": "POLITICAL"
+   },
+   "schema_version": "core-ontology/0.1",
+   "claim_id": "clm:sha256:7c2fc26c4f4fe1a973af3c3e1e78c359ffb560088d37941d63b58453ab0ca1d3"
+  },
+  {
+   "kind": "Claim",
+   "project_id": "prj_conflict_land",
+   "subject": "ent_c_lomov",
+   "predicate": "conflict.influences",
+   "object": {
+    "entity": "ent_c_conflict"
+   },
+   "evidence": [
+    {
+     "source_id": "src:sha256:cea88d19d3576a2f35f8a14331dbc035cb201d7851d3e1dfe702cd92f51d37f8",
+     "span": {
+      "start": 283,
+      "end": 429
+     },
+     "quote": "Генеральный директор компании Аркадий Ломов заявил, что работы начнутся весной",
+     "quote_sha256": "76851997b6c2e81ed9c5c11cf9dafdc23d9a4ce9e1ae53c773c48ad2b667a55d"
+    }
+   ],
+   "produced_by": {
+    "kind": "HUMAN",
+    "actor_id": "usr_analyst1"
+   },
+   "recorded_at": "2026-09-06T12:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA"
+    ]
+   },
+   "qualifiers": {
+    "mode": "EXPLICIT",
+    "channel": "ADMINISTRATIVE"
+   },
+   "schema_version": "core-ontology/0.1",
+   "claim_id": "clm:sha256:d20bc3643daf18c344b764825146cd02348eed197c89bdc40cf107501c29ec35"
+  },
+  {
+   "kind": "Claim",
+   "project_id": "prj_conflict_land",
+   "subject": "ent_c_lomov",
+   "predicate": "rel.affiliated_with",
+   "object": {
+    "entity": "ent_c_developer"
+   },
+   "evidence": [
+    {
+     "source_id": "src:sha256:cea88d19d3576a2f35f8a14331dbc035cb201d7851d3e1dfe702cd92f51d37f8",
+     "span": {
+      "start": 283,
+      "end": 365
+     },
+     "quote": "Генеральный директор компании Аркадий Ломов",
+     "quote_sha256": "cc94805a59e8af906bc2c4c7f031ac6fa2fa51031f2f8def732a12fecd447d59"
+    }
+   ],
+   "produced_by": {
+    "kind": "HUMAN",
+    "actor_id": "usr_analyst1"
+   },
+   "recorded_at": "2026-09-06T12:00:00Z",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA"
+    ]
+   },
+   "qualifiers": {
+    "kind": "BUSINESS",
+    "explicit": true
+   },
+   "schema_version": "core-ontology/0.1",
+   "claim_id": "clm:sha256:db0a6e20f5d016d5e620630b4dd62f7b121be22bfae824f5865e68b42fd96bc1"
+  },
+  {
+   "kind": "Claim",
+   "project_id": "prj_wm_region",
+   "subject": "ent_w_developer",
+   "predicate": "wm.mentioned",
+   "object": {
+    "literal": {
+     "type": "STRING",
+     "value": "Жители Заречной улицы против застройки"
+    }
+   },
+   "evidence": [
+    {
+     "source_id": "src:sha256:cea88d19d3576a2f35f8a14331dbc035cb201d7851d3e1dfe702cd92f51d37f8",
+     "span": {
+      "start": 190,
+      "end": 281
+     },
+     "quote": "Жители Заречной улицы выступили против застройки",
+     "quote_sha256": "395e9dab6a3634c3ffa2b0da323c3cb5317f16bf3ce4b00521dffa9d142ac138"
+    }
+   ],
+   "produced_by": {
+    "kind": "HUMAN",
+    "actor_id": "usr_analyst1"
+   },
+   "recorded_at": "2026-09-06T10:30:00Z",
+   "marking": {
+    "level": "PUBLIC",
+    "categories": []
+   },
+   "qualifiers": {
+    "sentiment": "NEGATIVE"
+   },
+   "schema_version": "core-ontology/0.1",
+   "claim_id": "clm:sha256:2273c69e73afbc45a49f617864a367e12658cc24d51acec441776c6827414ec4"
+  },
+  {
+   "kind": "Claim",
+   "project_id": "prj_wm_region",
+   "subject": "ent_w_initiative",
+   "predicate": "wm.mentioned",
+   "object": {
+    "literal": {
+     "type": "STRING",
+     "value": "сбор подписей против застройки"
+    }
+   },
+   "evidence": [
+    {
+     "source_id": "src:sha256:d16654f6ee054be2ad3b9aa6ee3567b5a2cc3d96bd3b098056dcfab48bb29761",
+     "span": {
+      "start": 63,
+      "end": 148
+     },
+     "quote": "начала сбор подписей против застройки участка",
+     "quote_sha256": "a2aabcb699060c20c3dcae22c51082170c7dc4f9641a733d1f60ab0f9ee2e216"
+    }
+   ],
+   "produced_by": {
+    "kind": "HUMAN",
+    "actor_id": "usr_analyst1"
+   },
+   "recorded_at": "2026-09-06T10:30:00Z",
+   "marking": {
+    "level": "PUBLIC",
+    "categories": []
+   },
+   "qualifiers": {
+    "sentiment": "NEUTRAL"
+   },
+   "schema_version": "core-ontology/0.1",
+   "claim_id": "clm:sha256:5f91d23311383bd5d7f40db5c509ee6b4fefc2bf0165c838da436042e7f5bb3a"
+  },
+  {
+   "kind": "ClaimReview",
+   "review_id": "rev_c13_a",
+   "claim_id": "clm:sha256:efff668cf49f26b836c3f0f4a8c6d3485a7af299a24da26ba9122c0c792ea459",
+   "status": "ACCEPTED",
+   "reviewer": "usr_reviewer1",
+   "reviewed_at": "2026-09-07T09:00:00Z",
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "ClaimReview",
+   "review_id": "rev_c18_a",
+   "claim_id": "clm:sha256:d208e3995d95d70a48285c4708e1b1ec2875e35cf4aebf6704cf5c28e80ed69f",
+   "status": "ACCEPTED",
+   "reviewer": "usr_reviewer1",
+   "reviewed_at": "2026-09-08T10:00:00Z",
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "ClaimReview",
+   "review_id": "rev_c19_a",
+   "claim_id": "clm:sha256:c448a7938a1f44a93b565323783d78e69de987d9a7a0e76b3cbd7ac21fce3c5b",
+   "status": "ACCEPTED",
+   "reviewer": "usr_reviewer1",
+   "reviewed_at": "2026-09-20T10:00:00Z",
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "ClaimReview",
+   "review_id": "rev_c20_a",
+   "claim_id": "clm:sha256:396b5b6426a522640017f6bd459bc851f3e995b64a62306fc8ac1b39836b9e52",
+   "status": "ACCEPTED",
+   "reviewer": "usr_reviewer1",
+   "reviewed_at": "2026-09-20T10:00:00Z",
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "ClaimReview",
+   "review_id": "rev_c20_d",
+   "claim_id": "clm:sha256:396b5b6426a522640017f6bd459bc851f3e995b64a62306fc8ac1b39836b9e52",
+   "status": "DISPUTED",
+   "reviewer": "usr_reviewer1",
+   "reviewed_at": "2026-09-28T10:00:00Z",
+   "note": "контрагент оспаривает итоги аукциона",
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "ClaimReview",
+   "review_id": "rev_c21_a",
+   "claim_id": "clm:sha256:5395a8d6821c7935ce2c2264e08590024a33c355448f8b678616c78ae105901b",
+   "status": "ACCEPTED",
+   "reviewer": "usr_reviewer1",
+   "reviewed_at": "2026-09-20T10:00:00Z",
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "ClaimReview",
+   "review_id": "rev_c22_a",
+   "claim_id": "clm:sha256:b5722475e4bcf7cdb36dd068629856eadd9c2b206d43f85230fa4036d922dfc4",
+   "status": "ACCEPTED",
+   "reviewer": "usr_reviewer1",
+   "reviewed_at": "2026-09-20T10:00:00Z",
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "ClaimReview",
+   "review_id": "rev_c23_a",
+   "claim_id": "clm:sha256:357e338c1c8729840a9704cb8eeee914c2c39611763ef38331fbe7ccf44ac658",
+   "status": "ACCEPTED",
+   "reviewer": "usr_reviewer1",
+   "reviewed_at": "2026-09-20T10:00:00Z",
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Check",
+   "check_id": "chk_express_1",
+   "project_id": "prj_compliance",
+   "subject_entity_id": "ent_k_developer",
+   "profile": "EXPRESS_NEGATIVE",
+   "as_of": "2026-09-10",
+   "requested_at": "2026-09-10T08:00:00Z",
+   "requested_by": "usr_bank_officer",
+   "status": "COMPLETED",
+   "completed_at": "2026-09-10T12:00:00Z",
+   "findings": [
+    {
+     "dimension": "NEGATIVE",
+     "result": "FOUND",
+     "risk": "MEDIUM",
+     "claim_ids": [
+      "clm:sha256:d208e3995d95d70a48285c4708e1b1ec2875e35cf4aebf6704cf5c28e80ed69f"
+     ]
+    }
+   ],
+   "overall_risk": "MEDIUM",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA",
+     "COMMERCIAL_SECRET"
+    ]
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Check",
+   "check_id": "chk_full_1",
+   "project_id": "prj_compliance",
+   "subject_entity_id": "ent_k_developer",
+   "profile": "FULL",
+   "as_of": "2026-09-25",
+   "requested_at": "2026-09-25T08:00:00Z",
+   "requested_by": "usr_bank_officer",
+   "status": "COMPLETED",
+   "completed_at": "2026-09-26T15:00:00Z",
+   "previous_check_id": "chk_express_1",
+   "findings": [
+    {
+     "dimension": "NEGATIVE",
+     "result": "FOUND",
+     "risk": "MEDIUM",
+     "claim_ids": [
+      "clm:sha256:d208e3995d95d70a48285c4708e1b1ec2875e35cf4aebf6704cf5c28e80ed69f"
+     ]
+    },
+    {
+     "dimension": "TENDERS",
+     "result": "FOUND",
+     "risk": "LOW",
+     "claim_ids": [
+      "clm:sha256:396b5b6426a522640017f6bd459bc851f3e995b64a62306fc8ac1b39836b9e52"
+     ]
+    },
+    {
+     "dimension": "SOCIAL_MEDIA",
+     "result": "FOUND",
+     "risk": "NONE",
+     "claim_ids": [
+      "clm:sha256:5395a8d6821c7935ce2c2264e08590024a33c355448f8b678616c78ae105901b"
+     ]
+    },
+    {
+     "dimension": "CORPORATE",
+     "result": "FOUND",
+     "risk": "NONE",
+     "claim_ids": [
+      "clm:sha256:357e338c1c8729840a9704cb8eeee914c2c39611763ef38331fbe7ccf44ac658"
+     ]
+    },
+    {
+     "dimension": "PROPERTY",
+     "result": "FOUND",
+     "risk": "NONE",
+     "claim_ids": [
+      "clm:sha256:b5722475e4bcf7cdb36dd068629856eadd9c2b206d43f85230fa4036d922dfc4"
+     ]
+    },
+    {
+     "dimension": "COURT",
+     "result": "FOUND",
+     "risk": "MEDIUM",
+     "claim_ids": [
+      "clm:sha256:c448a7938a1f44a93b565323783d78e69de987d9a7a0e76b3cbd7ac21fce3c5b"
+     ]
+    }
+   ],
+   "overall_risk": "MEDIUM",
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA",
+     "COMMERCIAL_SECRET"
+    ]
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "Check",
+   "check_id": "chk_tenders_1",
+   "project_id": "prj_compliance",
+   "subject_entity_id": "ent_k_developer",
+   "profile": "TENDERS_ONLY",
+   "as_of": "2026-09-29",
+   "requested_at": "2026-09-29T09:00:00Z",
+   "requested_by": "usr_bank_officer",
+   "status": "IN_PROGRESS",
+   "previous_check_id": "chk_full_1",
+   "findings": [],
+   "marking": {
+    "level": "CONFIDENTIAL",
+    "categories": [
+     "PERSONAL_DATA",
+     "COMMERCIAL_SECRET"
+    ]
+   },
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "ServiceKey",
+   "key_id": "key_ts_1",
+   "service_id": "svc_techsense",
+   "algorithm": "Ed25519",
+   "public_key": "9MV-HBSlLkzprGXL14Kw8iwt3NO9aLu_NwkJnLVQm8s",
+   "not_before": "2026-09-01T00:00:00Z",
+   "not_after": "2027-09-01T00:00:00Z",
+   "schema_version": "core-ontology/0.1"
+  },
+  {
+   "kind": "ArtifactReceipt",
+   "project_id": "prj_ts_pumps",
+   "producer": {
+    "service_id": "svc_techsense",
+    "version": "0.9.0"
+   },
+   "run_id": "run_ts_0001",
+   "artifact_digest": "sha256:352fdb6fd425cbe58cc0d6bb2dcb3d51af9e830e8172003bdbf86b9ea6f0dd2b",
+   "artifact_schema_version": "umr-artifact/0.3",
+   "semantic_profile_version": "ts-semantic/0.2",
+   "input_source_ids": [
+    "src:sha256:3d0e1f7dbfd48b0da0176a74aea0b4847c3cfa6593f80191aada97bc028f8800"
+   ],
+   "emitted_claim_ids": [
+    "clm:sha256:5eb804148e071eff558095811308287ee2dfb7fc69931e4b85400e56aecd724f",
+    "clm:sha256:a54c5332af333df48e11374b3ec89fd54a169b28c25278bc24c656f48bdf68d4",
+    "clm:sha256:f892cfbbc0cf1f4744ce45a603b648230d49638e01f54f1b929e2ccbeb742529"
+   ],
+   "issued_at": "2026-09-06T10:00:00Z",
+   "key_id": "key_ts_1",
+   "schema_version": "core-ontology/0.1",
+   "receipt_id": "rcp:sha256:4f290dbbc875fd2faca94c35f1f2c12f9ca17606d838fad47324cb601e539e13",
+   "signature": "i0-q4fQALNpwGZ5s0DFLf0ACs-N0jzmY-GP3Um7b7GVdZ0fEEfccDWdQV1rd5jZcNhbJoF7pPCa61OZ28B4SBw"
+  }
+ ]
+}

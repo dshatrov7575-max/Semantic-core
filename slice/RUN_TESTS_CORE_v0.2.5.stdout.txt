@@ -1,0 +1,7 @@
+T1 valid world: records=94 errors=0 warnings=1
+T2 vectors: 358 (299 negative, 59 positive)
+T3 error codes covered: 39/39
+T4 fuzz: 3000 cases, crashes=0, internal=0
+T6 JCS parity py/node: 31823 values
+T8 Unicode pinned to 14.0.0: another version -> ['VALIDATOR_INTERNAL_ERROR']
+ALL PASS

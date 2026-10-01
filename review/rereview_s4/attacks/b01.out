@@ -1,0 +1,3 @@
+[слияние ПОСЛЕ записи: утверждения о ent_ts_pump, узел называет 'H-101' (ещё отдельная сущность на момент записи)] validator=CLEAN warn=['CONTRADICTION_SINGLE_VALUED'] | db=ACCEPTED
+[слияние ПОСЛЕ записи: утверждения о ent_ts_pump_lat ('H-101'), узел называет 'Н-101' (другая сущность на момент записи)] validator=CLEAN warn=['CONTRADICTION_SINGLE_VALUED'] | db=ACCEPTED
+[контроль: 'H-101' не слит, узел 'H-101', утверждения о ent_ts_pump] validator=['GRAPH_NODE_INVALID'] warn=['CONTRADICTION_SINGLE_VALUED', 'POSSIBLE_DUPLICATE'] | db=REJECTED: ERROR:  GRAPH_NODE_INVALID: узел n10: субъект не совпадает с узлом-аргументом

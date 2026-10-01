@@ -1,0 +1,8 @@
+canonical run_ts_0002 stored: 1
+[эталон: канонический прогон run_ts_0002] parse_artifact=OK new_entities=0 | DB: ERROR:  duplicate key value violates unique constraint "artifacts_pkey"
+DETAIL:  Key (tenant_id, artifact_digest)=(tnt_demo, sha256:3a1c94731bd8ed9b7fa80ff2c4d3b6a920557377a30c310e70a7fc2286dd0276) al
+[тот же прогон run_ts_0002, артефакт с отступами (неканонический)] parse_artifact=артефакт не в канонической форме RFC 8785 new_entities=0 | DB: ERROR:  duplicate key value violates unique constraint "artifacts_one_per_run"
+DETAIL:  Key (tenant_id, ((body -> 'producer'::text) ->> 'service_id'::text), (body ->> 'run_id'::text))=(tnt_demo, svc_t
+[тот же прогон run_ts_0002, канонический артефакт + лишний узел] parse_artifact=OK new_entities=0 | DB: ERROR:  duplicate key value violates unique constraint "artifacts_one_per_run"
+DETAIL:  Key (tenant_id, ((body -> 'producer'::text) ->> 'service_id'::text), (body ->> 'run_id'::text))=(tnt_demo, svc_t
+receipts of run_ts_0002: 1 | claims 'номинальное давление' of the valve: 1

@@ -1,0 +1,36 @@
+python 3.11.15 unicodedata 14.0.0
+pg 16.13 (Ubuntu 16.13-0ubuntu0.24.04.1)
+A01a NFC brute force: code points=1112063 mismatches=8
+    ('0x10efd', '?', 'c3a9f090bbbd', '65f090bbbdcc81', 'f090bbbdcc81', 'f090bbbdcc81')
+    ('0x10efe', '?', 'c3a9f090bbbe', '65f090bbbecc81', 'f090bbbecc81', 'f090bbbecc81')
+    ('0x10eff', '?', 'c3a9f090bbbf', '65f090bbbfcc81', 'f090bbbfcc81', 'f090bbbfcc81')
+    ('0x11f41', '?', 'c3a9f091bd81', '65f091bd81cc81', 'f091bd81cc81', 'f091bd81cc81')
+    ('0x11f42', '?', 'c3a9f091bd82', '65f091bd82cc81', 'f091bd82cc81', 'f091bd82cc81')
+    ('0x1e4ec', '?', 'c3a9f09e93ac', '65f09e93accc81', 'cc81f09e93ac', 'f09e93accc81')
+    ('0x1e4ed', '?', 'c3a9f09e93ad', '65f09e93adcc81', 'cc81f09e93ad', 'f09e93adcc81')
+    ('0x1e4ee', '?', 'c3a9f09e93ae', '65f09e93aecc81', 'f09e93aecc81', 'f09e93aecc81')
+A01a text_digest for e+0x10efd+U+0301: validator=None db=NULL equal=True
+A01a text_digest for e+0x10efe+U+0301: validator=None db=NULL equal=True
+A01a text_digest for e+0x10eff+U+0301: validator=None db=NULL equal=True
+A01a text_digest for e+0x11f41+U+0301: validator=None db=NULL equal=True
+A01a text_digest for e+0x11f42+U+0301: validator=None db=NULL equal=True
+A01a text_digest for e+0x1e4ec+U+0301: validator=None db=NULL equal=True
+A01a text_digest for e+0x1e4ed+U+0301: validator=None db=NULL equal=True
+A01a text_digest for e+0x1e4ee+U+0301: validator=None db=NULL equal=True
+A01b bytes=b'abc\x00def'                validator=None                       db=NULL  equal=True
+A01b bytes=b'\x00'                      validator=None                       db=NULL  equal=True
+A01b bytes=b'\xd0\x97\xd0\xb0\xd1\x80\xd0\xb5\xd1\x87\xd0\xbd\xd0\xb0\xd1\x8f\x00' validator=None                       db=NULL  equal=True
+A01c 'https://news.example@evil.example/zarechye'         real host=evil.example                 outlet=None           norm=None                                             db=[NULL | NULL]  outlet(norm(u))=None  idempotent=True
+A01c 'https://news.example:443@evil.example/zarechye'     real host=evil.example                 outlet=None           norm=None                                             db=[NULL | NULL]  outlet(norm(u))=None  idempotent=True
+A01c 'https://news.example_x.attacker.com/zarechye'       real host=news.example_x.attacker.com  outlet=None           norm=None                                             db=[NULL | NULL]  outlet(norm(u))=None  idempotent=True
+A01c 'https://news.example~attacker.com/zarechye'         real host=?                            outlet=None           norm=None                                             db=[NULL | NULL]  outlet(norm(u))=None  idempotent=True
+A01c 'http://news.example:80evil.com/zarechye'            real host=?                            outlet=None           norm=None                                             db=[NULL | NULL]  outlet(norm(u))=None  idempotent=True
+A01c 'https://news.example%2eattacker.com/zarechye'       real host=?                            outlet=None           norm=None                                             db=[NULL | NULL]  outlet(norm(u))=None  idempotent=True
+A01c 'https://news.example\\@evil.example/'               real host=news.example (whatwg)        outlet=None           norm=None                                             db=[NULL | NULL]  outlet(norm(u))=None  idempotent=True
+A01c 'https://www.co.uk/a'                                real host=www.co.uk                    outlet=co.uk          norm=https://www.co.uk/a                              db=[https://www.co.uk/a | co.uk]  outlet(norm(u))=co.uk  idempotent=True
+A01c 'https://m.co.uk/a'                                  real host=m.co.uk                      outlet=co.uk          norm=https://m.co.uk/a                                db=[https://m.co.uk/a | co.uk]  outlet(norm(u))=co.uk  idempotent=True
+A01c 'https://amp.co.uk/a'                                real host=amp.co.uk                    outlet=co.uk          norm=https://amp.co.uk/a                              db=[https://amp.co.uk/a | co.uk]  outlet(norm(u))=co.uk  idempotent=True
+A01c 'https://news.example:8443/a'                        real host=news.example:8443            outlet=news.example   norm=https://news.example:8443/a                      db=[https://news.example:8443/a | news.example]  outlet(norm(u))=news.example  idempotent=True
+A01c 'https://NEWS.example./a?b=&a=1&utm_x=1#f'           real host=news.example                 outlet=news.example   norm=https://news.example/a?a=1&b=                    db=[https://news.example/a?a=1&b= | news.example]  outlet(norm(u))=news.example  idempotent=True
+A01c 'https://news.example/a?A=1&a=1'                     real host=news.example                 outlet=news.example   norm=https://news.example/a?A=1&a=1                   db=[https://news.example/a?A=1&a=1 | news.example]  outlet(norm(u))=news.example  idempotent=True
+A01d pub_norm idempotent: non-idempotent code points=0 []

@@ -1,0 +1,98 @@
+sec  | id      | sev | expected                                 | got                                                     | verdict    | note
+OR   | OR-01a  | P0  | ERR(SOURCE_CONTENT_UNAVAILABLE)          | SOURCE_CONTENT_UNAVAILABLE                              | closed     | нет байтов нигде, подложная цитата
+OR   | OR-01b  | P0  | EVIDENCE_SPAN_INVALID                    | EVIDENCE_SPAN_INVALID                                   | closed     | байты в хранилище, подложная цитата
+OR   | OR-02a  | P0  | ERR(RECEIPT_SIGNATURE_INVALID)           | RECEIPT_SIGNATURE_INVALID                               | closed     | подпись чужим ключом под key_ts_1
+OR   | OR-02b  | P0  | ERR(SCHEMA_INVALID)                      | SCHEMA_INVALID                                          | closed     | ServiceKey в данных
+OR   | OR-03   | P0  | ENTITY_DUPLICATE_IN_PROJECT              | ENTITY_DUPLICATE_IN_PROJECT                             | closed     | ИНН слитого дубля у новой сущности
+OR   | OR-04   | P0  | ERR(SCHEMA_INVALID)                      | SCHEMA_INVALID                                          | closed     | VIN + '\n'
+OR   | OR-05   | P0  | MARKING_BROADER_THAN_INPUT               | MARKING_BROADER_THAN_INPUT                              | closed     | Проверка физлица PUBLIC
+OR   | OR-06a  | P1  | NO-CRASH                                 | SCHEMA_INVALID                                          | closed     | ИНН + '\n'
+OR   | OR-06b  | P1  | NO-CRASH                                 | SCHEMA_INVALID                                          | closed     | IMO + '\n'
+OR   | OR-06c  | P1  | NO-CRASH                                 | SCHEMA_INVALID                                          | closed     | 6000.0
+OR   | OR-06d  | P1  | NO-CRASH                                 | SCHEMA_INVALID                                          | closed     | 2^53
+OR   | OR-06e  | P1  | NO-CRASH                                 | SCHEMA_INVALID                                          | closed     | суррогат в content_inline
+OR   | OR-06f  | P1  | NO-CRASH                                 | SCHEMA_INVALID                                          | closed     | суррогат в литерале
+OR   | OR-06g  | P1  | NO-CRASH                                 | SCHEMA_INVALID                                          | closed     | суррогат в ключе
+OR   | OR-06h  | P1  | NO-CRASH                                 | SCHEMA_INVALID                                          | closed     | span 0.0
+OR   | OR-06i  | P1  | exit=1                                   | exit=1                                                  | closed     | CLI 6000.0
+OR   | OR-09   | P1  | OK                                       | OK                                                      | closed     | слияние субъекта после закрытых Проверок
+OR   | OR-10   | P1  | OK                                       | OK                                                      | closed     | тёзки с разными ИНН
+OR   | OR-11   | P1  | OK                                       | OK                                                      | closed     | одноимённые события в разных местах
+OR   | OR-12a  | P1  | ENTITY_DUPLICATE_IN_PROJECT              | ENTITY_DUPLICATE_IN_PROJECT                             | closed     | латинская o
+OR   | OR-12b  | P1  | ENTITY_DUPLICATE_IN_PROJECT              | OK                                                      | OPEN       | латинская H
+OR   | OR-12c  | P1  | ENTITY_DUPLICATE_IN_PROJECT              | ENTITY_DUPLICATE_IN_PROJECT                             | closed     | U+2011
+OR   | OR-12d  | P1  | ENTITY_DUPLICATE_IN_PROJECT              | ENTITY_DUPLICATE_IN_PROJECT                             | closed     | U+200B
+OR   | OR-12e  | P1  | ENTITY_DUPLICATE_IN_PROJECT              | ENTITY_DUPLICATE_IN_PROJECT                             | closed     | кавычки
+OR   | OR-12f  | P1  | ENTITY_DUPLICATE_IN_PROJECT              | ENTITY_DUPLICATE_IN_PROJECT                             | closed     | :0245
+OR   | OR-13   | P1  | CHECK_CLAIM_NOT_ACCEPTED_AT_COMPLETION   | OK                                                      | OPEN       | задним числом (обе метки времени)
+OR   | OR-14   | P1  | ERR(SCHEMA_INVALID)                      | SCHEMA_INVALID                                          | closed     | ru.inn через foreign_ids
+OR   | OR-16   | P2  | OK                                       | OK                                                      | closed     | квалификатор с именем date
+OR   | OR-17a  | P2  | PREDICATE_RANGE_VIOLATION                | PREDICATE_RANGE_VIOLATION                               | closed     | scheme telegram у дела
+OR   | OR-17b  | P2  | QUALIFIER_INVALID                        | QUALIFIER_INVALID                                       | closed     | квалификатор ' '
+OR   | OR-17c  | P2  | PREDICATE_RANGE_VIOLATION                | OK                                                      | OPEN       | давление в kg
+OR   | OR-18   | P2  | MARKING_BROADER_THAN_INPUT               | MARKING_BROADER_THAN_INPUT                              | closed     | утверждение шире сущности
+OR   | OR-G1   |     | OK                                       | OK                                                      | closed     | ИП: PERSON + ОГРНИП
+OR   | OR-G2   |     | CHECK_SEARCH_MISSING                     | CHECK_SEARCH_MISSING                                    | closed     | NOT_FOUND без поиска
+OR   | OR-G3   |     | OK                                       | OK                                                      | closed     | EQUIPMENT_MODEL
+OR   | OR-G4   |     | ERR(same publication)                    | OK                                                      | OPEN       | статья + '\n' -> 2-й Source (O4)
+RR   | RR-01   | P1  | OK                                       | OK                                                      | fixed      | субъект RETIRED после закрытия Проверок
+RR   | RR-02a  | P1  | OK                                       | OK                                                      | fixed      | PT-101 (лат.) и РТ-101 (кир.) — разные приборы
+RR   | RR-02b  | P1  | OK                                       | OK                                                      | fixed      | понятия «небо» и «нёбо»
+RR   | RR-02c  | P1  | OK                                       | ENTITY_DUPLICATE_IN_PROJECT                             | FINDING    | понятия «Орёл» (город) и «орёл» (птица)
+RR   | RR-02d  | P2  | OK                                       | OK                                                      | fixed      | понятия «10²» и «102»
+OK   | V-14    |     | ENTITY_DUPLICATE_IN_PROJECT              | ENTITY_DUPLICATE_IN_PROJECT                             | ok         | Лёвин/Левин без ИНН: слабый ключ склеивает (ожидаемо, снимается пометками)
+RR   | RR-03a  | P1  | ENTITY_DUPLICATE_IN_PROJECT              | ENTITY_DUPLICATE_IN_PROJECT                             | fixed      | то же событие с местом и без
+RR   | RR-03b  | P1  | ENTITY_DUPLICATE_IN_PROJECT              | ENTITY_DUPLICATE_IN_PROJECT                             | fixed      | тот же конфликт без места
+RR   | RR-03c  | P1  | ENTITY_DUPLICATE_IN_PROJECT              | ENTITY_DUPLICATE_IN_PROJECT                             | fixed      | дубль Ломова с disambiguator у одного
+RR   | RR-03h  | P1  | ENTITY_DUPLICATE_IN_PROJECT              | ENTITY_DUPLICATE_IN_PROJECT                             | fixed      | U+034F CGJ (Mn, невидим) в фамилии
+RR   | RR-03i  | P1  | ENTITY_DUPLICATE_IN_PROJECT              | ENTITY_DUPLICATE_IN_PROJECT                             | fixed      | U+FE0F VS16 (Mn, невидим) в фамилии
+RR   | RR-03j  | P1  | ENTITY_DUPLICATE_IN_PROJECT              | OK                                                      | FINDING    | греческая ο вместо о
+RR   | RR-03k  | P1  | ENTITY_DUPLICATE_IN_PROJECT              | ENTITY_DUPLICATE_IN_PROJECT                             | fixed      | U+3164 Hangul filler (Lo, невидим)
+RR   | RR-03d  | P2  | ENTITY_DUPLICATE_IN_PROJECT              | ENTITY_DUPLICATE_IN_PROJECT                             | fixed      | регистрация RA-12345 / ra 12345
+RR   | RR-03e  | P2  | ENTITY_DUPLICATE_IN_PROJECT              | ENTITY_DUPLICATE_IN_PROJECT                             | fixed      | HRB 12345 / HRB12345
+RR   | RR-03f  | P2  | ENTITY_DUPLICATE_IN_PROJECT              | ENTITY_DUPLICATE_IN_PROJECT                             | fixed      | тег Н-101 / Н101
+RR   | RR-03g  | P2  | ERR(duplicate)                           | OK                                                      | FINDING    | головная организация повторно как BRANCH
+RR   | RR-04   | P2  | OK                                       | OK                                                      | fixed      | два ИП-тёзки с разными ОГРНИП без ИНН
+RR   | RR-05a  | P1  | NO-CRASH                                 | SCHEMA_INVALID                                          | fixed      | вложенность 5000 (библиотека)
+RR   | RR-05b  | P1  | exit=1                                   | exit=1                                                  | fixed      | CLI: вложенность 100000
+RR   | RR-05c  | P2  | exit=0                                   | exit=0                                                  | fixed      | CLI: подкаталог в --content-dir
+OK   | V-15    |     | VALIDATOR_INTERNAL_ERROR                 | VALIDATOR_INTERNAL_ERROR                                | ok         | хранилище вернуло str: fail-closed
+RR   | RR-06   | P2  | OK                                       | OK                                                      | fixed      | повтор key_id у другого tenant
+RR   | RR-07   | P2  | ERR(unverifiable node)                   | OK                                                      | FINDING    | несуществующий узел графа
+RR   | RR-08a  | P2  | ERR(search scope)                        | OK                                                      | FINDING    | COURT «проверен» в кулинарном блоге
+RR   | RR-08b  | P2  | ERR(SOURCE_CONTENT_UNAVAILABLE)          | SOURCE_CONTENT_UNAVAILABLE                              | fixed      | источник результата поиска без байтов
+RR   | RR-08c  | P2  | MARKING_BROADER_THAN_INPUT               | MARKING_BROADER_THAN_INPUT                              | fixed      | Проверка шире источника поиска
+RR   | RR-09   | P2  | ERR(time bound)                          | OK                                                      | FINDING    | status_changed_at = 2099
+RR   | RR-11   | P2  | ERR(IDENTIFIER_CHECKSUM_INVALID)         | IDENTIFIER_CHECKSUM_INVALID                             | fixed      | литерал ru.ogrnip с неверной контрольной цифрой
+RR   | RR-12   | P2  | OK                                       | OK                                                      | fixed      | foreign_ids scheme 'equipment' = ключ насоса Н-101
+RR   | RR-13   | P1  | OK                                       | OK                                                      | fixed      | выживший после слияния выведен из оборота
+RR   | RR-10   | P2  | OK                                       | OK                                                      | fixed      | многострочный STRING-литерал
+OK   | V-01    |     | SOURCE_DIGEST_MISMATCH                   | SOURCE_DIGEST_MISMATCH                                  | ok         | в хранилище байты другого источника
+OK   | V-02    |     | SOURCE_DIGEST_MISMATCH                   | SOURCE_DIGEST_MISMATCH                                  | ok         | inline ≠ хранилище
+OK   | V-03    |     | RECEIPT_KEY_INVALID                      | RECEIPT_KEY_INVALID                                     | ok         | пустой реестр доверия
+OK   | V-04    |     | RECEIPT_KEY_INVALID,TRUST_CONFIG_INVALID | RECEIPT_KEY_INVALID,TRUST_CONFIG_INVALID                | ok         | битый реестр
+OK   | V-05    |     | RECEIPT_KEY_INVALID                      | RECEIPT_KEY_INVALID                                     | ok         | ключ другого tenant
+OK   | V-06    |     | OK                                       | OK                                                      | ok         | без реестра и без receipt
+OK   | V-07    |     | RECEIPT_KEY_INVALID                      | RECEIPT_KEY_INVALID                                     | ok         | revoked_at == issued_at
+OK   | V-08    |     | QUALIFIER_INVALID                        | QUALIFIER_INVALID                                       | ok         | True как integer
+OK   | V-09    |     | EVIDENCE_SPAN_INVALID                    | EVIDENCE_SPAN_INVALID                                   | ok         | разрез эмодзи при верном sha
+OK   | V-10    |     | OK                                       | OK                                                      | ok         | реальные ИНН/ОГРН/ОГРНИП/IMO
+OK   | V-11    |     | ENTITY_DUPLICATE_IN_PROJECT              | ENTITY_DUPLICATE_IN_PROJECT                             | ok         | полноширинные формы
+OK   | V-12    |     | CHECK_CLAIM_NOT_ACCEPTED_AT_COMPLETION   | CHECK_CLAIM_NOT_ACCEPTED_AT_COMPLETION                  | ok         | reviewed_at до, recorded_at после
+OK   | V-13    |     | CHECK_SUBJECT_INVALID                    | CHECK_SUBJECT_INVALID                                   | ok         | слияние до закрытия Проверки
+JCS  | J01     |     | '{"😀":2,"\ue000":1}'                     | py=node=expected                                        | ok         | {"\ue000":1,"\ud83d\ude00":2}
+JCS  | J02     |     | '{"\x7f":2,"\x80":1,"𐀀":4,"\uf           | py=node=expected                                        | ok         | {"\u0080":1,"\u007f":2,"\uffff":3,"\ud80
+JCS  | J03     |     | '"\u2028\u2029"'                         | py=node=expected                                        | ok         | "\u2028\u2029"
+JCS  | J04     |     | '"\\u0000\\u001f\x7f"'                   | py=node=expected                                        | ok         | "\u0000\u001f\u007f"
+JCS  | J06     |     | '{"string":"€$\\u000f\\nA\'B\\           | py=node=expected                                        | ok         | {"string":"\u20ac$\u000F\u000aA'\u0042\u
+JCS  | J08     |     | '{"__proto__":1,"a":2}'                  | py=node=expected                                        | ok         | {"__proto__":1,"a":2}
+JCS  | J10     |     | '0'                                      | py=node=expected                                        | ok         | -0
+JCS  | J11     |     | 'REJECT'                                 | py=node=expected                                        | ok         | "\ud800"
+JCS  | J12     |     | 'REJECT'                                 | py=node=expected                                        | ok         | 9007199254740993
+JCS  | J13     |     | 'REJECT'                                 | py=node=expected                                        | ok         | 1.5
+JCS  | J14     |     | 'REJECT'                                 | py='REJECT' node='1'                                    | FINDING    | 1.0
+JCS  | J15     |     | 'REJECT'                                 | py=node=expected                                        | ok         | {"\ud800":1}
+JCS  | J16     |     | 'REJECT'                                 | py='REJECT' node='100'                                  | FINDING    | 1e2
+JCS  | J17     |     | 'REJECT'                                 | py=node=expected                                        | ok         | {"a":{"\udc00":1}}
+
+FINDING=8 OPEN=4 closed=32 fixed=24 ok=27 total=95

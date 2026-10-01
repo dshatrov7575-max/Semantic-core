@@ -1,0 +1,10 @@
+X1 validator_digest=sha256:ba45f8d1738d9… db_digest=NULL…
+X1 ВАЛИДАТОР: публикация с его digest -> принято (все коды мира+записей: [])
+X1 БАЗА: источник -> принят; та же публикация -> ERROR:  PUBLICATION_INVALID: нет ни одного источника этого издания с этим текстом, полученного к recorded_at
+X1 БАЗА: публикация с digest базы -> —
+X1 DIVERGENCE=YES
+X2 validator_digest=sha256:03d8ac9d6fa20… db_digest=sha256:7a1e81558f394…
+X2 ВАЛИДАТОР: публикация с его digest -> принято (все коды мира+записей: [])
+X2 БАЗА: источник -> принят; та же публикация -> ERROR:  PUBLICATION_INVALID: нет ни одного источника этого издания с этим текстом, полученного к recorded_at
+X2 БАЗА: публикация с digest базы -> принято
+X2 DIVERGENCE=YES

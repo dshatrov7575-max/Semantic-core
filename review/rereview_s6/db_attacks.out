@@ -1,0 +1,52 @@
+claim clm:sha256:be5476fc3e6e3 source src:sha256:cea88d19d3576
+
+== A1: a check committed late changes a PAST custody answer (claim 5: as-of answers do not change retroactively)
+  journal: OK@2026-10-02 00:52:44.41063+03, CORRUPT@2026-10-02 00:52:46.653223+03
+  asked at T2=2026-10-02 00:52:51.673529+03 (while the scrub transaction was open): as_of=2026-10-01T21:52:51.673529+00:00 originals=[('https://news.example/zarechye', 'OK', 1)] digest=sha256:a94f2ae2a65
+  asked AGAIN for the same as_of after its commit:        as_of=2026-10-01T21:52:51.673529+00:00 originals=[('https://news.example/zarechye', 'CORRUPT', 2)] digest=sha256:a5463cbb8de
+  RESULT: FINDING — same as_of, different answer
+
+== A2: an observation committed late changes a PAST custody answer
+  loader stderr: -
+  observations per source at as_of=T2: first ask [3] digest=sha256:0292842461c | second ask [4] digest=sha256:56939f264d5
+  RESULT: FINDING — same as_of, different answer
+
+== A3: race scrub vs observation: an observation naming an object whose LATEST check is not OK gets in
+  observation insert while MISSING was uncommitted: ACCEPTED
+  committed history: check MISSING@2026-10-02 00:53:08.224294+03 ; check OK@2026-10-02 00:53:07.875835+03 ; observation ingested@2026-10-02 00:53:13.229811+03
+  observations whose original was NOT OK at their own ingestion time (invariant of claim 3): 1 -> FINDING
+  locks taken by an open scrub tx that an observation insert would wait on (pg_locks, this db, not granted): 0
+
+== A4: custody shows fetches made for OTHER projects (sources are tenant-wide): URI, time, original
+  another product's loader adds its own fetch of the same text: accepted
+  reader ac_rd_wm (PUBLIC clearance, project prj_wm_region only) sees in custody: [{"original": {"checks": 1, "object": "sha256:a8ecbd6df3661c19fb4df705e4d229f54e4226c855d99a63c70e48e364576748", "status": "OK", "stored_at": "2026-10-01T21:53:22.696752+00:00", "media_type": "application/pdf", "byte_length": 4242, "last_checked_at": "2026-10-01T21:53:22.701524+00:00"}, "origin_uri": "https://intranet.corp.examp
+  same URI in wm_feed (D24): False | in provenance: False | custody marking label: {'level': 'PUBLIC', 'categories': []}
+  RESULT: FINDING — custody discloses what feed/provenance do not
+
+== A5: registry accepts tenants that do not exist / cannot be a store prefix (no FK, no pattern on ac.objects.tenant_id)
+  tenant 'tnt_ghost': accepted
+  tenant 'TNT/../tnt_demo': accepted
+  tenant 'a\tb': accepted
+
+== A6: same-timestamp collisions on PRIMARY KEY (tenant, object, checked_at)
+  200000 checks of one object in one statement: 200002|200002
+
+== A7: bounds parity (validator: integer >= 1, schema rejects 2**63; database bigint)
+  byte_length=9223372036854775807: accepted
+  byte_length=9223372036854775808: refused ERROR:  bigint out of range
+  media_type 'text/html\n': db f
+  media_type 'text/html; charset=utf-8': db t
+  media_type 'text/html;charset=utf-8': db t
+  media_type 'text/html;  charset=utf-8': db f
+  media_type 'tеxt/html': db f
+
+== A8: earlier projections unaffected by everything above
+  check_report digests unchanged: True | reports: 3
+
+== A9: refusals
+  ac_rd_none  clm:sha256:be547 as_of=None: ERROR:  ACCESS_DENIED: нет допуска
+  ac_rd_wm    clm:sha256:00000 as_of=None: ERROR:  ACCESS_DENIED: нет допуска
+  ac_rd_wm    clm:sha256:be547 as_of=2020-01-01: ERROR:  ACCESS_DENIED: нет допуска
+  ac_rd_wm    clm:sha256:be547 as_of=-infinity: ERROR:  ACCESS_DENIED: нет допуска
+  ac_storage  clm:sha256:be547 as_of=None: ERROR:  permission denied for function custody
+  ac_loader   clm:sha256:be547 as_of=None: ERROR:  permission denied for function custody

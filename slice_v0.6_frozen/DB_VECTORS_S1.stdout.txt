@@ -1,0 +1,342 @@
+N001 | SCHEMA_INVALID | ACCEPTED | 
+N002 | SCHEMA_INVALID | REJECTED | ERROR:  QUALIFIER_INVALID: corp.founder_of: квалификатор вне реестра, неверного типа или без обязательного
+N003 | SCHEMA_INVALID | ACCEPTED | 
+N004 | SCHEMA_INVALID | N/A | UnicodeEncodeError
+N005 | SCHEMA_INVALID | N/A | UnicodeEncodeError
+N006 | SCHEMA_INVALID | ACCEPTED | 
+N007 | SCHEMA_INVALID | ACCEPTED | 
+N008 | SCHEMA_INVALID | REJECTED | ERROR:  new row for relation "claims" violates check constraint "claim_dates_valid"
+N009 | SCHEMA_INVALID | REJECTED | ERROR:  new row for relation "claims" violates check constraint "claim_dates_valid"
+N010 | SCHEMA_INVALID | ACCEPTED | 
+N011 | SCHEMA_INVALID | ACCEPTED | 
+N012 | SCHEMA_INVALID | ACCEPTED | 
+N013 | SCHEMA_INVALID | ACCEPTED | 
+N014 | SCHEMA_INVALID | REJECTED | ERROR:  new row for relation "checks" violates check constraint "checks_check"
+N020 | RECEIPT_KEY_INVALID,TRUST_CONFIG_INVALID | REJECTED | ERROR:  duplicate key value violates unique constraint "keys_pkey"
+N021 | RECEIPT_KEY_INVALID,TRUST_CONFIG_INVALID | REJECTED | ERROR:  new row for relation "keys" violates check constraint "keys_check"
+N022 | RECEIPT_KEY_INVALID,TRUST_CONFIG_INVALID | REJECTED | ERROR:  new row for relation "keys" violates check constraint "keys_check1"
+N023 | RECEIPT_KEY_INVALID,TRUST_CONFIG_INVALID | REJECTED | ERROR:  new row for relation "keys" violates check constraint "keys_algorithm_check"
+N030 | DUPLICATE_ID | REJECTED | ERROR:  duplicate key value violates unique constraint "entities_pkey"
+N031 | DUPLICATE_ID | REJECTED | ERROR:  duplicate key value violates unique constraint "sources_pkey"
+N032 | REF_UNRESOLVED | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки сущности
+N033 | REF_UNRESOLVED | REJECTED | ERROR:  insert or update on table "claims" violates foreign key constraint "claims_project_id_object_entity_fkey"
+N034 | REF_UNRESOLVED | REJECTED | ERROR:  CROSS_SCOPE_REFERENCE: источник не найден в tenant утверждения
+N035 | REF_UNRESOLVED | REJECTED | ERROR:  insert or update on table "claim_reviews" violates foreign key constraint "claim_reviews_claim_id_fkey"
+N036 | REF_UNRESOLVED | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: Проверка шире маркировки утверждения
+N037 | REF_UNRESOLVED | REJECTED | ERROR:  CHECK_PREVIOUS_INVALID: предыдущая Проверка: тот же субъект и более ранняя дата
+N038 | REF_UNRESOLVED | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: Проверка шире маркировки субъекта
+N039 | REF_UNRESOLVED | REJECTED | ERROR:  SOURCE_CONTENT_UNAVAILABLE: у источника результата поиска нет байтов
+N040 | REF_UNRESOLVED | REJECTED | ERROR:  GRAPH_NODE_INVALID: clm:sha256:4444444444444444444444444444444444444444444444444444444444444444: доказательство утверждения из артеф
+N041 | REF_UNRESOLVED | REJECTED | ERROR:  ARTIFACT_INVALID: вход артефакта не найден среди байтов источников tenant
+N042 | REF_UNRESOLVED | REJECTED | ERROR:  insert or update on table "entities" violates foreign key constraint "entities_project_id_fkey"
+N043 | REF_UNRESOLVED | N/A | KeyError
+N044 | REF_UNRESOLVED | N/A | KeyError
+N045 | RECEIPT_CLAIM_BINDING_INVALID,REF_UNRESOLVED | N/A | KeyError
+N046 | CROSS_SCOPE_REFERENCE | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки сущности
+N047 | CROSS_SCOPE_REFERENCE | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки сущности
+N048 | CROSS_SCOPE_REFERENCE | REJECTED | ERROR:  CROSS_SCOPE_REFERENCE: источник не найден в tenant утверждения
+N049 | CROSS_SCOPE_REFERENCE | REJECTED | ERROR:  insert or update on table "checks" violates foreign key constraint "checks_project_id_subject_entity_id_fkey"
+N050 | CROSS_SCOPE_REFERENCE | REJECTED | ERROR:  CROSS_SCOPE_REFERENCE: утверждение другого проекта в Проверке
+N051 | CROSS_SCOPE_REFERENCE | REJECTED | ERROR:  SOURCE_CONTENT_UNAVAILABLE: у источника результата поиска нет байтов
+N052 | CROSS_SCOPE_REFERENCE | REJECTED | ERROR:  ARTIFACT_INVALID: вход артефакта не найден среди байтов источников tenant
+N060 | SOURCE_DIGEST_MISMATCH | ACCEPTED | 
+N061 | SOURCE_DIGEST_MISMATCH | REJECTED | ERROR:  SOURCE_DIGEST_MISMATCH: длина байтов не совпадает с byte_length
+N062 | SOURCE_DIGEST_MISMATCH | REJECTED | ERROR:  SOURCE_DIGEST_MISMATCH: длина байтов не совпадает с byte_length
+N063 | SOURCE_DIGEST_MISMATCH | REJECTED | ERROR:  SOURCE_DIGEST_MISMATCH: длина байтов не совпадает с byte_length
+N064 | SOURCE_CONTENT_UNAVAILABLE | REJECTED | ERROR:  SOURCE_CONTENT_UNAVAILABLE: src:sha256:4a9a0b098cda28aedfc4d866bfde9b3b7ef1fcda381e23cbf6917323bfcf15cc
+N065 | CLAIM_ID_MISMATCH | ACCEPTED | 
+N066 | RECEIPT_ID_MISMATCH | ACCEPTED | 
+N070 | IDENTIFIER_CHECKSUM_INVALID | REJECTED | ERROR:  IDENTIFIER_CHECKSUM_INVALID: ИНН юрлица
+N071 | IDENTIFIER_CHECKSUM_INVALID | REJECTED | ERROR:  IDENTIFIER_CHECKSUM_INVALID: ОГРН
+N072 | IDENTIFIER_CHECKSUM_INVALID | REJECTED | ERROR:  IDENTIFIER_CHECKSUM_INVALID: ru.inn физлица
+N073 | IDENTIFIER_CHECKSUM_INVALID | REJECTED | ERROR:  IDENTIFIER_CHECKSUM_INVALID: ru.inn физлица
+N074 | IDENTIFIER_CHECKSUM_INVALID | REJECTED | ERROR:  IDENTIFIER_CHECKSUM_INVALID: ru.ogrnip
+N075 | IDENTIFIER_CHECKSUM_INVALID | REJECTED | ERROR:  IDENTIFIER_CHECKSUM_INVALID: IMO
+N076 | IDENTIFIER_CHECKSUM_INVALID | REJECTED | ERROR:  IDENTIFIER_CHECKSUM_INVALID: ИНН юрлица
+N078 | ENTITY_IDENTITY_INSUFFICIENT | REJECTED | ERROR:  ENTITY_IDENTITY_INSUFFICIENT: организация РФ без ОГРН и ИНН
+N079 | ENTITY_IDENTITY_INSUFFICIENT | REJECTED | ERROR:  ENTITY_IDENTITY_INSUFFICIENT: PERSON без ИНН, ОГРНИП, даты рождения и disambiguator
+N080 | ENTITY_IDENTITY_INSUFFICIENT | REJECTED | ERROR:  ENTITY_IDENTITY_INSUFFICIENT: неформальная организация: только название и disambiguator
+N081 | ENTITY_IDENTITY_INSUFFICIENT | REJECTED | ERROR:  ENTITY_IDENTITY_INSUFFICIENT: неформальная организация: только название и disambiguator
+N082 | ENTITY_IDENTITY_INSUFFICIENT | REJECTED | ERROR:  ENTITY_IDENTITY_INSUFFICIENT: неформальная организация: только название и disambiguator
+N083 | ENTITY_IDENTITY_INSUFFICIENT | REJECTED | ERROR:  ENTITY_IDENTITY_INSUFFICIENT: филиал: ИНН и КПП, без ОГРН
+N084 | ENTITY_IDENTITY_INSUFFICIENT | REJECTED | ERROR:  ENTITY_IDENTITY_INSUFFICIENT: филиал: ИНН и КПП, без ОГРН
+N085 | ENTITY_IDENTITY_INSUFFICIENT | REJECTED | ERROR:  ENTITY_IDENTITY_INSUFFICIENT: иностранная организация без идентификатора
+N087 | ENTITY_IDENTITY_INSUFFICIENT | REJECTED | ERROR:  ENTITY_IDENTITY_INSUFFICIENT: нет обязательного идентификатора имущества
+N088 | ENTITY_IDENTITY_INSUFFICIENT | REJECTED | ERROR:  ENTITY_IDENTITY_INSUFFICIENT: нет обязательного идентификатора имущества
+N090 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: ru.inn уже принадлежит другой сущности проекта
+N091 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: ru.ogrn уже принадлежит другой сущности проекта
+N092 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: person.fio_dob совпадает у ent_d_lomov и ent_d_lomov2
+N093 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: person.fio_dob совпадает у ent_d_lomov и ent_d_lomov2
+N095 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: equipment уже принадлежит другой сущности проекта
+N096 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: equipment уже принадлежит другой сущности проекта
+N097 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: equipment уже принадлежит другой сущности проекта
+N098 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: equipment уже принадлежит другой сущности проекта
+N099 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: org.informal уже принадлежит другой сущности проекта
+N100 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: ru.cadastral уже принадлежит другой сущности проекта
+N101 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: ru.inn уже принадлежит другой сущности проекта
+N102 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: ru.inn уже принадлежит другой сущности проекта
+N103 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: person.fio_dob совпадает у ent_d_lomov и ent_d_lomov2
+N106 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: event совпадает у ent_c_rally1 и ent_c_rally2
+N107 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: ru.inn_kpp уже принадлежит другой сущности проекта
+N108 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: equipment_model уже принадлежит другой сущности проекта
+N109 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: concept совпадает у ent_wk_blue и ent_wk_blue2
+N110 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: conflict совпадает у ent_c_conf2 и ent_c_conflict
+N111 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: vin уже принадлежит другой сущности проекта
+N112 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: ru.ogrnip уже принадлежит другой сущности проекта
+N113 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: person.fio_disamb уже принадлежит другой сущности проекта
+N120 | ENTITY_MERGE_INVALID | REJECTED | ERROR:  ENTITY_MERGE_INVALID: ent_d_lomov_media: цель того же проекта и типа, ACTIVE на момент слияния, не шире по маркировке
+N121 | ENTITY_MERGE_INVALID | REJECTED | ERROR:  ENTITY_MERGE_INVALID: ent_d_lomov_media: цель того же проекта и типа, ACTIVE на момент слияния, не шире по маркировке
+N122 | ENTITY_MERGE_INVALID | REJECTED | ERROR:  ENTITY_MERGE_INVALID: ent_d_x: цель того же проекта и типа, ACTIVE на момент слияния, не шире по маркировке
+N123 | ENTITY_MERGE_INVALID | REJECTED | ERROR:  ENTITY_MERGE_INVALID: ent_d_lomov_media: цель того же проекта и типа, ACTIVE на момент слияния, не шире по маркировке
+N124 | TEMPORAL_ORDER_INVALID | REJECTED | ERROR:  new row for relation "entities" violates check constraint "entities_check2"
+N130 | PREDICATE_UNKNOWN | REJECTED | ERROR:  insert or update on table "claims" violates foreign key constraint "claim_predicate_known"
+N131 | PREDICATE_DOMAIN_VIOLATION | REJECTED | ERROR:  PREDICATE_DOMAIN_VIOLATION: ORGANIZATION не в domain corp.director_of
+N132 | PREDICATE_RANGE_VIOLATION | REJECTED | ERROR:  PREDICATE_RANGE_VIOLATION: person.birth_date: тип объекта вне range
+N133 | PREDICATE_RANGE_VIOLATION | REJECTED | ERROR:  PREDICATE_RANGE_VIOLATION: prop.owns: тип объекта вне range
+N134 | PREDICATE_RANGE_VIOLATION | REJECTED | ERROR:  PREDICATE_RANGE_VIOLATION: person.birth_date: тип объекта вне range
+N135 | PREDICATE_RANGE_VIOLATION | REJECTED | ERROR:  PREDICATE_RANGE_VIOLATION: prop.owns: тип объекта вне range
+N136 | PREDICATE_RANGE_VIOLATION | REJECTED | ERROR:  PREDICATE_RANGE_VIOLATION: court.party_to_case: схема идентификатора или единица вне range (S24-01)
+N137 | GRAPH_NODE_INVALID,PREDICATE_RANGE_VIOLATION | REJECTED | ERROR:  PREDICATE_RANGE_VIOLATION: ts.has_parameter: схема идентификатора или единица вне range (S24-01)
+N138 | QUALIFIER_INVALID | REJECTED | ERROR:  QUALIFIER_INVALID: corp.founder_of: квалификатор вне реестра, неверного типа или без обязательного
+N139 | QUALIFIER_INVALID | REJECTED | ERROR:  QUALIFIER_INVALID: corp.founder_of: квалификатор вне реестра, неверного типа или без обязательного
+N141 | QUALIFIER_INVALID | REJECTED | ERROR:  QUALIFIER_INVALID: media.negative_mention: квалификатор вне реестра, неверного типа или без обязательного
+N142 | QUALIFIER_INVALID | REJECTED | ERROR:  QUALIFIER_INVALID: corp.founder_of: квалификатор вне реестра, неверного типа или без обязательного
+N143 | QUALIFIER_INVALID | REJECTED | ERROR:  QUALIFIER_INVALID: rel.affiliated_with: квалификатор вне реестра, неверного типа или без обязательного
+N144 | QUALIFIER_INVALID | REJECTED | ERROR:  QUALIFIER_INVALID: person.birth_date: квалификатор вне реестра, неверного типа или без обязательного
+N145 | GRAPH_NODE_INVALID,QUALIFIER_INVALID | REJECTED | ERROR:  QUALIFIER_INVALID: ts.has_parameter: квалификатор вне реестра, неверного типа или без обязательного
+N146 | GRAPH_NODE_INVALID,QUALIFIER_INVALID | REJECTED | ERROR:  QUALIFIER_INVALID: ts.has_parameter: квалификатор вне реестра, неверного типа или без обязательного
+N147 | QUALIFIER_INVALID | REJECTED | ERROR:  QUALIFIER_INVALID: rel.affiliated_with: квалификатор вне реестра, неверного типа или без обязательного
+N150 | TEMPORAL_ORDER_INVALID | REJECTED | ERROR:  new row for relation "claims" violates check constraint "claim_valid_time_order"
+N151 | TEMPORAL_ORDER_INVALID | REJECTED | ERROR:  TEMPORAL_ORDER_INVALID: утверждение записано раньше, чем получен источник
+N152 | TEMPORAL_ORDER_INVALID | REJECTED | ERROR:  TEMPORAL_ORDER_INVALID: рецензия раньше записи утверждения
+N153 | TEMPORAL_ORDER_INVALID | REJECTED | ERROR:  new row for relation "claim_reviews" violates check constraint "claim_reviews_check"
+N154 | CHECK_SEARCH_MISSING,TEMPORAL_ORDER_INVALID | REJECTED | ERROR:  new row for relation "checks" violates check constraint "check_time_order"
+N155 | TEMPORAL_ORDER_INVALID | REJECTED | ERROR:  new row for relation "checks" violates check constraint "check_time_order"
+N156 | TEMPORAL_ORDER_INVALID | REJECTED | ERROR:  new row for relation "checks" violates check constraint "check_time_order"
+N160 | EVIDENCE_SPAN_INVALID | REJECTED | ERROR:  EVIDENCE_SPAN_INVALID: фрагмент за пределами байтов источника
+N161 | EVIDENCE_SPAN_INVALID | REJECTED | ERROR:  EVIDENCE_SPAN_INVALID: sha256 фрагмента не совпадает
+N162 | EVIDENCE_SPAN_INVALID | REJECTED | ERROR:  EVIDENCE_SPAN_INVALID: фрагмент режет символ UTF-8
+N164 | EVIDENCE_SPAN_INVALID | REJECTED | ERROR:  EVIDENCE_SPAN_INVALID: sha256 фрагмента не совпадает
+N165 | EVIDENCE_SPAN_INVALID | REJECTED | ERROR:  EVIDENCE_SPAN_INVALID: quote не совпадает с байтами
+N166 | EVIDENCE_SPAN_INVALID | REJECTED | ERROR:  EVIDENCE_SPAN_INVALID: quote не совпадает с байтами
+N170 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки сущности
+N171 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки сущности
+N172 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки сущности
+N173 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки сущности
+N174 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: Проверка шире маркировки утверждения
+N175 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: Проверка шире маркировки субъекта
+N176 | MARKING_PD_MISSING | REJECTED | ERROR:  new row for relation "entities" violates check constraint "person_has_pd"
+N180 | CLAIM_REVIEW_AMBIGUOUS | REJECTED | ERROR:  CLAIM_REVIEW_AMBIGUOUS: разные статусы с одинаковым временем записи
+N190 | CHECK_PROJECT_NOT_COMPLIANCE | REJECTED | ERROR:  CHECK_PROJECT_NOT_COMPLIANCE: chk_wrong
+N191 | CHECK_SUBJECT_INVALID | REJECTED | ERROR:  CHECK_SUBJECT_INVALID: субъект — ACTIVE физлицо или юрлицо
+N192 | CHECK_SUBJECT_INVALID | REJECTED | ERROR:  CHECK_SUBJECT_INVALID: субъект — ACTIVE физлицо или юрлицо
+N194 | CHECK_SUBJECT_INVALID | REJECTED | ERROR:  CHECK_SUBJECT_INVALID: субъект слит или выведен из оборота до закрытия Проверки
+N195 | CHECK_DIMENSION_OUTSIDE_PROFILE | REJECTED | ERROR:  CHECK_DIMENSION_OUTSIDE_PROFILE: chk_tenders_1
+N196 | CHECK_DIMENSION_MISSING | REJECTED | ERROR:  CHECK_DIMENSION_MISSING: chk_full_1
+N198 | CHECK_FINDING_INCONSISTENT | REJECTED | ERROR:  CHECK_FINDING_INCONSISTENT: chk_full_1/SOCIAL_MEDIA: FOUND ⇔ есть утверждения
+N199 | CHECK_FINDING_INCONSISTENT | REJECTED | ERROR:  CHECK_FINDING_INCONSISTENT: chk_full_1/SOCIAL_MEDIA: FOUND ⇔ есть утверждения
+N200 | CHECK_FINDING_INCONSISTENT | REJECTED | ERROR:  new row for relation "check_findings" violates check constraint "not_found_no_risk"
+N201 | CHECK_FINDING_INCONSISTENT | REJECTED | ERROR:  duplicate key value violates unique constraint "check_findings_pkey"
+N202 | CHECK_FINDING_INCONSISTENT | REJECTED | ERROR:  CHECK_FINDING_INCONSISTENT: chk_express_1: overall_risk <> max(риск)
+N203 | CHECK_SEARCH_MISSING | REJECTED | ERROR:  CHECK_SEARCH_MISSING: chk_social_lomov/SOCIAL_MEDIA
+N204 | CHECK_SEARCH_MISSING | REJECTED | ERROR:  CHECK_SEARCH_MISSING: chk_express_1/NEGATIVE
+N205 | CHECK_SEARCH_MISSING | REJECTED | ERROR:  CHECK_SEARCH_MISSING: chk_express_1/NEGATIVE
+N207 | CHECK_CLAIM_NOT_ABOUT_SUBJECT | REJECTED | ERROR:  CHECK_CLAIM_NOT_ABOUT_SUBJECT: clm:sha256:1609b34ecc45f25295a29203bcd3bb46089402825d90a32559aa7fc551893e8d
+N209 | CHECK_CLAIM_DIMENSION_MISMATCH | REJECTED | ERROR:  CHECK_CLAIM_DIMENSION_MISMATCH: media.negative_mention не относится к TENDERS
+N210 | CHECK_CLAIM_NOT_ACCEPTED_AT_COMPLETION | REJECTED | ERROR:  CHECK_CLAIM_NOT_ACCEPTED_AT_COMPLETION: clm:sha256:577b95338d259dd345e5be1e8684f192ce6dcb18d4257a907bd2c1d4c48ce36d
+N212 | CHECK_CLAIM_NOT_ACCEPTED_AT_COMPLETION | REJECTED | ERROR:  CHECK_CLAIM_NOT_ACCEPTED_AT_COMPLETION: clm:sha256:7759b99c91f06cdfafd227b2df2b182a360e2273fdfc16010c88ea5ec79f8969
+N213 | CHECK_CLAIM_NOT_ACCEPTED_AT_COMPLETION | REJECTED | ERROR:  CHECK_CLAIM_NOT_ACCEPTED_AT_COMPLETION: clm:sha256:7759b99c91f06cdfafd227b2df2b182a360e2273fdfc16010c88ea5ec79f8969
+N215 | CHECK_PREVIOUS_INVALID | REJECTED | ERROR:  CHECK_PREVIOUS_INVALID: предыдущая Проверка: тот же субъект и более ранняя дата
+N216 | CHECK_PREVIOUS_INVALID | REJECTED | ERROR:  CHECK_PREVIOUS_INVALID: предыдущая Проверка: тот же субъект и более ранняя дата
+N217 | CHECK_PREVIOUS_INVALID,CHECK_PROJECT_NOT_COMPLIANCE | REJECTED | ERROR:  CHECK_PROJECT_NOT_COMPLIANCE: chk_other
+N218 | CHECK_PREVIOUS_INVALID | REJECTED | ERROR:  CHECK_PREVIOUS_INVALID: предыдущая Проверка: тот же субъект и более ранняя дата
+N230 | RECEIPT_SIGNATURE_INVALID | ACCEPTED | 
+N231 | RECEIPT_KEY_INVALID | REJECTED | ERROR:  RECEIPT_KEY_INVALID: ключ чужой службы или не действует на issued_at
+N232 | RECEIPT_KEY_INVALID | REJECTED | ERROR:  RECEIPT_KEY_INVALID: ключ чужой службы или не действует на issued_at
+N234 | RECEIPT_KEY_INVALID | REJECTED | ERROR:  RECEIPT_KEY_INVALID: ключ чужой службы или не действует на issued_at
+N236 | RECEIPT_KEY_INVALID | REJECTED | ERROR:  RECEIPT_KEY_INVALID: ключ чужой службы или не действует на issued_at
+N238 | RECEIPT_KEY_INVALID | REJECTED | ERROR:  RECEIPT_KEY_INVALID: ключ чужой службы или не действует на issued_at
+N239 | RECEIPT_KEY_INVALID | REJECTED | ERROR:  insert or update on table "artifact_receipts" violates foreign key constraint "artifact_receipts_tenant_id_key_id_fkey"
+N240 | RECEIPT_KEY_INVALID | REJECTED | ERROR:  insert or update on table "artifact_receipts" violates foreign key constraint "artifact_receipts_tenant_id_key_id_fkey"
+N241 | RECEIPT_CLAIM_BINDING_INVALID | REJECTED | ERROR:  RECEIPT_CLAIM_BINDING_INVALID: clm:sha256:79026ffd2a1c21331319b672a71ba722b61ffe39741c79edf9547d0102dc3256: PIPELINE-утверждение без
+N242 | ARTIFACT_INVALID,RECEIPT_CLAIM_BINDING_INVALID | REJECTED | ERROR:  duplicate key value violates unique constraint "receipts_one_per_run"
+N243 | RECEIPT_CLAIM_BINDING_INVALID | REJECTED | ERROR:  GRAPH_NODE_INVALID: clm:sha256:6c65f99cedce95e1f6e6c213e9bbefca1eceb9ec8a5a140c965c701c8e8e982e: доказательство утверждения из артеф
+N244 | RECEIPT_CLAIM_BINDING_INVALID | REJECTED | ERROR:  RECEIPT_CLAIM_BINDING_INVALID: clm:sha256:5f74b3bf572e589731cc3c9e9c075fb1ed38d68ff0bbe90896a8cd2cac0b44ad
+N245 | RECEIPT_CLAIM_BINDING_INVALID | REJECTED | ERROR:  RECEIPT_CLAIM_BINDING_INVALID: clm:sha256:00e12186a1a9c5d5478dd7027c3a3106198554ece64c32ccb0d20fa54e94e35c
+N246 | GRAPH_NODE_INVALID,RECEIPT_CLAIM_BINDING_INVALID | REJECTED | ERROR:  GRAPH_NODE_INVALID: clm:sha256:5a8a3af309e39c5bfc1a03b74bf870e1849610b67c99ad2d1c01ff12d2b75099: доказательство утверждения из артеф
+N247 | RECEIPT_CLAIM_BINDING_INVALID | REJECTED | ERROR:  RECEIPT_CLAIM_BINDING_INVALID: clm:sha256:275ba5de250e20a34f23450618c157551df4eaa4229daa88a1a2a125d930d767
+N249 | GRAPH_NODE_INVALID,RECEIPT_CLAIM_BINDING_INVALID | REJECTED | ERROR:  GRAPH_NODE_INVALID: clm:sha256:7fc7895705e4680074c7ee997335ccade3044fd9d73ae52b1ebabb878cfa74a3: доказательство утверждения из артеф
+N250 | RECEIPT_CLAIM_BINDING_INVALID | REJECTED | ERROR:  GRAPH_NODE_INVALID: узла n12 нет в сохранённом артефакте tenant или это не отношение
+N251 | RECEIPT_CLAIM_BINDING_INVALID | REJECTED | ERROR:  RECEIPT_CLAIM_BINDING_INVALID: узел графа допустим только у PIPELINE-утверждения
+N168 | EVIDENCE_SPAN_INVALID | REJECTED | ERROR:  EVIDENCE_SPAN_INVALID: фрагмент за пределами байтов источника
+N169 | EVIDENCE_SPAN_INVALID | REJECTED | ERROR:  new row for relation "claim_evidence" violates check constraint "claim_evidence_check"
+N197 | CHECK_SUBJECT_INVALID | REJECTED | ERROR:  CHECK_SUBJECT_INVALID: субъект слит или выведен из оборота до закрытия Проверки
+N219 | CHECK_CLAIM_NOT_ACCEPTED_AT_COMPLETION | REJECTED | ERROR:  CHECK_CLAIM_NOT_ACCEPTED_AT_COMPLETION: clm:sha256:7759b99c91f06cdfafd227b2df2b182a360e2273fdfc16010c88ea5ec79f8969
+N220 | CHECK_PREVIOUS_INVALID | REJECTED | ERROR:  CHECK_PREVIOUS_INVALID: предыдущая Проверка: тот же субъект и более ранняя дата
+N067 | SOURCE_DIGEST_MISMATCH | REJECTED | ERROR:  new row for relation "source_bytes" violates check constraint "source_bytes_address"
+N177 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки источника
+N225 | CHECK_FINDING_INCONSISTENT | REJECTED | ERROR:  new row for relation "check_findings" violates check constraint "not_found_no_risk"
+N301 | CHECK_SUBJECT_INVALID | REJECTED | ERROR:  CHECK_SUBJECT_INVALID: субъект слит или выведен из оборота до закрытия Проверки
+N302 | CHECK_SUBJECT_INVALID | REJECTED | ERROR:  CHECK_SUBJECT_INVALID: субъект слит или выведен из оборота до закрытия Проверки
+N304 | ENTITY_MERGE_INVALID | REJECTED | ERROR:  ENTITY_MERGE_INVALID: ent_d_lomov_media: цель того же проекта и типа, ACTIVE на момент слияния, не шире по маркировке
+N305 | ENTITY_MERGE_INVALID | REJECTED | ERROR:  ENTITY_MERGE_INVALID: ent_d_lomov_media: цель того же проекта и типа, ACTIVE на момент слияния, не шире по маркировке
+N309 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: concept совпадает у ent_wk_orel_b и ent_wk_orel_c
+N309b | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: concept совпадает у ent_wk_orel_b и ent_wk_orel_c
+N310 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: equipment уже принадлежит другой сущности проекта
+N312 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: event совпадает у ent_k_tender и ent_k_tender2
+N313 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: conflict совпадает у ent_c_conf2 и ent_c_conflict
+N314 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: person.fio_dob совпадает у ent_d_lomov и ent_d_lomov2
+N315 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: person.fio_dob совпадает у ent_d_lomov и ent_d_lomov2
+N316 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: person.fio_dob совпадает у ent_d_lomov и ent_d_lomov2
+N317 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: person.fio_dob совпадает у ent_d_lomov и ent_d_lomov2
+N318 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: person.fio_dob совпадает у ent_d_lomov и ent_d_lomov2
+N319 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: aviareg уже принадлежит другой сущности проекта
+N320 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: event совпадает у ent_c_ev1 и ent_c_ev2
+N322 | SCHEMA_INVALID | N/A | RecursionError
+N322b | RECEIPT_KEY_INVALID,TRUST_CONFIG_INVALID | ACCEPTED | 
+N323b | TRUST_CONFIG_INVALID | REJECTED | ERROR:  duplicate key value violates unique constraint "keys_pkey"
+N325 | SOURCE_CONTENT_UNAVAILABLE | REJECTED | ERROR:  SOURCE_CONTENT_UNAVAILABLE: у источника результата поиска нет байтов
+N326 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: Проверка шире маркировки источника результата поиска
+N327b | SCHEMA_INVALID | REJECTED | ERROR:  GRAPH_NODE_INVALID: узел n13: объект не совпадает с узлом-аргументом
+N328 | IDENTIFIER_CHECKSUM_INVALID | REJECTED | ERROR:  IDENTIFIER_CHECKSUM_INVALID: контрольные цифры литерала (S24-01)
+N328b | IDENTIFIER_CHECKSUM_INVALID | REJECTED | ERROR:  IDENTIFIER_CHECKSUM_INVALID: контрольные цифры литерала (S24-01)
+N332 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: event совпадает у ent_c_ev1 и ent_c_ev2
+N333 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: Проверка шире маркировки субъекта
+N334 | SCHEMA_INVALID | REJECTED | ERROR:  IDENTIFIER_CHECKSUM_INVALID: контрольные цифры литерала (S24-01)
+N331 | SCHEMA_INVALID | ACCEPTED | 
+N400 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: person.fio_dob совпадает у ent_d_lomov и ent_d_ns
+N401 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: person.fio_dob совпадает у ent_d_lomov и ent_d_ns
+N402 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: person.fio_dob совпадает у ent_d_lomov и ent_d_ns
+N403 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: person.fio_dob совпадает у ent_d_lomov и ent_d_ns
+N404 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: person.fio_dob совпадает у ent_d_lomov и ent_d_ns
+N405 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: person.fio_dob совпадает у ent_d_lomov и ent_d_ns
+N406 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: person.fio_dob совпадает у ent_d_lomov и ent_d_ns
+N406b | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: person.fio_dob совпадает у ent_d_lomov и ent_d_ns
+N407 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: org.informal уже принадлежит другой сущности проекта
+N413 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: equipment_model уже принадлежит другой сущности проекта
+N413b | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: equipment уже принадлежит другой сущности проекта
+N420 | IDENTITY_DECISION_INVALID | REJECTED | ERROR:  IDENTITY_DECISION_INVALID: ent_d_developer: уточнение допустимо один раз, только недостающего disambiguator у слабого ключа (ФИО+дат
+N421 | IDENTITY_DECISION_INVALID | REJECTED | ERROR:  IDENTITY_DECISION_INVALID: ent_wk_blue_colour: уточнение допустимо один раз, только недостающего disambiguator у слабого ключа (ФИО+
+N422 | IDENTITY_DECISION_INVALID | REJECTED | ERROR:  IDENTITY_DECISION_INVALID: ent_wk_blue: уточнение допустимо один раз, только недостающего disambiguator у слабого ключа (ФИО+дата, с
+N423 | IDENTITY_DECISION_INVALID | REJECTED | ERROR:  IDENTITY_DECISION_INVALID: ent_wk_baleen: уточнение допустимо один раз, только недостающего place у слабого ключа (ФИО+дата, событие
+N424 | IDENTITY_DECISION_INVALID | REJECTED | ERROR:  ENTITY_MERGE_INVALID: ent_d_lomov_x: цель того же проекта и типа, ACTIVE на момент слияния, не шире по маркировке
+N425 | IDENTITY_DECISION_INVALID | REJECTED | ERROR:  IDENTITY_DECISION_INVALID: «различны» — только для несливших сущностей одного типа
+N426 | IDENTITY_DECISION_INVALID | REJECTED | ERROR:  IDENTITY_DECISION_INVALID: «различны» — только для несливших сущностей одного типа
+N427 | REF_UNRESOLVED | REJECTED | ERROR:  insert or update on table "identity_decisions" violates foreign key constraint "identity_decisions_project_id_entity_b_fkey"
+N427b | REF_UNRESOLVED | REJECTED | ERROR:  CROSS_SCOPE_REFERENCE: уточняемая сущность не найдена в проекте решения
+N428 | CROSS_SCOPE_REFERENCE | REJECTED | ERROR:  insert or update on table "identity_decisions" violates foreign key constraint "identity_decisions_project_id_entity_b_fkey"
+N429 | TEMPORAL_ORDER_INVALID | REJECTED | ERROR:  CROSS_SCOPE_REFERENCE: уточняемая сущность не найдена в проекте решения
+N430 | SCHEMA_INVALID | REJECTED | ERROR:  new row for relation "identity_decisions" violates check constraint "decision_shape"
+N430b | SCHEMA_INVALID | REJECTED | ERROR:  new row for relation "identity_decisions" violates check constraint "decision_columns_match_body"
+N431 | SCHEMA_INVALID | REJECTED | ERROR:  IDENTITY_DECISION_INVALID: ent_wk_blue: уточнение допустимо один раз, только недостающего place у слабого ключа (ФИО+дата, событие, 
+N431b | SCHEMA_INVALID | REJECTED | ERROR:  new row for relation "identity_decisions" violates check constraint "decision_shape"
+N432 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: concept совпадает у ent_wk_blue и ent_wk_blue_colour
+N434 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: concept совпадает у ent_wk_blue и ent_wk_blue_colour
+N438 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: person.fio_dob совпадает у ent_d_lomov и ent_d_ns
+N439 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: concept совпадает у ent_wk_blue и ent_wk_blue_colour
+N440 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: concept совпадает у ent_wk_blue и ent_wk_blue_colour
+N441 | ENTITY_MERGE_INVALID | REJECTED | ERROR:  ENTITY_MERGE_INVALID: ent_k_land: цель того же проекта и типа, ACTIVE на момент слияния, не шире по маркировке
+N442 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: Проверка уже маркировки предыдущей Проверки (S22-03)
+N444 | ENTITY_MERGE_INVALID | REJECTED | ERROR:  ENTITY_MERGE_INVALID: ent_d_trub: цель того же проекта и типа, ACTIVE на момент слияния, не шире по маркировке
+N445 | CHECK_PREVIOUS_INVALID | REJECTED | ERROR:  CHECK_PREVIOUS_INVALID: предыдущая Проверка завершена до запроса новой (S23-01)
+N500 | ARTIFACT_INVALID | REJECTED | ERROR:  GRAPH_NODE_INVALID: узла n10 нет в сохранённом артефакте tenant или это не отношение
+N501 | ARTIFACT_INVALID | REJECTED | ERROR:  new row for relation "artifacts" violates check constraint "artifact_address"
+N502 | ARTIFACT_INVALID | ACCEPTED | 
+N503 | ARTIFACT_INVALID | REJECTED | ERROR:  ARTIFACT_INVALID: артефакт не совпадает с receipt: формат, профиль, служба, запуск или входы
+N504 | ARTIFACT_INVALID | REJECTED | ERROR:  ARTIFACT_INVALID: артефакт не JSON в UTF-8
+N505 | ARTIFACT_INVALID | REJECTED | ERROR:  ARTIFACT_INVALID: узел n13 без якоря
+N506 | ARTIFACT_INVALID | REJECTED | ERROR:  ARTIFACT_INVALID: неизвестный семантический профиль артефакта
+N507 | ARTIFACT_INVALID | REJECTED | ERROR:  ARTIFACT_INVALID: артефакт не совпадает с receipt: формат, профиль, служба, запуск или входы
+N508 | ARTIFACT_INVALID | REJECTED | ERROR:  ARTIFACT_INVALID: артефакт не совпадает с receipt: формат, профиль, служба, запуск или входы
+N509 | ARTIFACT_INVALID | REJECTED | ERROR:  ARTIFACT_INVALID: артефакт не совпадает с receipt: формат, профиль, служба, запуск или входы
+N510 | ARTIFACT_INVALID | REJECTED | ERROR:  ARTIFACT_INVALID: узлы: объекты с уникальными id
+N511 | ARTIFACT_INVALID | REJECTED | ERROR:  ARTIFACT_INVALID: якорь узла n4 не попадает в байты источника
+N512 | ARTIFACT_INVALID | REJECTED | ERROR:  ARTIFACT_INVALID: якорь узла n4 режет символ UTF-8
+N513 | ARTIFACT_INVALID | REJECTED | ERROR:  ARTIFACT_INVALID: якорь узла n4: источник не во входах артефакта
+N514 | ARTIFACT_INVALID | REJECTED | ERROR:  ARTIFACT_INVALID: отношение n10: ссылка на несуществующий узел (или условие не CONDITION)
+N515 | ARTIFACT_INVALID | REJECTED | ERROR:  ARTIFACT_INVALID: отношение n12 (has-parameter): аргументы или уточнение не по профилю
+N516 | ARTIFACT_INVALID | REJECTED | ERROR:  ARTIFACT_INVALID: отношение n12 (has-parameter): аргументы или уточнение не по профилю
+N517 | ARTIFACT_INVALID | REJECTED | ERROR:  ARTIFACT_INVALID: отношение n13: ссылка на несуществующий узел (или условие не CONDITION)
+N518 | ARTIFACT_INVALID | REJECTED | ERROR:  ARTIFACT_INVALID: артефакт не совпадает с receipt: формат, профиль, служба, запуск или входы
+N520 | GRAPH_NODE_INVALID | REJECTED | ERROR:  GRAPH_NODE_INVALID: узла no-such-node-999 нет в сохранённом артефакте tenant или это не отношение
+N521 | GRAPH_NODE_INVALID | REJECTED | ERROR:  GRAPH_NODE_INVALID: узла n1 нет в сохранённом артефакте tenant или это не отношение
+N522 | GRAPH_NODE_INVALID | REJECTED | ERROR:  GRAPH_NODE_INVALID: фрагмент доказательства вне якоря узла n13
+N523 | GRAPH_NODE_INVALID | REJECTED | ERROR:  GRAPH_NODE_INVALID: фрагмент доказательства вне якоря узла n10
+N524 | GRAPH_NODE_INVALID | REJECTED | ERROR:  GRAPH_NODE_INVALID: узел n12: субъект не совпадает с узлом-аргументом
+N525 | GRAPH_NODE_INVALID | REJECTED | ERROR:  GRAPH_NODE_INVALID: узел n12: объект не совпадает с узлом-аргументом
+N526 | GRAPH_NODE_INVALID | REJECTED | ERROR:  GRAPH_NODE_INVALID: узел n12: уточнения не совпадают с узлом
+N527 | GRAPH_NODE_INVALID | REJECTED | ERROR:  GRAPH_NODE_INVALID: узел n10: предикат не совпадает с ролью узла
+N528 | GRAPH_NODE_INVALID | REJECTED | ERROR:  GRAPH_NODE_INVALID: узел n10: роль model-of не отображается в предикат профиля
+N529 | GRAPH_NODE_INVALID | REJECTED | ERROR:  GRAPH_NODE_INVALID: clm:sha256:4cd87a85a754d625dc07be9546524b6023d1bbe0af92db1459af82688a7640ef: доказательство утверждения из артеф
+N530 | GRAPH_NODE_INVALID | REJECTED | ERROR:  duplicate key value violates unique constraint "claim_evidence_one_node"
+N531 | GRAPH_NODE_INVALID | REJECTED | ERROR:  GRAPH_NODE_INVALID: узел n11: объект не совпадает с узлом-аргументом
+N532 | GRAPH_NODE_INVALID | REJECTED | ERROR:  GRAPH_NODE_INVALID: узел n10: субъект не совпадает с узлом-аргументом
+N533 | GRAPH_NODE_INVALID | REJECTED | ERROR:  GRAPH_NODE_INVALID: узел n13: уточнения не совпадают с узлом
+N538 | GRAPH_NODE_INVALID | REJECTED | ERROR:  duplicate key value violates unique constraint "claim_evidence_one_node"
+N539 | ARTIFACT_INVALID | REJECTED | ERROR:  ARTIFACT_INVALID: узел n4: якорь {source_id, start, end}
+N540 | ARTIFACT_INVALID | REJECTED | ERROR:  ARTIFACT_INVALID: узлы: объекты с уникальными id
+N541 | ARTIFACT_INVALID | REJECTED | ERROR:  ARTIFACT_INVALID: артефакт не совпадает с receipt: формат, профиль, служба, запуск или входы
+N542 | GRAPH_NODE_INVALID | REJECTED | ERROR:  GRAPH_NODE_INVALID: фрагмент доказательства вне якоря узла n12
+N543 | GRAPH_NODE_INVALID | REJECTED | ERROR:  GRAPH_NODE_INVALID: фрагмент доказательства вне якоря узла n12
+N544 | GRAPH_NODE_INVALID | REJECTED | ERROR:  GRAPH_NODE_INVALID: узел n13: объект не совпадает с узлом-аргументом
+N545 | GRAPH_NODE_INVALID | REJECTED | ERROR:  GRAPH_NODE_INVALID: узел n12: у отношения нет срока действия, а у утверждения есть
+N546 | GRAPH_NODE_INVALID | REJECTED | ERROR:  GRAPH_NODE_INVALID: clm:sha256:1902c850593fcc98d35623eb5588835390f3ed1f5fe85a51eb641a6e7f577422: доказательство утверждения из артеф
+N547 | ARTIFACT_INVALID | REJECTED | ERROR:  duplicate key value violates unique constraint "artifacts_one_per_run"
+N549 | GRAPH_NODE_INVALID | REJECTED | ERROR:  GRAPH_NODE_INVALID: узел n10: субъект не совпадает с узлом-аргументом
+N550 | GRAPH_NODE_INVALID | REJECTED | ERROR:  GRAPH_NODE_INVALID: узел n10: субъект не совпадает с узлом-аргументом
+N600 | PUBLICATION_INVALID | REJECTED | ERROR:  new row for relation "publications" violates check constraint "publication_address"
+N601 | PUBLICATION_INVALID | REJECTED | ERROR:  new row for relation "publications" violates check constraint "publication_url"
+N602 | PUBLICATION_INVALID | REJECTED | ERROR:  new row for relation "publications" violates check constraint "publication_url"
+N603 | PUBLICATION_INVALID | REJECTED | ERROR:  PUBLICATION_INVALID: нет ни одного источника этого издания с этим текстом, полученного к recorded_at
+N604 | PUBLICATION_INVALID | REJECTED | ERROR:  PUBLICATION_INVALID: нет ни одного источника этого издания с этим текстом, полученного к recorded_at
+N605 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка публикации шире маркировки её источника
+N606 | TEMPORAL_ORDER_INVALID | REJECTED | ERROR:  TEMPORAL_ORDER_INVALID: публикация вышла позже, чем её получили
+N607 | DUPLICATE_ID | REJECTED | ERROR:  duplicate key value violates unique constraint "publications_pkey"
+N611 | PUBLICATION_INVALID | REJECTED | ERROR:  PUBLICATION_INVALID: нет ни одного источника этого издания с этим текстом, полученного к recorded_at
+N612 | PUBLICATION_INVALID | REJECTED | ERROR:  new row for relation "publications" violates check constraint "publication_url"
+N613 | PUBLICATION_INVALID | REJECTED | ERROR:  new row for relation "publications" violates check constraint "publication_url"
+N614 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка публикации шире маркировки её источника
+N615 | PUBLICATION_INVALID | REJECTED | ERROR:  PUBLICATION_INVALID: нет ни одного источника этого издания с этим текстом, полученного к recorded_at
+
+код ошибки | отвергнуто БД | принято БД | не представимо в SQL
+ARTIFACT_INVALID | 23 | 1 | 0
+CHECK_CLAIM_DIMENSION_MISMATCH | 1 | 0 | 0
+CHECK_CLAIM_NOT_ABOUT_SUBJECT | 1 | 0 | 0
+CHECK_CLAIM_NOT_ACCEPTED_AT_COMPLETION | 4 | 0 | 0
+CHECK_DIMENSION_MISSING | 1 | 0 | 0
+CHECK_DIMENSION_OUTSIDE_PROFILE | 1 | 0 | 0
+CHECK_FINDING_INCONSISTENT | 6 | 0 | 0
+CHECK_PREVIOUS_INVALID | 6 | 0 | 0
+CHECK_PROJECT_NOT_COMPLIANCE | 2 | 0 | 0
+CHECK_SEARCH_MISSING | 4 | 0 | 0
+CHECK_SUBJECT_INVALID | 6 | 0 | 0
+CLAIM_ID_MISMATCH | 0 | 1 | 0
+CLAIM_REVIEW_AMBIGUOUS | 1 | 0 | 0
+CROSS_SCOPE_REFERENCE | 8 | 0 | 0
+DUPLICATE_ID | 3 | 0 | 0
+ENTITY_DUPLICATE_IN_PROJECT | 50 | 0 | 0
+ENTITY_IDENTITY_INSUFFICIENT | 10 | 0 | 0
+ENTITY_MERGE_INVALID | 8 | 0 | 0
+EVIDENCE_SPAN_INVALID | 8 | 0 | 0
+GRAPH_NODE_INVALID | 27 | 0 | 0
+IDENTIFIER_CHECKSUM_INVALID | 9 | 0 | 0
+IDENTITY_DECISION_INVALID | 7 | 0 | 0
+MARKING_BROADER_THAN_INPUT | 12 | 0 | 0
+MARKING_PD_MISSING | 1 | 0 | 0
+PREDICATE_DOMAIN_VIOLATION | 1 | 0 | 0
+PREDICATE_RANGE_VIOLATION | 6 | 0 | 0
+PREDICATE_UNKNOWN | 1 | 0 | 0
+PUBLICATION_INVALID | 9 | 0 | 0
+QUALIFIER_INVALID | 9 | 0 | 0
+RECEIPT_CLAIM_BINDING_INVALID | 10 | 0 | 1
+RECEIPT_ID_MISMATCH | 0 | 1 | 0
+RECEIPT_KEY_INVALID | 11 | 1 | 0
+RECEIPT_SIGNATURE_INVALID | 0 | 1 | 0
+REF_UNRESOLVED | 13 | 0 | 3
+SCHEMA_INVALID | 10 | 9 | 3
+SOURCE_CONTENT_UNAVAILABLE | 2 | 0 | 0
+SOURCE_DIGEST_MISMATCH | 4 | 1 | 0
+TEMPORAL_ORDER_INVALID | 10 | 0 | 0
+TRUST_CONFIG_INVALID | 5 | 1 | 0
+
+negative_vectors=299 rejected_by_db=278 accepted_by_db=15 not_representable=6

@@ -1,0 +1,2 @@
+LOAD: OK artifact_nodes=10 artifacts=1 checks=4 claims=30 decisions=2 entities=27 entity_keys=43 evidence=33 projects=6 receipts=1 reviews=8 seals=1 sources=15
+KEYS PARITY (DB-derived == validator): OK rows=43

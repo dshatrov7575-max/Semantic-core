@@ -1,0 +1,99 @@
+### attacks_s1.py
+DB-A53 REJECTED | HUMAN-утверждение с узлом графа | ERROR:  RECEIPT_CLAIM_BINDING_INVALID: узел графа допустим только у PIPELINE-утверждения
+DB-A54 REJECTED | RS-01 D01: удалить ключи идентичности, чтобы освободить ОГРН | ERROR:  permission denied for table entity_keys
+DB-A55 REJECTED | RS-01 D03: подменить значение ключа | ERROR:  permission denied for table entity_keys
+DB-A56 REJECTED | RS-01: ИНН с неверной контрольной цифрой в identity (база сама считает контрольные суммы) | ERROR:  IDENTIFIER_CHECKSUM_INVALID: ru.inn физлица
+DB-A57 REJECTED | RS-01: физлицо без идентичности (нет ИНН, ОГРНИП, даты и пометки) | ERROR:  ENTITY_IDENTITY_INSUFFICIENT: PERSON без ИНН, ОГРНИП, даты рождения и disambiguator
+DB-A58 REJECTED | RS-02 D05: временная таблица с триггером для подмешивания доказательства | ERROR:  permission denied to create temporary tables in database "review026"
+DB-A59 REJECTED | RS-03 D09: завершить Проверку с утверждением, которое к моменту завершения опровергнуто | ERROR:  CHECK_CLAIM_NOT_ACCEPTED_AT_COMPLETION: chk_tenders_1
+DB-A60 REJECTED | RS-03 D10: понизить маркировку Проверки после привязки утверждения | ERROR:  permission denied for table checks
+DB-A61 REJECTED | RS-03 D10 (через тело): изменить маркировку в теле открытой Проверки | ERROR:  CHECK_IMMUTABLE: у Проверки меняются только статус и итог
+DB-A62 REJECTED | RS-03 D11: сменить субъект открытой Проверки | ERROR:  permission denied for table checks
+DB-A63 REJECTED | RS-04 D06: рассекретить источник (изменить маркировку) | ERROR:  permission denied for table sources
+DB-A64 REJECTED | RS-04 D07: удалить байты источника | ERROR:  permission denied for table source_bytes
+DB-A65 REJECTED | RS-05: изменить время наблюдения источника | ERROR:  permission denied for table source_observations
+DB-A66 REJECTED | RS-07: живая роль меняет реестр предикатов | ERROR:  permission denied for table predicates
+DB-A67 REJECTED | RS-07: живая роль меняет продукт проекта | ERROR:  permission denied for table projects
+DB-A68 REJECTED | RS-11: живая роль пытается стать ac_migrator | ERROR:  permission denied to set role "ac_migrator"
+DB-A69 REJECTED | RS-21: дописать след поиска в закрытую Проверку | ERROR:  CHECK_CLOSED: в закрытую Проверку нельзя дописывать след поиска
+DB-A70 REJECTED | RS-13: насос «H-101» латиницей без решения аналитика (скелет совпал, при COMMIT) | ERROR:  POSSIBLE_DUPLICATE: skel:equipment: ent_ts_h101 и ent_ts_pump совпадают по скелету — нужно решение аналитика (identity_decisions)
+DB-A71 REJECTED | RS-13: «различны» для сущностей разных типов (при COMMIT) | ERROR:  IDENTITY_DECISION_INVALID: «различны» — только для несливших сущностей одного типа
+DB-A72 REJECTED | RS-15: уточнение организации (сильный ключ) | ERROR:  IDENTITY_DECISION_INVALID: ent_d_developer: уточнение допустимо один раз, только недостающего disambiguator у слабого ключа (ФИО+дата, событие
+DB-A73 REJECTED | RS-15: повторное уточнение того же понятия | ERROR:  IDENTITY_DECISION_INVALID: ent_wk_blue: уточнение допустимо один раз, только недостающего disambiguator у слабого ключа (ФИО+дата, событие, ко
+DB-A74 REJECTED | решение об идентичности изменить задним числом | ERROR:  permission denied for table identity_decisions
+DB-A75 REJECTED | слить сущности, которые аналитик признал различными | ERROR:  IDENTITY_DECISION_INVALID: ent_ts_valve_b и ent_ts_valve_a: аналитик решил «различны»
+DB-A76 REJECTED | RS-15: омоним «Усатые киты» при неуточнённом оригинале | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: concept совпадает у ent_wk_baleen и ent_wk_baleen2
+DB-A77 REJECTED | D20: живая роль ставит печать истории | ERROR:  permission denied for table history_seals
+DB-A78 REJECTED | S21-01: тег «ｱ-9» (полуширинная катакана) после «ア-9» | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: equipment уже принадлежит другой сущности проекта
+DB-A79 REJECTED | RS-12: тёзка «Ломо́в» (U+0301) с той же датой, без ИНН | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: person.fio_dob совпадает у ent_d_lomov и ent_d_ns
+DB-A80 REJECTED | RS-14: «К 1.12» — та же задвижка, что «К-1/12» | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: equipment уже принадлежит другой сущности проекта
+DB-A81 REJECTED | D20: ac_migrator пишет рецензию «задним числом» до печати истории | ERROR:  TEMPORAL_ORDER_INVALID: история до 2026-10-01 02:02:07.569672+03 запечатана
+DB-A82 REJECTED | D20: ac_migrator дописывает утверждение в Проверку, закрытую до печати | ERROR:  CHECK_CLOSED: в закрытую Проверку нельзя добавлять утверждения
+OK-01 OK | новое утверждение «сейчас»: доказательство проверено по байтам | 1
+OK-02 OK | рецензия с заявленным «задним» временем: база ставит системное время | true
+OK-03 OK | ещё одна Проверка того же субъекта (Compliance: многократность) | 4
+OK-04 OK | слияние нового дубля: ключи переходят к выжившей сущности, время ставит база | ent_d_developer true
+OK-05 OK | все цитаты всех утверждений подтверждаются байтами источников | 33/33
+OK-06 OK | RS-15: уточнить оригинал «Усатые киты», затем завести омоним с другой пометкой | 2
+OK-07 OK | RS-13: насос «H-101» латиницей вместе с решением «различны» в одной транзакции | 2
+
+attacks=82 legit=7 failures=0
+S2_RESULT=PASS
+EXIT 0
+### s3_tests.py
+S3-01 PASS | каждое предложение ведёт к утверждению и к фрагменту, сверенному с байтами | предложений 19, фрагментов 24
+S3-02 PASS | цитата проекции = байты источника по span (перечитано независимо) | расхождений 0
+S3-03 PASS | расхождение дат рождения выведено одним предложением с пояснением | Ломов Аркадий Семёнович: дата рождения — 14.03.1971. / Расхождение источников: в источнике «Интервью: Аркадий Ломов о планах компании» указано: дата рождения — 14.03.1972. Приведено значение по источнику «Выписка ЕГРЮЛ: ООО «Заречье-Девелопмент»», подтверждённому при проверке.
+S3-04 PASS | «Не выявлено» ведёт к следу поиска; найденное — к утверждениям; пустой раздел досье — «Сведений нет.» | измерений 8, из них не выявлено 1; пустых разделов досье 24
+S3-05 PASS | в отчёте только утверждения своей Проверки, в досье — только о своей сущности | лишних 0
+S3-06 PASS | digest воспроизводим и не зависит от часового пояса сессии
+S3-07 PASS | поздняя рецензия REFUTED: отчёт закрытой Проверки не изменился, досье «сейчас» утверждение исключило
+S3-08 PASS | досье по слитой карточке = досье выжившей сущности; карточка указана как «также известен»
+S3-09 PASS | допуск без персональных данных: компания видна, физлицо и связи с ним скрыты, Проверка с ПД закрыта
+S3-10 PASS | нет допуска / чужой проект / несуществующий объект / попытка инъекции — одинаковый отказ
+S3-11 PASS | у читателя нет доступа к таблицам и к данным через служебные функции
+S3-12 PASS | допуски пишет только ac_trust_admin, только добавлением, время ставит база; отзыв действует сразу
+S3-13 PASS | открытая Проверка: статус IN_PROGRESS, незавершённые направления помечены
+S3-14 PASS | провенанс PIPELINE-утверждения: фрагменты и подписанный receipt; без допуска — отказ
+S3-15 PASS | у каждого предиката есть шаблон; проекции принадлежат ac_projector (не суперпользователь, только SELECT) | 0 / ac_projector:false / 0
+S3-16 PASS | читатель не может создать объекты для подмены имён
+
+s3_tests=16 passed=16
+S3_RESULT=PASS
+EXIT 0
+### regression_s22.py
+S22-01   held    | слияние в сущность с более широкой маркировкой | ERROR:  ENTITY_MERGE_INVALID: ent_k_land: цель того же проекта и типа, ACTIVE на момент слияния, не шире по ма
+S22-02   held    | законное слияние после закрытия: отчёт закрытой Проверки не изменился, досье «сейчас» — с новым именем
+S22-03   held    | Проверка уже маркировки предыдущей | ERROR:  MARKING_BROADER_THAN_INPUT: Проверка уже маркировки предыдущей Проверки (S22-03)
+S22-04   held    | итог в отменённую Проверку | ERROR:  CHECK_CLOSED: в закрытую Проверку нельзя дописывать итоги (S22-04)
+S22-04b  held    | открытая Проверка помечена черновиком; «не выявлено» без поиска так не называется | Поиск по этому направлению не выполнен.
+S22-05   held    | Проверка, закрытая после печати: ни след поиска, ни рецензия задним числом, ни итог | ERROR:  CHECK_CLOSED: в закрытую Проверку нельзя дописывать  / ERROR:  TEMPORAL_ORDER_INVALID: рецензия задним числом под з / ERROR:  CHECK_CLOSED: в закрытую Проверку нельзя дописывать 
+S22-06   held    | маркировка неизвестной формы отвергается; доминирование с ней — false | ERROR:  new row for relation "sources" violates check constraint "sour / falsefalsefalse
+
+regression_s22=7 findings=0
+S22_REGRESSION=PASS
+EXIT 0
+### regression_s23_races.py
+S23-10a.1  held    | рецензия REFUTED раньше закрытия | второй ждал: True; Проверка: IN_PROGRESS ASSERTED; отчёт после закрытия не менялся | CHECK_CLAIM_NOT_ACCEPTED_AT_COMPLETION', k.check_id)"
+PL/pgSQL function ac.check_complete() line 22 at PERFORM
+S23-10a.2  held    | слияние раньше закрытия | второй ждал: True; Проверка: COMPLETED ACCEPTED; отчёт после закрытия не менялся |  
+S23-10a.3  held    | строка поиска раньше закрытия | второй ждал: True; Проверка: COMPLETED ACCEPTED; отчёт после закрытия не менялся |  
+S23-10b.1  held    | закрытие раньше рецензии REFUTED | второй ждал: True; Проверка: COMPLETED ACCEPTED; отчёт после закрытия не менялся |  
+S23-10b.2  held    | закрытие раньше слияния | второй ждал: True; Проверка: COMPLETED ACCEPTED; отчёт после закрытия не менялся |  
+S23-10b.3  held    | закрытие раньше строки поиска | второй ждал: True; Проверка: COMPLETED ACCEPTED; отчёт после закрытия не менялся | рытую Проверку нельзя дописывать след поиска')"
+PL/pgSQL function ac.check_searches_guard() line 10 at PERFORM
+
+races=6 findings=0
+S23_RACES=PASS
+EXIT 0
+### keys_parity_s1.py
+entities compared=127 mismatches=0
+base_key: 3000/3000 equal
+skel: 3000/3000 equal
+skel_nokc: 3000/3000 equal
+id_norm: 3000/3000 equal
+tag_norm: 3000/3000 equal
+tag_compact: 3000/3000 equal
+PARITY_RESULT=PASS
+EXIT 0
+DONE

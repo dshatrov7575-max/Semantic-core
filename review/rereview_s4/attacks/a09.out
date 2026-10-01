@@ -1,0 +1,5 @@
+canonical run_ts_0002 stored: 0
+[эталон: канонический прогон run_ts_0002] parse_artifact=OK new_entities=1 | DB: ACCEPTED
+[тот же прогон run_ts_0002, артефакт с отступами (неканонический)] parse_artifact=артефакт не в канонической форме RFC 8785 new_entities=0 | DB: ACCEPTED
+[тот же прогон run_ts_0002, канонический артефакт + лишний узел] parse_artifact=OK new_entities=0 | DB: ACCEPTED
+receipts of run_ts_0002: 3 | claims 'номинальное давление' of the valve: 3

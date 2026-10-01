@@ -1,0 +1,322 @@
+M001   EQUIVALENT                   дробные числа разрешены — float всё равно отвергается последней веткой фазы 0 («недопустимый тип»); отдельная ветка нужна только для понятного сообщения
+M002   KILLED by N003               целые вне 2^53 разрешены
+M003   KILLED by N004               суррогаты в значениях разрешены
+M004   KILLED by N012               управляющие символы разрешены
+M005   EQUIVALENT                   ключи не проверяются — ключи-строки с суррогатами/управляющими символами отвергает схема: все объекты закрыты, у qualifiers есть propertyNames
+M006   EQUIVALENT                   шаблоны по re.search ($ перед \n) — перевод строки в структурных полях отвергает фаза 0 (управляющие символы); у свободного текста нет якорных шаблонов
+M007   KILLED by N007               календарь не проверяется
+M008   KILLED by N020               повтор ключа доверия
+M009   KILLED by N021               интервал ключа доверия
+M010   KILLED by N022               отзыв раньше начала
+M012   KILLED by N001               семантика на битой схеме
+M013   KILLED by N030               повтор id
+M020   KILLED by N062               inline vs хранилище
+M021   KILLED by N061               byte_length
+M022   KILLED by N067               адрес = хэш
+M023   KILLED by N064               нет байтов — молча
+M024   KILLED by N063               хранилище игнорируется
+M030   KILLED by N042               проект сущности
+M031   KILLED by N124               status_changed_at < created_at
+M032   KILLED by N176               PD у физлица
+M033   KILLED by N123               слияние в неизвестную
+M034   KILLED by N122               слияние в не-ACTIVE
+M035   KILLED by N444               слияние в другой проект
+M036   KILLED by N120               слияние в другой тип
+M037   KILLED by BASE               resolve без слияний
+M040   KILLED by N072               контрольные цифры физлица
+M041   KILLED by N072               ИНН-12: 12-я цифра
+M042   KILLED by N073               ИНН-12: 11-я цифра
+M043   KILLED by N070               ИНН-10
+M044   KILLED by N071               ОГРН
+M045   KILLED by N074               ОГРНИП
+M046   KILLED by N075               IMO
+M047   KILLED by N101               ИНН/ОГРНИП физлица не индексируются
+M048   KILLED by N309b              пометка у одного тёзки отключает дубль (RR-03c)
+M049   KILLED by N092               слабого ключа нет
+M050   KILLED by N079               физлицо без идентичности
+M051   KILLED by N081               неформальная без disambiguator
+M052   KILLED by N080               неформальная с ИНН
+M053   KILLED by N082               неформальная с legal_form
+M054   KILLED by N070               ИНН юрлица
+M055   KILLED by N071               ОГРН юрлица
+M056   KILLED by N083               филиал без КПП
+M057   KILLED by N084               филиал с ОГРН
+M058   KILLED by N107               ключ филиала
+M059   KILLED by BASE               филиал как юрлицо
+M060   KILLED by N091               ОГРН не индексируется
+M061   KILLED by N090               ИНН не индексируется
+M062   KILLED by N078               организация РФ без ОГРН/ИНН
+M063   KILLED by P086               foreign_ids не индексируются
+M064   KILLED by N085               иностранная без id
+M065   KILLED by N100               кадастр без нормализации
+M066   KILLED by N087               VIN не обязателен
+M067   KILLED by N088               имущество без id
+M068   KILLED by BASE               VIN не индексируется
+M069   KILLED by N075               IMO не проверяется
+M070   KILLED by P089               регистрация не индексируется
+M071   KILLED by N106               событие не индексируется
+M072   KILLED by N110               конфликт не индексируется
+M073   KILLED by BASE               оборудование не индексируется
+M074   KILLED by BASE               модель не индексируется
+M075   KILLED by BASE               понятие не индексируется
+M080   KILLED by N332               скелет без NFKC
+M081   KILLED by N096               без удаления невидимых символов
+M082   KILLED by N093               без конфузаблов
+M083   KILLED by N092               без casefold
+M084   KILLED by N092               без ё→е
+M085   KILLED by N095               без тире
+M086   KILLED by N099               без кавычек
+M087   KILLED by N106               без пробелов
+M090   KILLED by N090               дубли по сильным ключам
+M091   KILLED by N192               владелец = сама сущность (без слияний)
+M092   KILLED by N092               дубли по слабым ключам
+M093   KILLED by P104               ИНН/ОГРНИП не различают тёзок
+M094   KILLED by N092               различие по ИНН у одного
+M100   KILLED by N065               claim_id
+M101   KILLED by N043               проект утверждения
+M102   KILLED by N032               субъект неизвестен
+M103   KILLED by N046               субъект из чужого проекта
+M104   KILLED by N033               объект неизвестен
+M105   KILLED by N047               объект из чужого проекта
+M106   KILLED by N130               предикат неизвестен
+M107   KILLED by N131               domain
+M108   KILLED by N134               range: сущность вместо литерала
+M109   KILLED by N133               range: тип сущности
+M110   KILLED by N135               range: литерал вместо сущности
+M111   KILLED by N132               range: тип литерала
+M112   KILLED by N136               range: схема идентификатора
+M113   KILLED by N137               range: единица
+M114   KILLED by N141               enum
+M115   KILLED by N142               bool как int
+M116   KILLED by N138               диапазон int
+M117   KILLED by N145               строка из пробелов
+M118   KILLED by N143               boolean
+M119   KILLED by N144               необъявленный квалификатор
+M120   KILLED by N146               обязательный квалификатор
+M121   KILLED by N150               valid_from > valid_to
+M122   KILLED by N171               утверждение ≥ сущностей
+M123   KILLED by N172               утверждение ≥ только субъекта
+M124   KILLED by N174               dominates: категории
+M125   KILLED by N170               dominates: уровень
+M126   KILLED by N034               источник доказательства неизвестен
+M127   KILLED by N048               tenant источника
+M128   KILLED by N151               источник получен позже
+M129   KILLED by BASE               max вместо min observed_at
+M130   KILLED by N177               утверждение ≥ источника
+M131   KILLED by N169               span: start < end
+M132   KILLED by N168               span: end <= len
+M133   KILLED by N162               граница UTF-8
+M134   KILLED by N164               sha фрагмента
+M135   KILLED by N165               текст цитаты
+M140   KILLED by N035               рецензия на неизвестное
+M141   KILLED by N152               рецензия раньше утверждения
+M142   KILLED by N153               записана раньше решения
+M143   KILLED by N180               неоднозначность
+M144   KILLED by N180               неоднозначность по заявленному времени
+M145   KILLED by N210               status_at по заявленному времени (окно)
+M146   KILLED by N219               status_at по заявленному времени (порядок)
+M147   KILLED by P211               status_at строго <
+M148   KILLED by BASE               противоречие: любая кардинальность
+M149   KILLED by P221               противоречие: отклонённые учитываются
+M150   KILLED by BASE               противоречие: без слияний
+M151   KILLED by P222               противоречие: без пересечения сроков
+M152   KILLED by P223               противоречие: равные значения
+M160   KILLED by N044               проект Проверки неизвестен
+M161   KILLED by N190               Проверка вне COMPLIANCE
+M162   KILLED by N038               субъект Проверки неизвестен
+M163   KILLED by N049               субъект Проверки из чужого проекта
+M164   KILLED by N192               субъект не обязан быть ACTIVE
+M165   KILLED by N194               слияние до закрытия допустимо
+M166   KILLED by N197               слияние в момент закрытия допустимо
+M167   KILLED by N191               тип субъекта
+M168   KILLED by N333               Проверка ≥ субъекта
+M169   KILLED by N154               закрытие раньше запроса
+M170   KILLED by N155               as_of позже закрытия
+M171   KILLED by N156               отмена не закрывает
+M172   KILLED by N201               повтор измерения
+M173   KILLED by N195               измерение вне профиля
+M174   KILLED by N196               не все измерения
+M175   KILLED by BASE               все измерения и у незавершённых
+M176   KILLED by N156               CANCELLED как завершённая
+M177   KILLED by N198               FOUND ⇔ утверждения
+M178   KILLED by N225               NOT_FOUND с риском
+M179   KILLED by N154               поиск не обязателен
+M180   KILLED by N205               поиск до запроса
+M181   KILLED by N154               поиск после завершения
+M182   KILLED by P206               окно поиска строго
+M183   KILLED by N039               источник поиска неизвестен
+M184   KILLED by N051               tenant источника поиска
+M185   KILLED by N036               утверждение Проверки неизвестно
+M186   KILLED by N050               утверждение Проверки из чужого проекта
+M187   KILLED by N207               не о субъекте
+M188   KILLED by BASE               объект не учитывается
+M189   KILLED by N192               дубли субъекта не учитываются
+M190   KILLED by N192               субъект Проверки без слияний
+M191   KILLED by N209               измерение предиката
+M192   KILLED by N210               ACCEPTED на момент завершения
+M193   KILLED by N174               Проверка ≥ утверждения
+M194   KILLED by N202               итоговый риск
+M195   KILLED by N037               предыдущая неизвестна
+M196   KILLED by N216               предыдущая: другой субъект
+M197   KILLED by N220               предыдущая: дата
+M198   KILLED by N220               предыдущая: та же дата
+M199   KILLED by N192               предыдущая без слияний
+M200   KILLED by N066               receipt_id
+M201   KILLED by N045               проект receipt
+M202   KILLED by N020               ключ неизвестен
+M204   KILLED by N238               служба ключа
+M205   KILLED by P237               not_before строго
+M206   KILLED by N236               not_before не проверяется
+M207   KILLED by N234               not_after включительно
+M208   KILLED by N234               not_after не проверяется
+M209   KILLED by N232               отзыв строго
+M210   KILLED by N231               отзыв не проверяется
+M211   KILLED by N230               подпись не проверяется
+M212   KILLED by N041               входной источник неизвестен
+M213   KILLED by N052               tenant входа
+M214   KILLED by N040               выпущенное утверждение неизвестно
+M215   KILLED by N243               HUMAN в receipt
+M216   KILLED by N245               служба утверждения
+M217   KILLED by N244               run_id
+M218   KILLED by N246               проект утверждения receipt
+M219   KILLED by N247               записано после issued_at
+M220   KILLED by P248               записано в момент issued_at
+M221   KILLED by N249               источники ⊆ входов
+M222   KILLED by N250               узел графа другого артефакта
+M223   KILLED by N242               ровно один receipt → хотя бы один
+M224   KILLED by N045               receipt не обязателен
+M225   KILLED by N251               узел графа у HUMAN
+M300   KILLED by P300               RETIRED после закрытия не допускается (RR-01)
+M301   KILLED by N197               закрытие включительно (RR-01)
+M302   KILLED by N304               цель слияния RETIRED в любой момент (RR-13)
+M303   KILLED by N305               цель слияния RETIRED в момент слияния (RR-13)
+M304   KILLED by BASE               скелет — ошибка и для оборудования (RR-02)
+M305   KILLED by BASE               понятие по скелету — ошибка (RR-02)
+M306   KILLED by P094               предупреждение о возможном дубле не выдаётся
+M307   KILLED by BASE               предупреждение и для различённых пометками
+M308   KILLED by N310               тег с разделителями — разные (RR-03f)
+M309   KILLED by N319               регистрационные номера без нормализации (RR-03d)
+M310   KILLED by N097               без свёртки ширины (N097)
+M311   KILLED by P094               двойники заменяются только после casefold (RR-02)
+M312   KILLED by N318               без греческой ο (RR-03k)
+M313   KILLED by N316               только категория Cf (RR-03h-j)
+M314   KILLED by N109               понятие без casefold
+M315   KILLED by P321               ОГРНИП не различает тёзок (RR-04)
+M316   KILLED by P321               ОГРНИП не собирается для различения (RR-04)
+M317   EQUIVALENT                   без предела глубины (RR-05) — защита в глубину: все объекты схемы закрыты, поэтому вложенность глубже 64 отвергает схема (SCHEMA_INVALID), а глубже предела рекурсии — перехват RecursionError; без обеих защит мутант M328 убит
+M318   EQUIVALENT                   RecursionError не перехватывается (RR-05) — защита в глубину: пока действует предел глубины фазы 0, схема не видит глубоких входов и RecursionError не возникает; без обеих защит мутант M328 убит
+M319   KILLED by N239               ключи доверия глобально (RR-06)
+M320   KILLED by N323b              битый tenant отключает всех (RR-06)
+M321   KILLED by N325               источник результата поиска без байтов (RR-08b)
+M322   KILLED by N326               маркировка источника результата поиска (RR-08c)
+M323   KILLED by P327               свободный текст только по имени ключа (RR-10)
+M324   KILLED by N334               свободный текст — любое поле value
+M325   KILLED by N328               контрольная сумма литерала (RR-11)
+M326   KILLED by P330               тип сущности не в ключе индекса (RR-12)
+M327   KILLED by N309b              одиночное место не отделяет (RR-03a)
+M328   KILLED by N322(исключение RecursionError) нет ни предела глубины, ни перехвата RecursionError (RR-05, пара M317+M318)
+M400   KILLED by N400               комбинирующие ударения не снимаются
+M401   KILLED by P409               снимается и бреве (й -> и)
+M402   KILLED by N402               армянская օ не двойник
+M403   KILLED by N403               капитель ᴏ не двойник
+M404   KILLED by N404               лунная сигма не двойник
+M405   KILLED by N405               чероки Ꭺ не двойник
+M406   KILLED by N406b              нет второго прохода таблицы двойников после casefold
+M407   KILLED by N406               пробел Брайля не невидимый
+M408   KILLED by N404               двойники не заменяются до NFKC (Ϲ -> Σ)
+M409   KILLED by N413               ширина не сворачивается до таблицы двойников
+M410   KILLED by N401               латинская ë не двойник
+M411   KILLED by BASE               границы групп в теге не сохраняются (К-1/12 = К-11/2)
+M412   KILLED by N310               любая граница в теге значима (Н101 != Н-101)
+M413   KILLED by P410               мягкий ключ тега с границами групп
+M414   KILLED by P412               NFKC в ключе модели (10² = 102)
+M421   KILLED by N420               уточнять можно любой тип
+M422   KILLED by N421               уточнение поверх имеющегося поля
+M423   KILLED by N424               уточнение слитой сущности
+M423b  KILLED by P424b              уточнение слитой позже сущности отвергается
+M424   KILLED by N422               повторное уточнение
+M425   KILLED by N425               «различны» для разных типов
+M426   KILLED by N426               «различны» для слитых
+M427   KILLED by BASE               «различны» не снимает предупреждение
+M428   KILLED by N429               время решения не проверяется
+M429   KILLED by N428               проект сущности решения не проверяется
+M430   KILLED by N427b              проект решения не проверяется
+M432   KILLED by P433               у события уточняется disambiguator, а не место
+M433   KILLED by BASE               предупреждение при любом пересечении (без попарного учёта)
+M434   KILLED by N423               уточнение без нужного поля
+M435   KILLED by N439               уточнение действует задним числом (омоним до уточнения)
+M436   KILLED by BASE               уточнение выжившей не распространяется на ключи слитых в неё
+M437   KILLED by N441               слияние в более широкую маркировку (S22-01)
+M438   KILLED by N442               Проверка уже предыдущей (S22-03)
+M439   KILLED by N445               предыдущая Проверка не завершена (S23-01)
+M500   KILLED by N500               нет байтов артефакта — молча
+M501   KILLED by N501               адрес артефакта не сверяется
+M502   KILLED by N502               каноническая форма не требуется
+M503   EQUIVALENT                   повтор ключей допускается — защита в глубину: байты с повторяющимся ключом не могут совпасть с канонической формой (RFC 8785 выводит каждый ключ один раз), поэтому их отвергает проверка канонической формы
+M504   KILLED by N505               схема артефакта не проверяется
+M505   KILLED by N539               профиль чисел артефакта не проверяется
+M506   KILLED by N506               неизвестный профиль принимается
+M507   KILLED by N540               повтор id узла
+M508   KILLED by N513               якорь вне входов
+M509   KILLED by N511               границы якоря
+M510   KILLED by N512               якорь режет UTF-8
+M511   KILLED by N510               ссылка на несуществующий узел
+M512   KILLED by N517               условие не CONDITION
+M513   KILLED by N515               отношение не по профилю
+M514   KILLED by N507               receipt ↔ артефакт не сверяются
+M515   KILLED by N507               служба артефакта
+M516   KILLED by N508               запуск артефакта
+M517   KILLED by N509               входы артефакта
+M518   KILLED by N541               профиль артефакта
+M519   KILLED by N518               формат артефакта
+M520   KILLED by N246               утверждение без узла — молча
+M521   KILLED by N521               узел-не-отношение принимается
+M521b  KILLED by N520               несуществующий узел принимается
+M522   KILLED by N523               фрагмент вне якоря
+M523   KILLED by N542               начало фрагмента до якоря
+M524   KILLED by N523               конец фрагмента после якоря
+M525   KILLED by N543               источник фрагмента не сверяется с якорем
+M526   KILLED by N137               смысл узла не сверяется
+M527   KILLED by N528               неотображаемая роль
+M528   KILLED by N527               предикат по роли
+M529   KILLED by N524               субъект по узлу
+M530   KILLED by N531               объект-сущность по узлу
+M531   KILLED by N137               величина по узлу
+M532   KILLED by N544               действие по узлу
+M533   KILLED by N145               уточнения по узлу
+M534   KILLED by N533               условие по узлу
+M535   KILLED by N145               параметр по узлу
+M536   EQUIVALENT                   тип сущности узла — типы EQUIPMENT и EQUIPMENT_MODEL дают строгие ключи разных схем (equipment / equipment_model), поэтому при разных типах ключи не совпадут и без этого условия
+M537   KILLED by N530               один узел — одно доказательство
+M538   KILLED by P327               текст действия не свободный текст
+M539   KILLED by N524               строгие ключи узла не сверяются
+M540   KILLED by P548               ключи слитых в группу не входят (S4R-02)
+M544   KILLED by N550               группа по итоговому состоянию слияний (S4R-11)
+M541   KILLED by N545               срок действия у утверждения из узла (S4R-01)
+M542   KILLED by N249               достаточно одного доказательства с узлом (S4R-07)
+M543   KILLED by N242               повтор запуска (S4R-08)
+M600   KILLED by N600               адрес публикации не сверяется
+M601   KILLED by N601               канонический адрес не сверяется с нормальной формой
+M602   KILLED by N602               издание канонического адреса не сверяется
+M603   KILLED by N604               основание — и полученные после recorded_at
+M604   PATTERN x0                   текст рендеринга не сверяется
+M605   KILLED by N603               публикация без оснований принимается
+M606   KILLED by N605               маркировка рендерингов
+M607   KILLED by N606               дата выхода публикации
+M608   KILLED by N614               пробелы не схлопываются
+M609   KILLED by N605               невидимые символы остаются
+M610   KILLED by N601               метки utm_ остаются
+M611   KILLED by N613               параметры не упорядочиваются
+M612   KILLED by N612               порт по умолчанию остаётся
+M613   KILLED by N605               мобильная версия — другое издание
+M614   KILLED by N615               издание наблюдения не сверяется
+M615   KILLED by N611               публикация чужого tenant
+M616   EQUIVALENT                   путь адреса может начинаться не с «/» (S5R-09) — защита в глубину: без требования «/» нормальная форма склеивает хост с мусором («news.exampleevil…», «news.example@…»), такое издание не совпадает ни с одним настоящим, поэтому рендерингом не становится; каноническому адресу «/» требует схема; правило нужно для паритета с базой (parity_s5)
+
+mutants=314 killed=305 equivalent=8 survived/broken=1
+
+# 01.10.2026: шаблон M604 устарел после правки S5R-07 (PATTERN x0); обновлён, мутант перезапущен отдельно:
+M604   KILLED by N603               текст рендеринга не сверяется
+
+mutants=314 killed=1 equivalent=0 survived/broken=0
+# ИТОГО v0.2.5: mutants=314 killed=306 equivalent=8 survived=0

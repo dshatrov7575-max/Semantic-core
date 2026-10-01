@@ -1,0 +1,6 @@
+X1 ВАЛИДАТОР: текст не сравним (None) -> публикация невозможна; коды при записи с digest=None: ['SCHEMA_INVALID']
+X1 БАЗА: источник -> принят; text_digest базы = NULL
+X1 DIVERGENCE=no
+X2 ВАЛИДАТОР: текст не сравним (None) -> публикация невозможна; коды при записи с digest=None: ['SCHEMA_INVALID']
+X2 БАЗА: источник -> принят; text_digest базы = NULL
+X2 DIVERGENCE=no

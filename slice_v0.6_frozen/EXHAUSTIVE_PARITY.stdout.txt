@@ -1,0 +1,2 @@
+base_key: mismatches=0 [] | unassigned-in-Python (Unicode 14.0.0) folded by PostgreSQL: 0 []
+skel: mismatches=0 [] | unassigned-in-Python (Unicode 14.0.0) folded by PostgreSQL: 62 ['0x1e030', '0x1e031', '0x1e032', '0x1e033']

@@ -1,0 +1,6 @@
+артефакт без receipt (run_ts_0099, один узел), отдельная транзакция ac_loader: ERROR:  ARTIFACT_INVALID: артефакт без receipt в той же транзакции (S4R-13)
+CONTEXT:  PL/pgSQL function ac.fail(text,text) line 2 at RAISE
+SQL statement "SELECT ac.fail('ARTIFACT_INVALID', msg)"
+PL/pg
+настоящий артефакт прогона run_ts_0099: ACCEPTED
+артефактов без receipt в базе: 0

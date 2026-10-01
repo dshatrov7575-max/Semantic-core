@@ -1,0 +1,6 @@
+### s23_previous_open.py
+### s23_01_validator.py
+S23-01v: held | валидатор принимает закрытую Проверку с открытой предыдущей
+### s23_observation_backdate.py
+S23-02: held | ac_migrator задним числом (после печати) меняет first_observed_at в отчёте закрытой Проверки
+### s23_race_review.py

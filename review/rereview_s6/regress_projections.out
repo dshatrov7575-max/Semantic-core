@@ -1,0 +1,4 @@
+calls x readers compared: 476; answered in new: 65; different: 1
+  DIFF ("ac.check_report('chk_tenders_1')", 'ac_rd_full') 
+    old: {"check_id": "chk_tenders_1", "dimensions": [{"dimension": "TENDERS", "searches": [], "text": "Проверка по этому направлению не завершена.", "title": "Государственные закупки"}], "draft": true, "evaluated_at": "2026-10-01T21:58:10.874379+00:00", "marking": {"categories": ["PERSONAL_DATA", "COMMERCIA 
+    new: {"check_id": "chk_tenders_1", "dimensions": [{"dimension": "TENDERS", "searches": [], "text": "Проверка по этому направлению не завершена.", "title": "Государственные закупки"}], "draft": true, "evaluated_at": "2026-10-01T21:58:33.776617+00:00", "marking": {"categories": ["PERSONAL_DATA", "COMMERCIA

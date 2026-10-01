@@ -1,0 +1,6 @@
+T1 valid world: records=77 errors=0 warnings=1
+T2 vectors: 53 (50 negative, 3 positive boundary)
+T3 necessity runs: 50
+T4 error codes covered: 32/32
+T6 JCS parity py/node: 4164 records
+ALL PASS

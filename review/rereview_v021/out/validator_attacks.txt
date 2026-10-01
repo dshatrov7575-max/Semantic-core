@@ -1,0 +1,43 @@
+== B1: skeleton bypasses (второе лицо Ломова без ИНН, та же дата рождения; ожидается ENTITY_DUPLICATE_IN_PROJECT)
+B1-00    ok       errors=['ENTITY_DUPLICATE_IN_PROJECT'] warnings=[] | контроль: «Ломов» без ИНН с той же ФИО+датой
+B1-01    FINDING  errors=[] warnings=[] | ударение U+0301 (комбинирующий акут): «Ломо́в»
+B1-02    FINDING  errors=[] warnings=[] | латинская ë U+00EB в отчестве: «Семëнович»
+B1-03    FINDING  errors=[] warnings=[] | армянская օ U+0585: «Лօмов»
+B1-04    FINDING  errors=[] warnings=[] | латинская капитель ᴏ U+1D0F: «Лᴏмов»
+B1-05    FINDING  errors=[] warnings=[] | греческая лунная сигма Ϲ U+03F9: «Ϲемёнович»
+B1-06    FINDING  errors=[] warnings=[] | чероки Ꭺ U+13AA: «Ꭺркадий»
+B1-07    FINDING  errors=[] warnings=[] | пустой шрифт Брайля U+2800 внутри фамилии
+B1-08    ok       errors=['ENTITY_DUPLICATE_IN_PROJECT'] warnings=[] | контроль: греческая ο U+03BF (заявлено закрытым RR-03k)
+B1-09    ok       errors=['ENTITY_DUPLICATE_IN_PROJECT'] warnings=[] | контроль: U+034F CGJ (заявлено закрытым RR-03h)
+== B2: оборудование и понятия (RR-02 понижение до предупреждения)
+B2-01    FINDING  errors=['ENTITY_DUPLICATE_IN_PROJECT'] warnings=[] | ложное слияние: разные теги «К-1/12» и «К-11/2» (разделители выброшены) -> ошибка без обхода
+B2-02    FINDING  errors=['ENTITY_DUPLICATE_IN_PROJECT'] warnings=[] | ложное слияние: «TT-10-1» (контур 10, датчик 1) и «TT-101»
+B2-03    FINDING  errors=[] warnings=['POSSIBLE_DUPLICATE'] | настоящий дубль насоса Н-101 латинской H: только предупреждение
+B2-04    FINDING  errors=[] warnings=[] | дубль насоса Н-101 с комбинирующим U+0301: ни ошибки, ни предупреждения
+B2-05    FINDING  errors=[] warnings=['POSSIBLE_DUPLICATE'] | дубль насоса: надстрочные цифры «Н-1⁰¹» — только предупреждение
+B2-06    FINDING  errors=[] warnings=['POSSIBLE_DUPLICATE'] | дубль понятия «Синий кит» с латинской C: только предупреждение
+B2-07    FINDING  errors=[] warnings=[] | дубль понятия «Синий кит.» (точка): ни ошибки, ни предупреждения
+B2-08    FINDING  errors=['ENTITY_DUPLICATE_IN_PROJECT'] warnings=[] | омоним: у существующего «Синий кит» нет пометки, новому пометка не помогает (надо менять старую — в БД identity неизменяема)
+B2-09    FINDING  errors=['ENTITY_DUPLICATE_IN_PROJECT'] warnings=[] | ложное слияние моделей «ЦНС 10²» и «ЦНС 102» (NFKC в ключе уровня ошибки, RR-02d не исправлен)
+== B3: квалификаторы и уровни идентичности
+B3-01    FINDING  errors=[] warnings=[] | конфликт с местом «Заречный» вместо «г. Заречный» — второй конфликт
+B3-02    FINDING  errors=[] warnings=[] | тот же Ломов в проекте конфликта: уже есть с disambiguator, добавлен с датой рождения — ключи не встречаются
+B3-03    FINDING  errors=[] warnings=[] | неформальная группа: то же название, другой disambiguator — вторая сущность без предупреждения
+B3-04    ok       errors=['ENTITY_DUPLICATE_IN_PROJECT'] warnings=[] | контроль: неформальная группа с латинскими a/e/o в названии и тем же disambiguator — дубль найден
+B3-05    FINDING  errors=[] warnings=[] | неформальная группа: ударение U+0301 в названии («Заре́чная»), тот же disambiguator — дубль не найден
+== B4: время слияния (RR-01, RR-13)
+B4-01    FINDING  errors=['ENTITY_MERGE_INVALID'] warnings=[] | цепочка слияний: дубль слит в Ломова 06.09, Ломов позже (20.09) слит в новую карточку — законная история отвергнута
+B4-02    FINDING  errors=[] warnings=[] | слияние 06.09 в сущность, созданную 25.09 (цель не существовала в момент слияния) — принято
+B4-03    ok       errors=['CHECK_SUBJECT_INVALID'] warnings=[] | контроль: субъект закрытой Проверки выведен ровно в момент закрытия -> ошибка (строго позже)
+B4-04    ok       errors=[] warnings=[] | контроль: выведен через секунду после закрытия -> принято (RR-01 закрыт)
+B4-05    ok       errors=[] warnings=[] | status_changed_at в будущем (2099) принят валидатором (в БД время ставит база)
+== B5: доверие по tenant (RR-06)
+B5-01    FINDING  errors=['TRUST_CONFIG_INVALID'] warnings=[] | битая запись ДРУГОГО tenant в реестре: набор tnt_demo целиком получает ошибку TRUST_CONFIG_INVALID (загрузчик откажет)
+== B6: литералы (RR-11)
+B6-01    FINDING  errors=[] warnings=[] | ОГРНИП-литерал с верной контрольной суммой, но чужой (не ОГРНИП субъекта) — принят
+== B7: CLI (RR-05)
+B7-01    FINDING  exit=1 traceback=True FileNotFoundError: [Errno 2] No such file or directory: '/tmp/tmpr2yvoi35/nope' | --content-dir на несуществующий каталог
+B7-02    FINDING  exit=1 traceback=True NotADirectoryError: [Errno 20] Not a directory: '/tmp/tmpr2yvoi35/file' | --content-dir указывает на файл
+B7-03    FINDING  exit=1 traceback=True IndexError: list index out of range | --trust без значения
+
+validator_attacks=34 findings=27

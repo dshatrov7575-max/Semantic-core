@@ -1,0 +1,29 @@
+[baseline] validator=CLEAN warn=['CONTRADICTION_SINGLE_VALUED'] | db=ACCEPTED
+[TAB в description узла n1] validator=['ARTIFACT_INVALID'] warn=['CONTRADICTION_SINGLE_VALUED'] | db=REJECTED: ERROR:  ARTIFACT_INVALID: управляющий символ в структурном поле или строка длиннее 2000 (S4R-03)
+[TAB в теге узла n1 ('Н-101'+TAB)] validator=['ARTIFACT_INVALID'] warn=['CONTRADICTION_SINGLE_VALUED'] | db=REJECTED: ERROR:  ARTIFACT_INVALID: управляющий символ в структурном поле или строка длиннее 2000 (S4R-03)
+[TAB внутри тега ('Н'+TAB+'101')] validator=['ARTIFACT_INVALID'] warn=['CONTRADICTION_SINGLE_VALUED'] | db=REJECTED: ERROR:  ARTIFACT_INVALID: управляющий символ в структурном поле или строка длиннее 2000 (S4R-03)
+[ACTION-узел с текстом 2001 символ] validator=['ARTIFACT_INVALID'] warn=['CONTRADICTION_SINGLE_VALUED'] | db=REJECTED: ERROR:  ARTIFACT_INVALID: управляющий символ в структурном поле или строка длиннее 2000 (S4R-03)
+[description узла 2001 символ] validator=['ARTIFACT_INVALID'] warn=['CONTRADICTION_SINGLE_VALUED'] | db=REJECTED: ERROR:  ARTIFACT_INVALID: управляющий символ в структурном поле или строка длиннее 2000 (S4R-03)
+[QUANTITY 16.0 вместо 16] validator=['GRAPH_NODE_INVALID'] warn=['CONTRADICTION_SINGLE_VALUED'] | db=REJECTED: ERROR:  GRAPH_NODE_INVALID: узел n12: объект не совпадает с узлом-аргументом
+[STRING с lang] validator=['GRAPH_NODE_INVALID'] warn=['CONTRADICTION_SINGLE_VALUED'] | db=REJECTED: ERROR:  GRAPH_NODE_INVALID: узел n13: объект не совпадает с узлом-аргументом
+[тег узла 'н-101'] validator=CLEAN warn=['CONTRADICTION_SINGLE_VALUED'] | db=ACCEPTED
+[тег узла 'Н101'] validator=CLEAN warn=['CONTRADICTION_SINGLE_VALUED'] | db=ACCEPTED
+[тег узла 'Н 101'] validator=CLEAN warn=['CONTRADICTION_SINGLE_VALUED'] | db=ACCEPTED
+[тег узла 'H-101'] validator=['GRAPH_NODE_INVALID'] warn=['CONTRADICTION_SINGLE_VALUED'] | db=REJECTED: ERROR:  GRAPH_NODE_INVALID: узел n10: субъект не совпадает с узлом-аргументом
+[тег узла 'Н‐101'] validator=CLEAN warn=['CONTRADICTION_SINGLE_VALUED'] | db=ACCEPTED
+[тег узла 'Н-１０１'] validator=CLEAN warn=['CONTRADICTION_SINGLE_VALUED'] | db=ACCEPTED
+[тег узла 'Н\xa0101'] validator=CLEAN warn=['CONTRADICTION_SINGLE_VALUED'] | db=ACCEPTED
+[тег узла 'Н-1О1'] validator=['GRAPH_NODE_INVALID'] warn=['CONTRADICTION_SINGLE_VALUED'] | db=REJECTED: ERROR:  GRAPH_NODE_INVALID: узел n10: субъект не совпадает с узлом-аргументом
+[тег узла 'Н-101́'] validator=['GRAPH_NODE_INVALID'] warn=['CONTRADICTION_SINGLE_VALUED'] | db=REJECTED: ERROR:  GRAPH_NODE_INVALID: узел n10: субъект не совпадает с узлом-аргументом
+[тег узла 'Н–101'] validator=CLEAN warn=['CONTRADICTION_SINGLE_VALUED'] | db=ACCEPTED
+[тег узла 'Н/101'] validator=CLEAN warn=['CONTRADICTION_SINGLE_VALUED'] | db=ACCEPTED
+[тег узла 'Н_101'] validator=CLEAN warn=['CONTRADICTION_SINGLE_VALUED'] | db=ACCEPTED
+[тег узла 'Н.101'] validator=CLEAN warn=['CONTRADICTION_SINGLE_VALUED'] | db=ACCEPTED
+[тег узла ' Н-101'] validator=CLEAN warn=['CONTRADICTION_SINGLE_VALUED'] | db=ACCEPTED
+[модель узла 'HM 16-100'] validator=CLEAN warn=['CONTRADICTION_SINGLE_VALUED'] | db=ACCEPTED
+[модель узла 'НМ16-100'] validator=['GRAPH_NODE_INVALID'] warn=['CONTRADICTION_SINGLE_VALUED'] | db=REJECTED: ERROR:  GRAPH_NODE_INVALID: узел n10: объект не совпадает с узлом-аргументом
+[модель узла 'НМ 16–100'] validator=CLEAN warn=['CONTRADICTION_SINGLE_VALUED'] | db=ACCEPTED
+[модель узла 'нм 16-100'] validator=CLEAN warn=['CONTRADICTION_SINGLE_VALUED'] | db=ACCEPTED
+[модель узла 'НМ 16-1ОО'] validator=['GRAPH_NODE_INVALID'] warn=['CONTRADICTION_SINGLE_VALUED'] | db=REJECTED: ERROR:  GRAPH_NODE_INVALID: узел n10: объект не совпадает с узлом-аргументом
+[модель узла 'НМ 16-100́'] validator=CLEAN warn=['CONTRADICTION_SINGLE_VALUED'] | db=ACCEPTED
+[изготовитель 'HacocMaш' (латиница)] validator=CLEAN warn=['CONTRADICTION_SINGLE_VALUED'] | db=ACCEPTED

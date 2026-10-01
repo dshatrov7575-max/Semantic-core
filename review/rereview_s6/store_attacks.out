@@ -1,0 +1,39 @@
+== B1: any backend failure is journalled as MISSING (immutable) — wrong/expired credentials, 5xx
+  the object is intact on disk: True
+  scrub with a rejected signature (HTTP 403 for every GET) returned: {'OK': 0, 'MISSING': 2, 'CORRUPT': 0}
+  journal: OK,MISSING
+  consequence: observation naming the intact original: ERROR:  ORIGINAL_INVALID: оригинал повреждён или утрачен по последней проверке
+  store.check on a 403: MISSING | store.get on a 403 raises: ObjectStoreError GET tnt_demo/sha256/04/0472937c29d331bd6d0b5bfc89ce846b39112
+
+== B2: client signs Host with an explicit default port, the HTTP library sends it without -> every request 403
+  signed host: s3.example.com:80 | Host header actually sent by http.client/urllib3: [b'Host: s3.example.com']
+
+== B3: the gateway's database session is a SUPERUSER session (SET SESSION AUTHORIZATION), not role ac_storage
+  through gateway._psql: now postgres, superuser=on, source_bytes rows readable=15, claims=30
+  login roles that are members of ac_storage: 0
+  scrub(tenant=<payload>) under python3 (default): AssertionError | injected table exists: no
+  scrub(tenant=<payload>) under python3 -O: {'OK': 0, 'MISSING': 0, 'CORRUPT': 0} | injected table exists: postgres/30
+
+== B4: scrub stamps results at the END of the run (database clock at insert), not when the object was read
+  object damaged at 2026-10-02 00:54:43.07843+03 | journal says: OK checked_at=2026-10-02 00:54:46.153431+03 | really now: CORRUPT
+
+== B5: one registry row with an odd tenant stops every later scrub (rows are immutable)
+  scrub of everything raises: ValueError too many values to unpack (expected 3)
+  scrub of tnt_demo only: {'OK': 2, 'MISSING': 1, 'CORRUPT': 1}
+
+== B6: tenant isolation by prefix — listing
+  FsBackend.keys('tnt_a') -> ['tnt_a', 'tnt_ab'] | S3Backend.keys('tnt_a') -> ['tnt_a', 'tnt_ab']
+  object_key accepts tenants the schema forbids (^tnt_[a-z0-9_]{2,64}$): ['sha256', '_', '0']
+  tenants with '/', '..', upper case, '-', newline, empty: refused by object_key
+
+== B7: SigV4 — independent implementation vs object_store.sigv4_signature
+  put object                                     same
+  list prefix+token (+/= space)                  same
+  query names whose raw and encoded order differ DIFFERENT
+  key with space, '+', '%', unicode              same
+
+== B8: what the emulator does NOT check (real S3/MinIO do) — so the suite cannot see these client faults
+  region 'zz-nowhere-9' in the credential scope: HTTP 200 (real: 400 AuthorizationHeaderMalformed)
+  x-amz-date 20000101T000000Z (26 years old, replay): HTTP 200 (real: 403 RequestTimeTooSkewed)
+  GET /originals/../originals2/secret.txt (bucket escape, fpath() compares string prefixes): HTTP 200 b'other bucket'
+  the emulator verifies signatures with the client's own sigv4_signature (s3_emulator.py imports it): a shared canonicalisation fault is invisible

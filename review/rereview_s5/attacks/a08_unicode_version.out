@@ -1,0 +1,12 @@
+A08 python 3.11.15 unicode 14.0.0 | e+U+1E4EC+U+0301   validator=None                     db=NULL                     equal=True
+A08 python 3.11.15 unicode 14.0.0 | emoji U+1FAE8      validator=None                     db=NULL                     equal=True
+A08 python 3.11.15 unicode 14.0.0 | emoji U+1FA77      validator=None                     db=NULL                     equal=True
+A08 python 3.11.15 unicode 14.0.0 | emoji U+1FABF      validator=None                     db=NULL                     equal=True
+A08 python 3.12.3 unicode 15.0.0 | e+U+1E4EC+U+0301   validator=sha256:a55ff243fade43d   db=NULL                     equal=False
+A08 python 3.12.3 unicode 15.0.0 | emoji U+1FAE8      validator=sha256:8179e3aa91ccee7   db=NULL                     equal=False
+A08 python 3.12.3 unicode 15.0.0 | emoji U+1FA77      validator=sha256:01643227730d4cc   db=NULL                     equal=False
+A08 python 3.12.3 unicode 15.0.0 | emoji U+1FABF      validator=sha256:0e4ac6a3c3687f5   db=NULL                     equal=False
+A08 python 3.13.13 unicode 15.1.0 | e+U+1E4EC+U+0301   validator=sha256:a55ff243fade43d   db=NULL                     equal=False
+A08 python 3.13.13 unicode 15.1.0 | emoji U+1FAE8      validator=sha256:8179e3aa91ccee7   db=NULL                     equal=False
+A08 python 3.13.13 unicode 15.1.0 | emoji U+1FA77      validator=sha256:01643227730d4cc   db=NULL                     equal=False
+A08 python 3.13.13 unicode 15.1.0 | emoji U+1FABF      validator=sha256:0e4ac6a3c3687f5   db=NULL                     equal=False

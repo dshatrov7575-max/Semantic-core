@@ -1,0 +1,118 @@
+sec  | id       | expected                                 | got                                                          | verdict | note
+FA   | OR-FA01  | ENTITY_DUPLICATE_IN_PROJECT              | OK                                                           | FINDING | PERSON: латинская o в «Ломов»
+FA   | OR-FA02  | ENTITY_DUPLICATE_IN_PROJECT              | OK                                                           | FINDING | EQUIPMENT: латинская H в «Н-101»
+FA   | OR-FA03  | ENTITY_DUPLICATE_IN_PROJECT              | OK                                                           | FINDING | EQUIPMENT: неразрывный дефис U+2011
+FA   | OR-FA04  | ENTITY_DUPLICATE_IN_PROJECT              | OK                                                           | FINDING | PERSON: U+200B внутри фамилии
+FA   | OR-FA05  | ENTITY_DUPLICATE_IN_PROJECT              | OK                                                           | FINDING | неформальная орг.: "" вместо «», тот же disambiguator
+FA   | OR-FA06  | ENTITY_DUPLICATE_IN_PROJECT              | OK                                                           | FINDING | кадастровый :245 vs :0245
+FA   | OR-FA07  | ERR(SCHEMA_INVALID|DUP)                  | OK                                                           | FINDING | VIN + '\n' проходит ^…$ -> второй автомобиль
+FA   | OR-FA08  | ENTITY_DUPLICATE_IN_PROJECT              | OK                                                           | FINDING | ИНН слитого дубля у новой ACTIVE сущности
+FA   | OR-FA09  | IDENTIFIER_CHECKSUM_INVALID              | OK                                                           | FINDING | ru.inn через foreign_ids без контрольной суммы
+FA   | OR-FA10  | EVIDENCE_SPAN_INVALID                    | OK                                                           | FINDING | источник без content_inline: подложная цитата
+FA   | OR-FA10b | EVIDENCE_SPAN_INVALID                    | OK                                                           | FINDING | источник без content_inline: без цитаты, любой sha
+FA   | OR-FA11  | RECEIPT_KEY_INVALID                      | OK                                                           | FINDING | свой ServiceKey для svc_techsense + подложный receipt
+FA   | OR-FA12  | MARKING_PD_MISSING                       | OK                                                           | FINDING | Проверка физлица PUBLIC без PERSONAL_DATA
+FA   | OR-FA13  | MARKING_BROADER_THAN_INPUT               | OK                                                           | FINDING | PUBLIC-утверждение о CONFIDENTIAL-сущности
+FA   | OR-FA14  | CHECK_CLAIM_NOT_ACCEPTED_AT_COMPLETION   | OK                                                           | FINDING | ACCEPTED задним числом (reviewed_at самозаявлен)
+FA   | OR-FA15  | PREDICATE_RANGE_VIOLATION                | OK                                                           | FINDING | номер дела со scheme=telegram
+FA   | OR-FA16  | QUALIFIER_INVALID                        | OK                                                           | FINDING | строковый квалификатор ' '
+FA   | OR-FA17  | PREDICATE_RANGE_VIOLATION                | OK                                                           | FINDING | давление в kg
+FR   | OR-FR01  | OK                                       | ENTITY_DUPLICATE_IN_PROJECT                                  | FINDING | тёзки с одной датой рождения и разными ИНН
+FR   | OR-FR02  | OK                                       | ENTITY_DUPLICATE_IN_PROJECT                                  | FINDING | два митинга: одно название, одна дата, разные места
+FR   | OR-FR03  | OK                                       | CHECK_PREVIOUS_INVALID,CHECK_SUBJECT_INVALID                 | FINDING | слияние субъекта после завершённых Проверок
+FR   | OR-FR04  | OK                                       | SCHEMA_INVALID                                               | FINDING | реестр-данные: строковый квалификатор с именем 'date'
+CR   | OR-CR01  | ERR(report)                              | CRASH:ValueError                                             | FINDING | ИНН '…\n' -> int('\n')
+CR   | OR-CR02  | ERR(report)                              | CRASH:ValueError                                             | FINDING | IMO '…\n'
+CR   | OR-CR03  | ERR(report)                              | CRASH:CanonicalizationError                                  | FINDING | share_bp 6000.0 (integer для схемы, float для JCS)
+CR   | OR-CR04  | ERR(report)                              | CRASH:CanonicalizationError                                  | FINDING | contract_amount_minor 2^53
+CR   | OR-CR05  | ERR(report)                              | CRASH:UnicodeEncodeError                                     | FINDING | одиночный суррогат в content_inline
+CR   | OR-CR06  | ERR(report)                              | CRASH:CanonicalizationError                                  | FINDING | одиночный суррогат в литерале
+CR   | OR-CR07  | ERR(report)                              | CRASH:UnicodeEncodeError                                     | FINDING | одиночный суррогат в ключе квалификатора
+CR   | OR-CR08  | ERR(report)                              | CRASH:CanonicalizationError                                  | FINDING | span.start = 5.0
+CR   | OR-CR09  | exit=1                                   | CRASH:Traceback                                              | FINDING | CLI: файл с 6000.0
+DG   | OR-DG01  | OK                                       | SCHEMA_INVALID                                               | FINDING | ИП: ИНН-12 + ОГРНИП-15 как ORGANIZATION
+DG   | OR-DG02  | ERR(no search trace)                     | OK                                                           | FINDING | FULL, всё NOT_FOUND, ни одного источника
+DG   | OR-DG03  | OK                                       | SCHEMA_INVALID                                               | FINDING | EQUIPMENT-тип без site_id
+DG   | OR-DG04  | ERR(QUALIFIER_INVALID)                   | OK                                                           | FINDING | condition='когда-нибудь'
+DG   | OR-DG05  | ERR(same publication)                    | OK                                                           | FINDING | та же статья + '\n' -> второй Source
+OK   | V-01     | RECEIPT_CLAIM_BINDING_INVALID            | RECEIPT_CLAIM_BINDING_INVALID                                | ok      | утверждение в двух receipt
+OK   | V-02     | RECEIPT_CLAIM_BINDING_INVALID            | RECEIPT_CLAIM_BINDING_INVALID                                | ok      | HUMAN-утверждение в receipt
+OK   | V-03     | RECEIPT_KEY_INVALID                      | RECEIPT_KEY_INVALID                                          | ok      | revoked_at == issued_at
+OK   | V-04     | OK                                       | OK                                                           | ok      | issued_at == not_before
+OK   | V-05     | QUALIFIER_INVALID                        | QUALIFIER_INVALID                                            | ok      | True как integer
+OK   | V-06     | QUALIFIER_INVALID                        | QUALIFIER_INVALID                                            | ok      | 1 как boolean
+OK   | V-07     | EVIDENCE_SPAN_INVALID                    | EVIDENCE_SPAN_INVALID                                        | ok      | span режет 4-байтовый эмодзи, sha совпадает
+OK   | V-08     | OK                                       | OK                                                           | ok      | span ровно по эмодзи
+OK   | V-09     | EVIDENCE_SPAN_INVALID                    | EVIDENCE_SPAN_INVALID                                        | ok      | span нулевой длины
+OK   | V-10     | ENTITY_MERGE_INVALID                     | ENTITY_MERGE_INVALID                                         | ok      | цепочка слияний A->B(MERGED)
+OK   | V-11     | ENTITY_MERGE_INVALID                     | ENTITY_MERGE_INVALID                                         | ok      | слияние в другой проект
+OK   | V-12     | CHECK_CLAIM_NOT_ACCEPTED_AT_COMPLETION   | CHECK_CLAIM_NOT_ACCEPTED_AT_COMPLETION                       | ok      | утверждение записано после завершения
+OK   | V-13     | SCHEMA_INVALID                           | SCHEMA_INVALID                                               | ok      | CANCELLED с completed_at
+OK   | V-14     | OK                                       | OK                                                           | ok      | IN_PROGRESS с оспоренным утверждением
+OK   | V-15     | SCHEMA_INVALID                           | SCHEMA_INVALID                                               | ok      | секунда 60
+OK   | V-16     | ENTITY_DUPLICATE_IN_PROJECT              | ENTITY_DUPLICATE_IN_PROJECT                                  | ok      | полноширинные «－１０１» (NFKC)
+OK   | V-17     | OK                                       | OK                                                           | ok      | реальные ИНН/ОГРН/IMO
+T3   | OR-T3    | INDEPENDENT                              | EQUIVALENT                                                   | FINDING | T3 == фильтр вывода T2
+JCS  | J01      | '{"😀":2,"\ue000":1}'                     | py=node=expected                                             | ok      | {"\ue000":1,"\ud83d\ude00":2}
+JCS  | J02      | '{"\x7f":2,"\x80":1,"𐀀":4,"\uffff":3}'   | py=node=expected                                             | ok      | {"\u0080":1,"\u007f":2,"\uffff":3,"\ud80
+JCS  | J03      | '"\u2028\u2029"'                         | py=node=expected                                             | ok      | "\u2028\u2029"
+JCS  | J04      | '"\\u0000\\u001f\x7f"'                   | py=node=expected                                             | ok      | "\u0000\u001f\u007f"
+JCS  | J05      | '"\\b\\f\\n\\r\\t\\"\\\\/"'              | py=node=expected                                             | ok      | "\b\f\n\r\t\"\\/"
+JCS  | J06      | '{"string":"€$\\u000f\\nA\'B\\"\\\\\\\\\ | py=node=expected                                             | ok      | {"string":"\u20ac$\u000F\u000aA'\u0042\u
+JCS  | J07      | '{"1":1,"10":2,"2":3,"a":4}'             | py=node=expected                                             | ok      | {"1":1,"10":2,"2":3,"a":4}
+JCS  | J08      | '{"__proto__":1,"a":2}'                  | py=node=expected                                             | ok      | {"__proto__":1,"a":2}
+JCS  | J09      | '{"é":2,"é":1}'                         | py=node=expected                                             | ok      | {"\u00e9":1,"e\u0301":2}
+JCS  | J10      | '0'                                      | py=node=expected                                             | ok      | -0
+JCS  | J11      | 'REJECT'                                 | py=node=expected                                             | ok      | "\ud800"
+JCS  | J12      | 'REJECT'                                 | py=node=expected                                             | ok      | 9007199254740993
+JCS  | J13      | 'REJECT'                                 | py=node=expected                                             | ok      | 1.5
+JCS  | J14      | 'REJECT'                                 | py='REJECT' node='1'                                         | FINDING | 1.0
+JCS  | J15      | 'REJECT'                                 | py='REJECT' node='{"\\ud800":1}'                             | FINDING | {"\ud800":1}
+JCS  | J16      | 'REJECT'                                 | py='REJECT' node='100'                                       | FINDING | 1e2
+MU   | M01      | KILLED                                   | SURVIVED                                                     | FINDING | без NFKC
+MU   | M03      | KILLED                                   | SURVIVED                                                     | FINDING | без схлопывания пробелов
+MU   | M04      | KILLED                                   | SURVIVED                                                     | FINDING | revoked_at <= t -> <
+MU   | M05      | KILLED                                   | SURVIVED                                                     | FINDING | not_before <= t -> <
+MU   | M06      | KILLED                                   | SURVIVED                                                     | FINDING | без проверки границы UTF-8
+MU   | M07      | KILLED                                   | SURVIVED                                                     | FINDING | Проверка игнорирует слияния
+MU   | M09      | KILLED                                   | SURVIVED                                                     | FINDING | повтор измерения не проверяется
+MU   | M10      | KILLED                                   | SURVIVED                                                     | FINDING | NOT_FOUND с риском != NONE
+MU   | M11      | KILLED                                   | SURVIVED                                                     | FINDING | утверждение записано после завершения
+MU   | M12      | KILLED                                   | SURVIVED                                                     | FINDING | HUMAN-утверждение в receipt
+MU   | M13      | KILLED                                   | SURVIVED                                                     | FINDING | run_id не сверяется
+MU   | M14      | KILLED                                   | SURVIVED                                                     | FINDING | служба не сверяется
+MU   | M15      | KILLED                                   | SURVIVED                                                     | FINDING | проект не сверяется
+MU   | M16      | KILLED                                   | SURVIVED                                                     | FINDING | recorded_at > issued_at не проверяется
+MU   | M17      | KILLED                                   | SURVIVED                                                     | FINDING | «ровно один receipt» -> «хотя бы один»
+MU   | M18      | KILLED                                   | SURVIVED                                                     | FINDING | as_of позже завершения
+MU   | M19      | KILLED                                   | SURVIVED                                                     | FINDING | not_before < not_after не проверяется
+MU   | M20      | KILLED                                   | SURVIVED                                                     | FINDING | revoked_at < not_before не проверяется
+MU   | M21      | KILLED                                   | SURVIVED                                                     | FINDING | IMO без контрольной цифры
+MU   | M22      | KILLED                                   | SURVIVED                                                     | FINDING | ИНН-12: только первая контрольная цифра
+MU   | M24      | KILLED                                   | SURVIVED                                                     | FINDING | объект из другого проекта
+MU   | M25      | KILLED                                   | SURVIVED                                                     | FINDING | tenant входов receipt
+MU   | M26      | KILLED                                   | SURVIVED                                                     | FINDING | PD только по субъекту, не по объекту
+MU   | M27      | KILLED                                   | SURVIVED                                                     | FINDING | byte_length не сверяется
+MU   | M28      | KILLED                                   | SURVIVED                                                     | FINDING | range: тип сущности-объекта не проверяется
+MU   | M29      | KILLED                                   | SURVIVED                                                     | FINDING | enum-квалификатор принимает любое значение
+MU   | M30      | KILLED                                   | SURVIVED                                                     | FINDING | bool принимается как integer
+MU   | M31      | KILLED                                   | SURVIVED                                                     | FINDING | boolean-квалификатор принимает что угодно
+MU   | M32      | KILLED                                   | SURVIVED                                                     | FINDING | необъявленный квалификатор принимается
+MU   | M33      | KILLED                                   | SURVIVED                                                     | FINDING | субъект Проверки не обязан быть ACTIVE
+MU   | M34      | KILLED                                   | SURVIVED                                                     | FINDING | слияние в другой проект
+MU   | M35      | KILLED                                   | SURVIVED                                                     | FINDING | слияние в не-ACTIVE
+MU   | M37      | KILLED                                   | SURVIVED                                                     | FINDING | неформальная организация с ИНН
+MU   | M38      | KILLED                                   | SURVIVED                                                     | FINDING | previous: субъект не сверяется
+MU   | M39      | KILLED                                   | SURVIVED                                                     | FINDING | previous: проект не сверяется
+MU   | M40      | KILLED                                   | SURVIVED                                                     | FINDING | календарь не проверяется для дат (DATE_FIELDS)
+MU   | M41      | KILLED                                   | SURVIVED                                                     | FINDING | календарь DATE-литералов не проверяется
+MU   | M43      | KILLED                                   | SURVIVED                                                     | FINDING | уникальность среди всех, а не только ACTIVE (строже)
+MU   | M44      | KILLED                                   | SURVIVED                                                     | FINDING | CANCELLED считается завершённой (строже)
+MU   | M45      | KILLED                                   | SURVIVED                                                     | FINDING | источник: max(observed_at) вместо min
+MU   | M-CTRL-1 | KILLED                                   | KILLED                                                       | ok      | контроль: без ё→е
+MU   | M-CTRL-2 | KILLED                                   | KILLED                                                       | ok      | контроль: resolve() игнорирует слияния
+MU   | M-CTRL-3 | KILLED                                   | KILLED                                                       | ok      | контроль: без ОГРН
+MU   | M-CTRL-4 | KILLED                                   | KILLED                                                       | ok      | контроль: status_at < вместо <=
+MU   | M-CTRL-5 | KILLED                                   | KILLED                                                       | ok      | контроль: измерение предиката не проверяется
+
+FINDING=80 REGRESSION=0 fixed=0 ok=35 total=115

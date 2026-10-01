@@ -1,0 +1,2 @@
+[модель НМ 16-100 CONFIDENTIAL/COMMERCIAL_SECRET, c0 (instance_of) INTERNAL] validator=['MARKING_BROADER_THAN_INPUT'] warn=['CONTRADICTION_SINGLE_VALUED'] | db=REJECTED: ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки сущности
+[насос CONFIDENTIAL/COMMERCIAL_SECRET, c0..c3 INTERNAL] validator=['MARKING_BROADER_THAN_INPUT'] warn=['CONTRADICTION_SINGLE_VALUED'] | db=REJECTED: ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки сущности

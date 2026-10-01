@@ -1,0 +1,3 @@
+[c2 с valid_to=2020-01-01 (узел времени не задаёт)] validator=['GRAPH_NODE_INVALID'] warn=['CONTRADICTION_SINGLE_VALUED'] | db=REJECTED: ERROR:  GRAPH_NODE_INVALID: узел n12: у отношения нет срока действия, а у утверждения есть
+[c2 с valid_from=2030-01-01] validator=['GRAPH_NODE_INVALID'] warn=['CONTRADICTION_SINGLE_VALUED'] | db=REJECTED: ERROR:  GRAPH_NODE_INVALID: узел n12: у отношения нет срока действия, а у утверждения есть
+[c2: второе доказательство без узла (другой фрагмент входа)] validator=['GRAPH_NODE_INVALID'] warn=['CONTRADICTION_SINGLE_VALUED'] | db=REJECTED: ERROR:  GRAPH_NODE_INVALID: clm:sha256:1902c850593fcc98d35623eb5588835390f3ed1f5fe85a51eb641a6e7f577422: доказательство утверждения из артефакта без узла графа 

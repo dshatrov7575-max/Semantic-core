@@ -1,0 +1,2 @@
+code_points=1112064 mismatches=0
+S5_EXHAUSTIVE=PASS

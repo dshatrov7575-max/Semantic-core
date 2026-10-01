@@ -1,0 +1,13 @@
+OK  'https://пример.рф/a'                         py=[None, None] db=[None, None]
+OK  'https://xn--e1afmkfd.xn--p1ai/a'             py=['https://xn--e1afmkfd.xn--p1ai/a', 'xn--e1afmkfd.xn--p1ai'] db=['https://xn--e1afmkfd.xn--p1ai/a', 'xn--e1afmkfd.xn--p1ai']
+OK  'https://news.example\\zarechye'              py=[None, None] db=[None, None]
+OK  'https://news.example/?&&a=1&&'               py=['https://news.example/?a=1', 'news.example'] db=['https://news.example/?a=1', 'news.example']
+OK  'https://news.example/a?utm_source'           py=['https://news.example/a', 'news.example'] db=['https://news.example/a', 'news.example']
+OK  'https://news.example/a?=1'                   py=['https://news.example/a?=1', 'news.example'] db=['https://news.example/a?=1', 'news.example']
+OK  'HTTP://NEWS.EXAMPLE:80'                      py=['http://news.example/', 'news.example'] db=['http://news.example/', 'news.example']
+OK  'https://news.example:443/'                   py=['https://news.example/', 'news.example'] db=['https://news.example/', 'news.example']
+OK  'git+https://news.example/a'                  py=[None, None] db=[None, None]
+OK  'https://news.example/a?b=2&a=1&a=0'          py=['https://news.example/a?a=0&a=1&b=2', 'news.example'] db=['https://news.example/a?a=0&a=1&b=2', 'news.example']
+OK  'https://news.example/́'                      py=['https://news.example/́', 'news.example'] db=['https://news.example/́', 'news.example']
+OK  'https://news.example/a?Ä=1&a=1&ä=2'          py=['https://news.example/a?a=1&Ä=1&ä=2', 'news.example'] db=['https://news.example/a?a=1&Ä=1&ä=2', 'news.example']
+A07 mismatches 0

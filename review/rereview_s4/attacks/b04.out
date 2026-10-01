@@ -1,0 +1,2 @@
+[слияние 'H-101' в 2026-09-06T09:59:00Z, утверждения 09:59:00 о ent_ts_pump, узел 'H-101'] validator=CLEAN warn=['CONTRADICTION_SINGLE_VALUED'] | db=ACCEPTED
+[слияние 'H-101' в 2026-09-06T09:59:01Z, утверждения 09:59:00 о ent_ts_pump, узел 'H-101'] validator=['GRAPH_NODE_INVALID'] warn=['CONTRADICTION_SINGLE_VALUED'] | db=REJECTED: ERROR:  GRAPH_NODE_INVALID: узел n10: субъект не совпадает с узлом-аргументом

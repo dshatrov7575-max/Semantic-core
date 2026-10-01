@@ -1,0 +1,8 @@
+entities compared=129 mismatches=0
+base_key: 3000/3000 equal
+skel: 3000/3000 equal
+skel_nokc: 3000/3000 equal
+id_norm: 3000/3000 equal
+tag_norm: 3000/3000 equal
+tag_compact: 3000/3000 equal
+PARITY_RESULT=PASS

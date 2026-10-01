@@ -1,0 +1,3 @@
+артефакт без receipt (run_ts_0099, один узел), отдельная транзакция ac_loader: COMMITTED
+настоящий артефакт прогона run_ts_0099: ERROR:  duplicate key value violates unique constraint "artifacts_one_per_run"
+артефактов без receipt в базе: 1

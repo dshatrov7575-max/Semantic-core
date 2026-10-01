@@ -1,0 +1,2128 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "urn:as:core-ontology:0.2",
+ "title": "Архитектура семантики — онтология ядра v0.2.2 (dataset)",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "dataset_format",
+  "ontology_version",
+  "records"
+ ],
+ "properties": {
+  "dataset_format": {
+   "const": "core-dataset/0.2"
+  },
+  "ontology_version": {
+   "const": "core-ontology/0.2"
+  },
+  "records": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/Record"
+   }
+  }
+ },
+ "$defs": {
+  "ProjectId": {
+   "type": "string",
+   "pattern": "^prj_[a-z0-9_]{2,64}$"
+  },
+  "TenantId": {
+   "type": "string",
+   "pattern": "^tnt_[a-z0-9_]{2,64}$"
+  },
+  "EntityId": {
+   "type": "string",
+   "pattern": "^ent_[a-z0-9_]{2,64}$"
+  },
+  "SourceId": {
+   "type": "string",
+   "pattern": "^src:sha256:[0-9a-f]{64}$"
+  },
+  "ClaimId": {
+   "type": "string",
+   "pattern": "^clm:sha256:[0-9a-f]{64}$"
+  },
+  "ReceiptId": {
+   "type": "string",
+   "pattern": "^rcp:sha256:[0-9a-f]{64}$"
+  },
+  "CheckId": {
+   "type": "string",
+   "pattern": "^chk_[a-z0-9_]{2,64}$"
+  },
+  "ReviewId": {
+   "type": "string",
+   "pattern": "^rev_[a-z0-9_]{2,64}$"
+  },
+  "KeyId": {
+   "type": "string",
+   "pattern": "^key_[a-z0-9_]{2,64}$"
+  },
+  "ServiceId": {
+   "type": "string",
+   "pattern": "^svc_[a-z0-9_]{2,64}$"
+  },
+  "ActorId": {
+   "type": "string",
+   "pattern": "^(usr|svc)_[a-z0-9_]{2,64}$"
+  },
+  "UserId": {
+   "type": "string",
+   "pattern": "^usr_[a-z0-9_]{2,64}$"
+  },
+  "RunId": {
+   "type": "string",
+   "pattern": "^run_[a-z0-9_]{2,64}$"
+  },
+  "Sha256Hex": {
+   "type": "string",
+   "pattern": "^[0-9a-f]{64}$"
+  },
+  "Timestamp": {
+   "type": "string",
+   "format": "date-time",
+   "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+  },
+  "Date": {
+   "type": "string",
+   "format": "date",
+   "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+  },
+  "NonEmpty": {
+   "type": "string",
+   "minLength": 1,
+   "maxLength": 2000,
+   "pattern": "\\S"
+  },
+  "Product": {
+   "enum": [
+    "TECHSENSE",
+    "CONFLICTOLOGY",
+    "WEB_MONITORING",
+    "DOSSIER",
+    "COMPLIANCE",
+    "SEMANTIC_WIKI"
+   ]
+  },
+  "EntityType": {
+   "enum": [
+    "PERSON",
+    "ORGANIZATION",
+    "REAL_ESTATE",
+    "MOVABLE_PROPERTY",
+    "EVENT",
+    "CONFLICT",
+    "EQUIPMENT",
+    "EQUIPMENT_MODEL",
+    "CONCEPT"
+   ]
+  },
+  "Dimension": {
+   "enum": [
+    "NEGATIVE",
+    "TENDERS",
+    "SOCIAL_MEDIA",
+    "CORPORATE",
+    "PROPERTY",
+    "COURT"
+   ]
+  },
+  "Risk": {
+   "enum": [
+    "NONE",
+    "LOW",
+    "MEDIUM",
+    "HIGH"
+   ]
+  },
+  "Marking": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "level",
+    "categories"
+   ],
+   "properties": {
+    "level": {
+     "enum": [
+      "PUBLIC",
+      "INTERNAL",
+      "CONFIDENTIAL",
+      "RESTRICTED"
+     ]
+    },
+    "categories": {
+     "type": "array",
+     "uniqueItems": true,
+     "items": {
+      "enum": [
+       "PERSONAL_DATA",
+       "COMMERCIAL_SECRET",
+       "OFFICIAL_USE"
+      ]
+     }
+    }
+   }
+  },
+  "Header": {
+   "type": "object",
+   "properties": {
+    "schema_version": {
+     "const": "core-ontology/0.2"
+    }
+   },
+   "required": [
+    "kind",
+    "schema_version"
+   ]
+  },
+  "Record": {
+   "type": "object",
+   "required": [
+    "kind"
+   ],
+   "properties": {
+    "kind": {
+     "enum": [
+      "Project",
+      "Source",
+      "Entity",
+      "Claim",
+      "ClaimReview",
+      "Check",
+      "ArtifactReceipt",
+      "IdentityDecision"
+     ]
+    }
+   },
+   "allOf": [
+    {
+     "$ref": "#/$defs/Header"
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "Project"
+       }
+      }
+     },
+     "then": {
+      "$ref": "#/$defs/Project"
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "Source"
+       }
+      }
+     },
+     "then": {
+      "$ref": "#/$defs/Source"
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "Entity"
+       }
+      }
+     },
+     "then": {
+      "$ref": "#/$defs/Entity"
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "Claim"
+       }
+      }
+     },
+     "then": {
+      "$ref": "#/$defs/Claim"
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "ClaimReview"
+       }
+      }
+     },
+     "then": {
+      "$ref": "#/$defs/ClaimReview"
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "Check"
+       }
+      }
+     },
+     "then": {
+      "$ref": "#/$defs/Check"
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "ArtifactReceipt"
+       }
+      }
+     },
+     "then": {
+      "$ref": "#/$defs/ArtifactReceipt"
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "IdentityDecision"
+       }
+      }
+     },
+     "then": {
+      "$ref": "#/$defs/IdentityDecision"
+     }
+    }
+   ]
+  },
+  "Project": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "kind",
+    "schema_version",
+    "project_id",
+    "tenant_id",
+    "product",
+    "title",
+    "created_at",
+    "default_marking"
+   ],
+   "properties": {
+    "kind": {
+     "const": "Project"
+    },
+    "schema_version": true,
+    "project_id": {
+     "$ref": "#/$defs/ProjectId"
+    },
+    "tenant_id": {
+     "$ref": "#/$defs/TenantId"
+    },
+    "product": {
+     "$ref": "#/$defs/Product"
+    },
+    "title": {
+     "$ref": "#/$defs/NonEmpty"
+    },
+    "created_at": {
+     "$ref": "#/$defs/Timestamp"
+    },
+    "default_marking": {
+     "$ref": "#/$defs/Marking"
+    }
+   }
+  },
+  "Source": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "kind",
+    "schema_version",
+    "source_id",
+    "tenant_id",
+    "source_kind",
+    "media_type",
+    "byte_length",
+    "language",
+    "title",
+    "observations",
+    "marking"
+   ],
+   "properties": {
+    "kind": {
+     "const": "Source"
+    },
+    "schema_version": true,
+    "source_id": {
+     "$ref": "#/$defs/SourceId"
+    },
+    "tenant_id": {
+     "$ref": "#/$defs/TenantId"
+    },
+    "source_kind": {
+     "enum": [
+      "DOCUMENT",
+      "MEDIA_ARTICLE",
+      "SOCIAL_POST",
+      "REGISTRY_EXTRACT",
+      "REGISTRY_SEARCH_RESULT",
+      "WEB_PAGE",
+      "ANALYST_NOTE"
+     ]
+    },
+    "media_type": {
+     "type": "string",
+     "pattern": "^[a-z]+/[a-z0-9.+-]+(; ?charset=utf-8)?$"
+    },
+    "byte_length": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "language": {
+     "type": "string",
+     "pattern": "^[a-z]{2,3}(-[A-Z]{2})?$"
+    },
+    "title": {
+     "$ref": "#/$defs/NonEmpty"
+    },
+    "published_at": {
+     "$ref": "#/$defs/Timestamp"
+    },
+    "observations": {
+     "type": "array",
+     "minItems": 1,
+     "items": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "observed_at",
+       "origin_uri",
+       "observed_by"
+      ],
+      "properties": {
+       "observed_at": {
+        "$ref": "#/$defs/Timestamp"
+       },
+       "origin_uri": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9+.-]*:\\S+$"
+       },
+       "observed_by": {
+        "$ref": "#/$defs/ActorId"
+       }
+      }
+     }
+    },
+    "content_inline": {
+     "type": "string"
+    },
+    "marking": {
+     "$ref": "#/$defs/Marking"
+    }
+   }
+  },
+  "Entity": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "kind",
+    "schema_version",
+    "entity_id",
+    "project_id",
+    "entity_type",
+    "identity",
+    "display_name",
+    "status",
+    "created_at",
+    "marking"
+   ],
+   "properties": {
+    "kind": {
+     "const": "Entity"
+    },
+    "schema_version": true,
+    "entity_id": {
+     "$ref": "#/$defs/EntityId"
+    },
+    "project_id": {
+     "$ref": "#/$defs/ProjectId"
+    },
+    "entity_type": {
+     "$ref": "#/$defs/EntityType"
+    },
+    "identity": {
+     "type": "object"
+    },
+    "display_name": {
+     "$ref": "#/$defs/NonEmpty"
+    },
+    "status": {
+     "enum": [
+      "ACTIVE",
+      "MERGED",
+      "RETIRED"
+     ]
+    },
+    "merged_into": {
+     "$ref": "#/$defs/EntityId"
+    },
+    "status_changed_at": {
+     "$ref": "#/$defs/Timestamp"
+    },
+    "created_at": {
+     "$ref": "#/$defs/Timestamp"
+    },
+    "marking": {
+     "$ref": "#/$defs/Marking"
+    }
+   },
+   "allOf": [
+    {
+     "if": {
+      "properties": {
+       "status": {
+        "const": "MERGED"
+       }
+      }
+     },
+     "then": {
+      "required": [
+       "merged_into"
+      ]
+     },
+     "else": {
+      "not": {
+       "required": [
+        "merged_into"
+       ]
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "status": {
+        "const": "ACTIVE"
+       }
+      }
+     },
+     "then": {
+      "not": {
+       "required": [
+        "status_changed_at"
+       ]
+      }
+     },
+     "else": {
+      "required": [
+       "status_changed_at"
+      ]
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "entity_type": {
+        "const": "PERSON"
+       }
+      }
+     },
+     "then": {
+      "properties": {
+       "identity": {
+        "$ref": "#/$defs/IdPerson"
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "entity_type": {
+        "const": "ORGANIZATION"
+       }
+      }
+     },
+     "then": {
+      "properties": {
+       "identity": {
+        "$ref": "#/$defs/IdOrganization"
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "entity_type": {
+        "const": "REAL_ESTATE"
+       }
+      }
+     },
+     "then": {
+      "properties": {
+       "identity": {
+        "$ref": "#/$defs/IdRealEstate"
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "entity_type": {
+        "const": "MOVABLE_PROPERTY"
+       }
+      }
+     },
+     "then": {
+      "properties": {
+       "identity": {
+        "$ref": "#/$defs/IdMovable"
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "entity_type": {
+        "const": "EVENT"
+       }
+      }
+     },
+     "then": {
+      "properties": {
+       "identity": {
+        "$ref": "#/$defs/IdEvent"
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "entity_type": {
+        "const": "CONFLICT"
+       }
+      }
+     },
+     "then": {
+      "properties": {
+       "identity": {
+        "$ref": "#/$defs/IdConflict"
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "entity_type": {
+        "const": "EQUIPMENT"
+       }
+      }
+     },
+     "then": {
+      "properties": {
+       "identity": {
+        "$ref": "#/$defs/IdEquipment"
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "entity_type": {
+        "const": "EQUIPMENT_MODEL"
+       }
+      }
+     },
+     "then": {
+      "properties": {
+       "identity": {
+        "$ref": "#/$defs/IdEquipmentModel"
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "entity_type": {
+        "const": "CONCEPT"
+       }
+      }
+     },
+     "then": {
+      "properties": {
+       "identity": {
+        "$ref": "#/$defs/IdConcept"
+       }
+      }
+     }
+    }
+   ]
+  },
+  "ForeignId": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "scheme",
+    "value"
+   ],
+   "properties": {
+    "scheme": {
+     "type": "string",
+     "pattern": "^[a-z][a-z0-9.]{1,40}$",
+     "not": {
+      "enum": [
+       "ru.inn",
+       "ru.ogrn",
+       "ru.ogrnip",
+       "ru.kpp",
+       "ru.cadastral",
+       "vin",
+       "imo"
+      ]
+     }
+    },
+    "value": {
+     "$ref": "#/$defs/NonEmpty"
+    }
+   }
+  },
+  "Disambiguator": {
+   "type": "string",
+   "pattern": "^[a-z0-9_-]{3,64}$"
+  },
+  "IdPerson": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "surname",
+    "given_name"
+   ],
+   "properties": {
+    "surname": {
+     "$ref": "#/$defs/NonEmpty"
+    },
+    "given_name": {
+     "$ref": "#/$defs/NonEmpty"
+    },
+    "patronymic": {
+     "$ref": "#/$defs/NonEmpty"
+    },
+    "birth_date": {
+     "$ref": "#/$defs/Date"
+    },
+    "inn": {
+     "type": "string",
+     "pattern": "^[0-9]{12}$"
+    },
+    "ogrnip": {
+     "type": "string",
+     "pattern": "^[0-9]{15}$"
+    },
+    "disambiguator": {
+     "$ref": "#/$defs/Disambiguator"
+    }
+   }
+  },
+  "IdOrganization": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "name",
+    "jurisdiction"
+   ],
+   "properties": {
+    "name": {
+     "$ref": "#/$defs/NonEmpty"
+    },
+    "jurisdiction": {
+     "type": "string",
+     "pattern": "^[A-Z]{2}$"
+    },
+    "legal_form": {
+     "enum": [
+      "LEGAL_ENTITY",
+      "BRANCH"
+     ]
+    },
+    "ogrn": {
+     "type": "string",
+     "pattern": "^[0-9]{13}$"
+    },
+    "inn": {
+     "type": "string",
+     "pattern": "^[0-9]{10}$"
+    },
+    "kpp": {
+     "type": "string",
+     "pattern": "^[0-9]{9}$"
+    },
+    "informal": {
+     "type": "boolean"
+    },
+    "disambiguator": {
+     "$ref": "#/$defs/Disambiguator"
+    },
+    "foreign_ids": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/ForeignId"
+     }
+    }
+   }
+  },
+  "IdRealEstate": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "cadastral_number",
+    "address"
+   ],
+   "properties": {
+    "cadastral_number": {
+     "type": "string",
+     "pattern": "^[0-9]{2}:[0-9]{2}:[0-9]{6,7}:[0-9]{1,9}$"
+    },
+    "address": {
+     "$ref": "#/$defs/NonEmpty"
+    }
+   }
+  },
+  "IdMovable": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "subtype",
+    "description"
+   ],
+   "properties": {
+    "subtype": {
+     "enum": [
+      "VEHICLE",
+      "VESSEL",
+      "AIRCRAFT",
+      "OTHER"
+     ]
+    },
+    "description": {
+     "$ref": "#/$defs/NonEmpty"
+    },
+    "vin": {
+     "type": "string",
+     "pattern": "^[A-HJ-NPR-Z0-9]{17}$"
+    },
+    "imo": {
+     "type": "string",
+     "pattern": "^[0-9]{7}$"
+    },
+    "registration": {
+     "$ref": "#/$defs/ForeignId"
+    }
+   }
+  },
+  "IdEvent": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "title",
+    "date"
+   ],
+   "properties": {
+    "title": {
+     "$ref": "#/$defs/NonEmpty"
+    },
+    "date": {
+     "$ref": "#/$defs/Date"
+    },
+    "place": {
+     "$ref": "#/$defs/NonEmpty"
+    }
+   }
+  },
+  "IdConflict": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "title",
+    "started_on"
+   ],
+   "properties": {
+    "title": {
+     "$ref": "#/$defs/NonEmpty"
+    },
+    "started_on": {
+     "$ref": "#/$defs/Date"
+    },
+    "place": {
+     "$ref": "#/$defs/NonEmpty"
+    }
+   }
+  },
+  "IdEquipment": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "site_id",
+    "tag"
+   ],
+   "properties": {
+    "site_id": {
+     "type": "string",
+     "pattern": "^site_[a-z0-9_]{2,64}$"
+    },
+    "tag": {
+     "$ref": "#/$defs/NonEmpty"
+    },
+    "description": {
+     "$ref": "#/$defs/NonEmpty"
+    }
+   }
+  },
+  "IdEquipmentModel": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "manufacturer",
+    "model"
+   ],
+   "properties": {
+    "manufacturer": {
+     "$ref": "#/$defs/NonEmpty"
+    },
+    "model": {
+     "$ref": "#/$defs/NonEmpty"
+    },
+    "description": {
+     "$ref": "#/$defs/NonEmpty"
+    }
+   }
+  },
+  "IdConcept": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "label",
+    "lang"
+   ],
+   "properties": {
+    "label": {
+     "$ref": "#/$defs/NonEmpty"
+    },
+    "lang": {
+     "type": "string",
+     "pattern": "^[a-z]{2,3}$"
+    },
+    "namespace": {
+     "type": "string",
+     "pattern": "^[a-z0-9_]{2,64}$"
+    },
+    "disambiguator": {
+     "$ref": "#/$defs/Disambiguator"
+    }
+   }
+  },
+  "Literal": {
+   "type": "object",
+   "required": [
+    "type"
+   ],
+   "properties": {
+    "type": {
+     "enum": [
+      "STRING",
+      "DATE",
+      "QUANTITY",
+      "MONEY",
+      "IDENTIFIER",
+      "BOOLEAN",
+      "INTEGER"
+     ]
+    }
+   },
+   "allOf": [
+    {
+     "if": {
+      "properties": {
+       "type": {
+        "const": "STRING"
+       }
+      }
+     },
+     "then": {
+      "additionalProperties": false,
+      "required": [
+       "value"
+      ],
+      "properties": {
+       "type": true,
+       "value": {
+        "$ref": "#/$defs/NonEmpty"
+       },
+       "lang": {
+        "type": "string",
+        "pattern": "^[a-z]{2,3}$"
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "type": {
+        "const": "DATE"
+       }
+      }
+     },
+     "then": {
+      "additionalProperties": false,
+      "required": [
+       "value"
+      ],
+      "properties": {
+       "type": true,
+       "value": {
+        "$ref": "#/$defs/Date"
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "type": {
+        "const": "QUANTITY"
+       }
+      }
+     },
+     "then": {
+      "additionalProperties": false,
+      "required": [
+       "value",
+       "unit"
+      ],
+      "properties": {
+       "type": true,
+       "value": {
+        "type": "string",
+        "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]+)?$"
+       },
+       "unit": {
+        "type": "string",
+        "pattern": "^[A-Za-z%/0-9]{1,16}$"
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "type": {
+        "const": "MONEY"
+       }
+      }
+     },
+     "then": {
+      "additionalProperties": false,
+      "required": [
+       "amount_minor",
+       "currency"
+      ],
+      "properties": {
+       "type": true,
+       "amount_minor": {
+        "type": "integer"
+       },
+       "currency": {
+        "type": "string",
+        "pattern": "^[A-Z]{3}$"
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "type": {
+        "const": "IDENTIFIER"
+       }
+      }
+     },
+     "then": {
+      "additionalProperties": false,
+      "required": [
+       "scheme",
+       "value"
+      ],
+      "properties": {
+       "type": true,
+       "scheme": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9.]{1,40}$"
+       },
+       "value": {
+        "$ref": "#/$defs/NonEmpty"
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "type": {
+        "const": "BOOLEAN"
+       }
+      }
+     },
+     "then": {
+      "additionalProperties": false,
+      "required": [
+       "value"
+      ],
+      "properties": {
+       "type": true,
+       "value": {
+        "type": "boolean"
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "type": {
+        "const": "INTEGER"
+       }
+      }
+     },
+     "then": {
+      "additionalProperties": false,
+      "required": [
+       "value"
+      ],
+      "properties": {
+       "type": true,
+       "value": {
+        "type": "integer"
+       }
+      }
+     }
+    }
+   ]
+  },
+  "Claim": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "kind",
+    "schema_version",
+    "claim_id",
+    "project_id",
+    "subject",
+    "predicate",
+    "object",
+    "evidence",
+    "produced_by",
+    "recorded_at",
+    "marking"
+   ],
+   "properties": {
+    "kind": {
+     "const": "Claim"
+    },
+    "schema_version": true,
+    "claim_id": {
+     "$ref": "#/$defs/ClaimId"
+    },
+    "project_id": {
+     "$ref": "#/$defs/ProjectId"
+    },
+    "subject": {
+     "$ref": "#/$defs/EntityId"
+    },
+    "predicate": {
+     "type": "string",
+     "pattern": "^[a-z]+\\.[a-z_]+$"
+    },
+    "object": {
+     "oneOf": [
+      {
+       "type": "object",
+       "additionalProperties": false,
+       "required": [
+        "entity"
+       ],
+       "properties": {
+        "entity": {
+         "$ref": "#/$defs/EntityId"
+        }
+       }
+      },
+      {
+       "type": "object",
+       "additionalProperties": false,
+       "required": [
+        "literal"
+       ],
+       "properties": {
+        "literal": {
+         "$ref": "#/$defs/Literal"
+        }
+       }
+      }
+     ]
+    },
+    "qualifiers": {
+     "type": "object",
+     "propertyNames": {
+      "pattern": "^[a-z][a-z0-9_]{0,40}$"
+     },
+     "additionalProperties": {
+      "type": [
+       "string",
+       "integer",
+       "boolean"
+      ]
+     }
+    },
+    "valid_from": {
+     "$ref": "#/$defs/Date"
+    },
+    "valid_to": {
+     "$ref": "#/$defs/Date"
+    },
+    "evidence": {
+     "type": "array",
+     "minItems": 1,
+     "items": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "source_id",
+       "span",
+       "quote_sha256"
+      ],
+      "properties": {
+       "source_id": {
+        "$ref": "#/$defs/SourceId"
+       },
+       "span": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "start",
+         "end"
+        ],
+        "properties": {
+         "start": {
+          "type": "integer",
+          "minimum": 0
+         },
+         "end": {
+          "type": "integer",
+          "minimum": 1
+         }
+        }
+       },
+       "quote": {
+        "type": "string",
+        "minLength": 1
+       },
+       "quote_sha256": {
+        "$ref": "#/$defs/Sha256Hex"
+       },
+       "graph_node": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "artifact_digest",
+         "node_id"
+        ],
+        "properties": {
+         "artifact_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+         },
+         "node_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.:-]{1,128}$"
+         }
+        }
+       }
+      }
+     }
+    },
+    "produced_by": {
+     "oneOf": [
+      {
+       "type": "object",
+       "additionalProperties": false,
+       "required": [
+        "kind",
+        "actor_id"
+       ],
+       "properties": {
+        "kind": {
+         "const": "HUMAN"
+        },
+        "actor_id": {
+         "$ref": "#/$defs/UserId"
+        }
+       }
+      },
+      {
+       "type": "object",
+       "additionalProperties": false,
+       "required": [
+        "kind",
+        "service_id",
+        "run_id"
+       ],
+       "properties": {
+        "kind": {
+         "const": "PIPELINE"
+        },
+        "service_id": {
+         "$ref": "#/$defs/ServiceId"
+        },
+        "run_id": {
+         "$ref": "#/$defs/RunId"
+        }
+       }
+      }
+     ]
+    },
+    "recorded_at": {
+     "$ref": "#/$defs/Timestamp"
+    },
+    "marking": {
+     "$ref": "#/$defs/Marking"
+    }
+   }
+  },
+  "ClaimReview": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "kind",
+    "schema_version",
+    "review_id",
+    "claim_id",
+    "status",
+    "reviewer",
+    "reviewed_at",
+    "recorded_at"
+   ],
+   "properties": {
+    "kind": {
+     "const": "ClaimReview"
+    },
+    "schema_version": true,
+    "review_id": {
+     "$ref": "#/$defs/ReviewId"
+    },
+    "claim_id": {
+     "$ref": "#/$defs/ClaimId"
+    },
+    "status": {
+     "enum": [
+      "ACCEPTED",
+      "DISPUTED",
+      "REFUTED",
+      "WITHDRAWN"
+     ]
+    },
+    "reviewer": {
+     "$ref": "#/$defs/UserId"
+    },
+    "reviewed_at": {
+     "$ref": "#/$defs/Timestamp"
+    },
+    "recorded_at": {
+     "$ref": "#/$defs/Timestamp"
+    },
+    "note": {
+     "$ref": "#/$defs/NonEmpty"
+    }
+   }
+  },
+  "Check": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "kind",
+    "schema_version",
+    "check_id",
+    "project_id",
+    "subject_entity_id",
+    "profile",
+    "as_of",
+    "requested_at",
+    "requested_by",
+    "status",
+    "findings",
+    "marking"
+   ],
+   "properties": {
+    "kind": {
+     "const": "Check"
+    },
+    "schema_version": true,
+    "check_id": {
+     "$ref": "#/$defs/CheckId"
+    },
+    "project_id": {
+     "$ref": "#/$defs/ProjectId"
+    },
+    "subject_entity_id": {
+     "$ref": "#/$defs/EntityId"
+    },
+    "profile": {
+     "enum": [
+      "EXPRESS_NEGATIVE",
+      "TENDERS_ONLY",
+      "SOCIAL_ONLY",
+      "FULL"
+     ]
+    },
+    "as_of": {
+     "$ref": "#/$defs/Date"
+    },
+    "requested_at": {
+     "$ref": "#/$defs/Timestamp"
+    },
+    "requested_by": {
+     "$ref": "#/$defs/UserId"
+    },
+    "status": {
+     "enum": [
+      "IN_PROGRESS",
+      "COMPLETED",
+      "CANCELLED"
+     ]
+    },
+    "completed_at": {
+     "$ref": "#/$defs/Timestamp"
+    },
+    "cancelled_at": {
+     "$ref": "#/$defs/Timestamp"
+    },
+    "previous_check_id": {
+     "$ref": "#/$defs/CheckId"
+    },
+    "findings": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "dimension",
+       "result",
+       "risk",
+       "claim_ids",
+       "searches"
+      ],
+      "properties": {
+       "dimension": {
+        "$ref": "#/$defs/Dimension"
+       },
+       "result": {
+        "enum": [
+         "FOUND",
+         "NOT_FOUND"
+        ]
+       },
+       "risk": {
+        "$ref": "#/$defs/Risk"
+       },
+       "claim_ids": {
+        "type": "array",
+        "uniqueItems": true,
+        "items": {
+         "$ref": "#/$defs/ClaimId"
+        }
+       },
+       "searches": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "additionalProperties": false,
+         "required": [
+          "search_scope",
+          "query",
+          "performed_at",
+          "performed_by"
+         ],
+         "properties": {
+          "search_scope": {
+           "$ref": "#/$defs/NonEmpty"
+          },
+          "query": {
+           "$ref": "#/$defs/NonEmpty"
+          },
+          "performed_at": {
+           "$ref": "#/$defs/Timestamp"
+          },
+          "performed_by": {
+           "$ref": "#/$defs/ActorId"
+          },
+          "result_source_id": {
+           "$ref": "#/$defs/SourceId"
+          }
+         }
+        }
+       }
+      }
+     }
+    },
+    "overall_risk": {
+     "$ref": "#/$defs/Risk"
+    },
+    "marking": {
+     "$ref": "#/$defs/Marking"
+    }
+   },
+   "allOf": [
+    {
+     "if": {
+      "properties": {
+       "status": {
+        "const": "COMPLETED"
+       }
+      }
+     },
+     "then": {
+      "required": [
+       "completed_at",
+       "overall_risk"
+      ],
+      "not": {
+       "required": [
+        "cancelled_at"
+       ]
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "status": {
+        "const": "CANCELLED"
+       }
+      }
+     },
+     "then": {
+      "required": [
+       "cancelled_at"
+      ],
+      "not": {
+       "anyOf": [
+        {
+         "required": [
+          "completed_at"
+         ]
+        },
+        {
+         "required": [
+          "overall_risk"
+         ]
+        }
+       ]
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "status": {
+        "const": "IN_PROGRESS"
+       }
+      }
+     },
+     "then": {
+      "not": {
+       "anyOf": [
+        {
+         "required": [
+          "completed_at"
+         ]
+        },
+        {
+         "required": [
+          "overall_risk"
+         ]
+        },
+        {
+         "required": [
+          "cancelled_at"
+         ]
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  "ArtifactReceipt": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "kind",
+    "schema_version",
+    "receipt_id",
+    "project_id",
+    "producer",
+    "run_id",
+    "artifact_digest",
+    "artifact_schema_version",
+    "semantic_profile_version",
+    "input_source_ids",
+    "emitted_claim_ids",
+    "issued_at",
+    "key_id",
+    "signature"
+   ],
+   "properties": {
+    "kind": {
+     "const": "ArtifactReceipt"
+    },
+    "schema_version": true,
+    "receipt_id": {
+     "$ref": "#/$defs/ReceiptId"
+    },
+    "project_id": {
+     "$ref": "#/$defs/ProjectId"
+    },
+    "producer": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "service_id",
+      "version"
+     ],
+     "properties": {
+      "service_id": {
+       "$ref": "#/$defs/ServiceId"
+      },
+      "version": {
+       "type": "string",
+       "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+      }
+     }
+    },
+    "run_id": {
+     "$ref": "#/$defs/RunId"
+    },
+    "artifact_digest": {
+     "type": "string",
+     "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "artifact_schema_version": {
+     "$ref": "#/$defs/NonEmpty"
+    },
+    "semantic_profile_version": {
+     "$ref": "#/$defs/NonEmpty"
+    },
+    "input_source_ids": {
+     "type": "array",
+     "minItems": 1,
+     "uniqueItems": true,
+     "items": {
+      "$ref": "#/$defs/SourceId"
+     }
+    },
+    "emitted_claim_ids": {
+     "type": "array",
+     "minItems": 1,
+     "uniqueItems": true,
+     "items": {
+      "$ref": "#/$defs/ClaimId"
+     }
+    },
+    "issued_at": {
+     "$ref": "#/$defs/Timestamp"
+    },
+    "key_id": {
+     "$ref": "#/$defs/KeyId"
+    },
+    "signature": {
+     "type": "string",
+     "pattern": "^[A-Za-z0-9_-]{86}$"
+    }
+   }
+  },
+  "TrustAnchors": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "trust_format",
+    "keys"
+   ],
+   "properties": {
+    "trust_format": {
+     "const": "core-trust/0.2"
+    },
+    "keys": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "tenant_id",
+       "key_id",
+       "service_id",
+       "algorithm",
+       "public_key",
+       "not_before",
+       "not_after"
+      ],
+      "properties": {
+       "tenant_id": {
+        "$ref": "#/$defs/TenantId"
+       },
+       "key_id": {
+        "$ref": "#/$defs/KeyId"
+       },
+       "service_id": {
+        "$ref": "#/$defs/ServiceId"
+       },
+       "algorithm": {
+        "const": "Ed25519"
+       },
+       "public_key": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_-]{43}$"
+       },
+       "not_before": {
+        "$ref": "#/$defs/Timestamp"
+       },
+       "not_after": {
+        "$ref": "#/$defs/Timestamp"
+       },
+       "revoked_at": {
+        "$ref": "#/$defs/Timestamp"
+       }
+      }
+     }
+    }
+   }
+  },
+  "DecisionId": {
+   "type": "string",
+   "pattern": "^idd_[a-z0-9_]{2,64}$"
+  },
+  "IdentityDecision": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "kind",
+    "schema_version",
+    "decision_id",
+    "project_id",
+    "decision",
+    "decided_by",
+    "decided_at"
+   ],
+   "properties": {
+    "kind": {
+     "const": "IdentityDecision"
+    },
+    "schema_version": true,
+    "decision_id": {
+     "$ref": "#/$defs/DecisionId"
+    },
+    "project_id": {
+     "$ref": "#/$defs/ProjectId"
+    },
+    "decision": {
+     "enum": [
+      "DISTINCT",
+      "QUALIFY"
+     ]
+    },
+    "entity_ids": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/EntityId"
+     },
+     "minItems": 2,
+     "maxItems": 2,
+     "uniqueItems": true
+    },
+    "entity_id": {
+     "$ref": "#/$defs/EntityId"
+    },
+    "disambiguator": {
+     "$ref": "#/$defs/Disambiguator"
+    },
+    "place": {
+     "$ref": "#/$defs/NonEmpty"
+    },
+    "decided_by": {
+     "$ref": "#/$defs/UserId"
+    },
+    "decided_at": {
+     "$ref": "#/$defs/Timestamp"
+    },
+    "note": {
+     "$ref": "#/$defs/NonEmpty"
+    }
+   },
+   "allOf": [
+    {
+     "if": {
+      "properties": {
+       "decision": {
+        "const": "DISTINCT"
+       }
+      }
+     },
+     "then": {
+      "required": [
+       "entity_ids"
+      ],
+      "not": {
+       "anyOf": [
+        {
+         "required": [
+          "entity_id"
+         ]
+        },
+        {
+         "required": [
+          "disambiguator"
+         ]
+        },
+        {
+         "required": [
+          "place"
+         ]
+        }
+       ]
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "decision": {
+        "const": "QUALIFY"
+       }
+      }
+     },
+     "then": {
+      "required": [
+       "entity_id"
+      ],
+      "not": {
+       "required": [
+        "entity_ids"
+       ]
+      },
+      "oneOf": [
+       {
+        "required": [
+         "disambiguator"
+        ]
+       },
+       {
+        "required": [
+         "place"
+        ]
+       }
+      ]
+     }
+    }
+   ]
+  },
+  "UmrNodeId": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9_.:-]{1,128}$"
+  },
+  "UmrAnchor": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "source_id",
+    "start",
+    "end"
+   ],
+   "properties": {
+    "source_id": {
+     "$ref": "#/$defs/SourceId"
+    },
+    "start": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "end": {
+     "type": "integer",
+     "minimum": 1
+    }
+   }
+  },
+  "UmrNode": {
+   "type": "object",
+   "required": [
+    "id",
+    "type"
+   ],
+   "properties": {
+    "type": {
+     "enum": [
+      "ENTITY",
+      "QUANTITY",
+      "ACTION",
+      "CONDITION",
+      "RELATION"
+     ]
+    }
+   },
+   "allOf": [
+    {
+     "if": {
+      "properties": {
+       "type": {
+        "const": "ENTITY"
+       }
+      }
+     },
+     "then": {
+      "additionalProperties": false,
+      "required": [
+       "id",
+       "type",
+       "entity_type",
+       "identity"
+      ],
+      "properties": {
+       "id": {
+        "$ref": "#/$defs/UmrNodeId"
+       },
+       "type": true,
+       "anchor": {
+        "$ref": "#/$defs/UmrAnchor"
+       },
+       "entity_type": {
+        "enum": [
+         "EQUIPMENT",
+         "EQUIPMENT_MODEL"
+        ]
+       },
+       "identity": {
+        "type": "object"
+       }
+      },
+      "allOf": [
+       {
+        "if": {
+         "properties": {
+          "entity_type": {
+           "const": "EQUIPMENT"
+          }
+         }
+        },
+        "then": {
+         "properties": {
+          "identity": {
+           "$ref": "#/$defs/IdEquipment"
+          }
+         }
+        },
+        "else": {
+         "properties": {
+          "identity": {
+           "$ref": "#/$defs/IdEquipmentModel"
+          }
+         }
+        }
+       }
+      ]
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "type": {
+        "const": "QUANTITY"
+       }
+      }
+     },
+     "then": {
+      "additionalProperties": false,
+      "required": [
+       "id",
+       "type",
+       "value",
+       "unit",
+       "anchor"
+      ],
+      "properties": {
+       "id": {
+        "$ref": "#/$defs/UmrNodeId"
+       },
+       "type": true,
+       "anchor": {
+        "$ref": "#/$defs/UmrAnchor"
+       },
+       "value": {
+        "type": "string",
+        "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]+)?$"
+       },
+       "unit": {
+        "type": "string",
+        "pattern": "^[A-Za-z%/0-9]{1,16}$"
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "type": {
+        "enum": [
+         "ACTION",
+         "CONDITION"
+        ]
+       }
+      }
+     },
+     "then": {
+      "additionalProperties": false,
+      "required": [
+       "id",
+       "type",
+       "text",
+       "anchor"
+      ],
+      "properties": {
+       "id": {
+        "$ref": "#/$defs/UmrNodeId"
+       },
+       "type": true,
+       "anchor": {
+        "$ref": "#/$defs/UmrAnchor"
+       },
+       "text": {
+        "$ref": "#/$defs/NonEmpty"
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "type": {
+        "const": "RELATION"
+       }
+      }
+     },
+     "then": {
+      "additionalProperties": false,
+      "required": [
+       "id",
+       "type",
+       "role",
+       "args",
+       "anchor"
+      ],
+      "properties": {
+       "id": {
+        "$ref": "#/$defs/UmrNodeId"
+       },
+       "type": true,
+       "anchor": {
+        "$ref": "#/$defs/UmrAnchor"
+       },
+       "role": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]{1,40}$"
+       },
+       "args": {
+        "type": "array",
+        "minItems": 2,
+        "maxItems": 2,
+        "items": {
+         "$ref": "#/$defs/UmrNodeId"
+        }
+       },
+       "parameter": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]{1,64}$"
+       },
+       "condition": {
+        "$ref": "#/$defs/UmrNodeId"
+       }
+      }
+     }
+    }
+   ]
+  },
+  "UmrArtifact": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "artifact_format",
+    "semantic_profile",
+    "producer",
+    "run_id",
+    "inputs",
+    "nodes"
+   ],
+   "properties": {
+    "artifact_format": {
+     "const": "umr-artifact/0.3"
+    },
+    "semantic_profile": {
+     "$ref": "#/$defs/NonEmpty"
+    },
+    "producer": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "service_id",
+      "version"
+     ],
+     "properties": {
+      "service_id": {
+       "$ref": "#/$defs/ServiceId"
+      },
+      "version": {
+       "type": "string",
+       "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+      }
+     }
+    },
+    "run_id": {
+     "$ref": "#/$defs/RunId"
+    },
+    "inputs": {
+     "type": "array",
+     "minItems": 1,
+     "uniqueItems": true,
+     "items": {
+      "$ref": "#/$defs/SourceId"
+     }
+    },
+    "nodes": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 10000,
+     "items": {
+      "$ref": "#/$defs/UmrNode"
+     }
+    }
+   }
+  }
+ }
+}

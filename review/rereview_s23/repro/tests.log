@@ -1,0 +1,6 @@
+T1 valid world: records=90 errors=0 warnings=1
+T2 vectors: 289 (239 negative, 50 positive)
+T3 error codes covered: 36/36
+T4 fuzz: 3000 cases, crashes=0, internal=0
+T6 JCS parity py/node: 24256 values
+ALL PASS

@@ -1,0 +1,3 @@
+model_disputed= True model_not_established= None
+MODEL ['Насос Н-101: экземпляр модели «Насос НМ 16-100».'] None
+MODEL_PARAMETERS ['Насос НМ 16-100: максимальное рабочее давление — 16 бар.'] None

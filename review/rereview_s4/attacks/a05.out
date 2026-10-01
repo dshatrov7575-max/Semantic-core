@@ -1,0 +1,4 @@
+    validator errors=NONE warnings=['CONTRADICTION_SINGLE_VALUED']
+--- strict, без неотображённых отношений:
+[двойники внутри артефакта, strict=True] adapter: claims=6 new=[('v2', 'ent_ts_17fc5b932292b15f32d452b2'), ('x1', 'ent_ts_33a46158cba58f3e01b83e96'), ('x2', 'ent_ts_cf6512c6ef44d779623f17a4')] matched={'v1': 'ent_ts_valve_a', 'v3': 'ent_ts_station'} unmapped=[] dup=[]
+    validator errors=NONE warnings=['CONTRADICTION_SINGLE_VALUED', 'POSSIBLE_DUPLICATE']
