@@ -315,5 +315,8 @@ M616   EQUIVALENT                   путь адреса может начин�
 M700   KILLED by N700               оригинала нет в хранилище — молча
 M701   KILLED by N701               адрес оригинала не сверяется
 M702   KILLED by N702               длина оригинала не сверяется
+M703   KILLED by N704               оригинал проверяется только у первого наблюдения источника
+M704   KILLED by N705               длина: не замечает оригинал короче заявленного
+M705   KILLED by N706               оригинал не проверяется у источника без байтов текста в хранилище
 
-mutants=317 killed=309 equivalent=8 survived/broken=0
+mutants=320 killed=312 equivalent=8 survived/broken=0

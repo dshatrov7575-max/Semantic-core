@@ -1,5 +1,5 @@
 requests 2.33.1 urllib3 2.6.3
   connection dropped after half of the body (Content-Length says full)               -> check() = raises ChunkedEncodingError
-  HTTP 503 SlowDown                                                                  -> check() = MISSING
-  HTTP 404 NoSuchBucket (wrong bucket name in the gateway configuration)             -> check() = MISSING
+  HTTP 503 SlowDown                                                                  -> check() = raises ObjectStoreError
+  HTTP 404 NoSuchBucket (wrong bucket name in the gateway configuration)             -> check() = raises ObjectStoreError
   intact object delivered with Content-Encoding: gzip (proxy in front of the store)  -> check() = OK
