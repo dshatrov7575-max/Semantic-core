@@ -367,6 +367,37 @@ M += [  # v0.2.6 (S5 part 2): originals
     ('M705', 'оригинал не проверяется у источника без байтов текста в хранилище', 'if og is None:\n                continue', 'if og is None or sid not in source_bytes:\n                continue'),
 ]
 
+M += [  # v0.3 (cycle 9): ClassDef, LinkDef, IdentifierDef, SchemaChange, schema.is_a
+    # ClassDef parent checks
+    ('M800', 'parent_class_id не проверяется на существование',
+     'parent = CD.get(cdef["parent_class_id"])\n            if parent is None:\n                R.err("REF_UNRESOLVED", cdef_id, f"parent_class_id {cdef[\'parent_class_id\']} не найден")',
+     'parent = CD.get(cdef["parent_class_id"])'),
+    ('M801', 'tenant isolation для parent_class_id не проверяется',
+     'elif parent["tenant_id"] != cdef["tenant_id"]:\n                R.err("CROSS_SCOPE_REFERENCE", cdef_id, "parent_class_id из другого tenant")',
+     'elif False:'),
+    ('M802', 'root_type наследника не сверяется с родителем',
+     'elif parent["root_type"] != cdef["root_type"]:\n                R.err("SCHEMA_INVALID", cdef_id, "root_type наследника должен совпадать с root_type родителя")',
+     'elif False:'),
+    # LinkDef checks
+    ('M810', 'domain_class_id и range_class_id не проверяются на существование',
+     'if ref_cls is None:\n                R.err("REF_UNRESOLVED", ldef_id, f"{ref_field} {ref_id} не найден")',
+     'if False:'),
+    # SchemaChange target_id check
+    ('M820', 'target_id в SchemaChange не проверяется',
+     'if target_store is not None and scx["target_id"] not in target_store:\n            R.err("REF_UNRESOLVED", scx_id, f"target_id {scx[\'target_id\']} не найден в {scx[\'target_kind\']}")',
+     'if False:'),
+    # schema.is_a checks
+    ('M830', 'class_id в CLASS_REF не проверяется на существование',
+     'if cls is None:\n            R.err("REF_UNRESOLVED", cid, f"schema.is_a: class_id {class_id} не найден")\n            continue',
+     'if False:\n            continue'),
+    ('M831', 'schema.is_a: тип объекта не проверяется на CLASS_REF',
+     'if lit is None or lit.get("type") != "CLASS_REF":\n            R.err("PREDICATE_RANGE_VIOLATION", cid, "schema.is_a: объект должен быть литералом CLASS_REF")\n            continue',
+     'if False:\n            continue'),
+    ('M832', 'schema.is_a: entity_type не сверяется с ClassDef.root_type',
+     'if subj_ent is not None and subj_ent["entity_type"] != cls["root_type"]:\n            R.err("PREDICATE_DOMAIN_VIOLATION", cid,\n                  f"schema.is_a: entity_type {subj_ent[\'entity_type\']} != ClassDef.root_type {cls[\'root_type\']}")',
+     'if False:'),
+]
+
 EQUIVALENT = {
     "M001": "float всё равно отвергается последней веткой фазы 0 («недопустимый тип»); отдельная ветка нужна только для понятного сообщения",
     "M005": "ключи-строки с суррогатами/управляющими символами отвергает схема: все объекты закрыты, у qualifiers есть propertyNames",

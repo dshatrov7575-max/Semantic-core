@@ -1,4 +1,4 @@
-"""Reference validator for core-ontology/0.2.6 (Архитектура семантики).
+"""Reference validator for core-ontology/0.3 (Архитектура семантики).
 
 Inputs (all three are separate on purpose):
   dataset  - records (Project, Source, Entity, Claim, ClaimReview, Check, ArtifactReceipt, IdentityDecision, Publication);
@@ -114,7 +114,9 @@ LEVEL = {"PUBLIC": 0, "INTERNAL": 1, "CONFIDENTIAL": 2, "RESTRICTED": 3}
 RISK = {"NONE": 0, "LOW": 1, "MEDIUM": 2, "HIGH": 3}
 ID_FIELD = {"Project": "project_id", "Source": "source_id", "Entity": "entity_id", "Claim": "claim_id",
             "ClaimReview": "review_id", "Check": "check_id", "ArtifactReceipt": "receipt_id",
-            "IdentityDecision": "decision_id", "Publication": "publication_id"}
+            "IdentityDecision": "decision_id", "Publication": "publication_id",
+            "ClassDef": "class_id", "LinkDef": "link_id", "IdentifierDef": "idef_id",
+            "SchemaChange": "change_id"}
 
 
 class Report:
@@ -479,6 +481,11 @@ def entity_identifiers(e, R, ref):
         ns = i.get("namespace", "") + "|" + i["lang"] + "|"
         weak.append(("concept", ns + base_key(i["label"]), i.get("disambiguator")))
         soft.append(("concept", ns + norm(i["label"])))
+    elif t == "THING":
+        # same rules as CONCEPT: label+lang+namespace are identity, optional disambiguator for homonyms
+        ns = i.get("namespace", "") + "|" + i["lang"] + "|"
+        weak.append(("thing", ns + base_key(i["label"]), i.get("disambiguator")))
+        soft.append(("thing", ns + norm(i["label"])))
     return strong, weak, soft
 
 
@@ -568,6 +575,7 @@ def _semantic(ds, keys, content, R):
             continue
         by[k][rid] = r
     P, S, E, C, V, Kc, A = (by[x] for x in ("Project", "Source", "Entity", "Claim", "ClaimReview", "Check", "ArtifactReceipt"))
+    CD, LD, IDD, SCX = (by[x] for x in ("ClassDef", "LinkDef", "IdentifierDef", "SchemaChange"))
     preds = {p["id"]: p for p in PREDICATES["predicates"]}
     profiles = PREDICATES["check_profiles"]
 
@@ -1171,6 +1179,84 @@ def _semantic(ds, keys, content, R):
     for (dg, nid), cids in node_uses.items():
         if len(cids) > 1:
             R.err("GRAPH_NODE_INVALID", nid, f"один узел графа — несколько доказательств ({len(cids)})")
+
+    # ---- schema records (D27.1, cycle 9): ClassDef, LinkDef, IdentifierDef, SchemaChange ----
+    valid_entity_types = {"PERSON", "ORGANIZATION", "REAL_ESTATE", "MOVABLE_PROPERTY", "EVENT",
+                          "CONFLICT", "EQUIPMENT", "EQUIPMENT_MODEL", "CONCEPT", "THING"}
+
+    # ClassDef: tenant isolation; parent_class_id must exist within same tenant
+    for cdef_id, cdef in CD.items():
+        if "parent_class_id" in cdef:
+            parent = CD.get(cdef["parent_class_id"])
+            if parent is None:
+                R.err("REF_UNRESOLVED", cdef_id, f"parent_class_id {cdef['parent_class_id']} не найден")
+            elif parent["tenant_id"] != cdef["tenant_id"]:
+                R.err("CROSS_SCOPE_REFERENCE", cdef_id, "parent_class_id из другого tenant")
+            elif parent["root_type"] != cdef["root_type"]:
+                R.err("SCHEMA_INVALID", cdef_id, "root_type наследника должен совпадать с root_type родителя")
+        # cycle detection: parent chain must not loop
+        seen_chain = {cdef_id}
+        cur = cdef
+        while "parent_class_id" in cur:
+            pid = cur["parent_class_id"]
+            if pid in seen_chain:
+                R.err("SCHEMA_INVALID", cdef_id, "циклическое наследование классов")
+                break
+            seen_chain.add(pid)
+            cur = CD.get(pid, {})
+
+    # LinkDef: domain/range class_ids must exist within same tenant
+    for ldef_id, ldef in LD.items():
+        for ref_field in ("domain_class_id", "range_class_id"):
+            ref_id = ldef[ref_field]
+            ref_cls = CD.get(ref_id)
+            if ref_cls is None:
+                R.err("REF_UNRESOLVED", ldef_id, f"{ref_field} {ref_id} не найден")
+            elif ref_cls["tenant_id"] != ldef["tenant_id"]:
+                R.err("CROSS_SCOPE_REFERENCE", ldef_id, f"{ref_field} из другого tenant")
+        if "inverse_predicate_id" in ldef:
+            inv_pred = ldef["inverse_predicate_id"]
+            if inv_pred not in preds:
+                R.err("PREDICATE_UNKNOWN", ldef_id, f"inverse_predicate_id {inv_pred} не зарегистрирован")
+
+    # IdentifierDef: applies_to_root_type must be a valid EntityType
+    for idef_id, idef in IDD.items():
+        if idef["applies_to_root_type"] not in valid_entity_types:
+            R.err("SCHEMA_INVALID", idef_id, f"applies_to_root_type {idef['applies_to_root_type']} не EntityType")
+
+    # SchemaChange: target_id must exist as the named target_kind
+    for scx_id, scx in SCX.items():
+        kind_map = {"ClassDef": CD, "LinkDef": LD, "IdentifierDef": IDD}
+        target_store = kind_map.get(scx["target_kind"])
+        if target_store is not None and scx["target_id"] not in target_store:
+            R.err("REF_UNRESOLVED", scx_id, f"target_id {scx['target_id']} не найден в {scx['target_kind']}")
+
+    # ---- is_a Claims (schema.is_a predicate) ----
+    # Every Claim with predicate schema.is_a must:
+    #   1. have object.literal.type == CLASS_REF
+    #   2. class_id in CLASS_REF must exist as ClassDef in this dataset
+    #   3. entity's entity_type must match class's root_type
+    for cid, c in C.items():
+        if c["predicate"] != "schema.is_a":
+            continue
+        lit = c["object"].get("literal")
+        if lit is None or lit.get("type") != "CLASS_REF":
+            R.err("PREDICATE_RANGE_VIOLATION", cid, "schema.is_a: объект должен быть литералом CLASS_REF")
+            continue
+        class_id = lit.get("class_id")
+        cls = CD.get(class_id)
+        if cls is None:
+            R.err("REF_UNRESOLVED", cid, f"schema.is_a: class_id {class_id} не найден")
+            continue
+        # tenant isolation: class must belong to same tenant as claim's project
+        claim_tenant = tenant_of(c["project_id"])
+        if claim_tenant is not None and cls["tenant_id"] != claim_tenant:
+            R.err("CROSS_SCOPE_REFERENCE", cid, "schema.is_a: ClassDef из другого tenant")
+        # entity root_type must match class root_type
+        subj_ent = E.get(c["subject"])
+        if subj_ent is not None and subj_ent["entity_type"] != cls["root_type"]:
+            R.err("PREDICATE_DOMAIN_VIOLATION", cid,
+                  f"schema.is_a: entity_type {subj_ent['entity_type']} != ClassDef.root_type {cls['root_type']}")
 
 
 def main(argv):

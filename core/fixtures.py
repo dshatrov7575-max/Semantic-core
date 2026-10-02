@@ -1,4 +1,4 @@
-"""Test world for core-ontology/0.2 + negative/positive vectors.
+"""Test world for core-ontology/0.3 + negative/positive vectors.
 
 The world uses symbolic references ("@S:name" source, "@C:name" claim, {"$ev": [source, quote]} evidence).
 finalize() computes every content address (source_id, claim_id, receipt_id), byte spans and Ed25519
@@ -20,7 +20,7 @@ from jcs import digest, canon_bytes
 from validator import inn_ok, ogrn_ok, ogrnip_ok, text_digest_of, publication_address
 
 HERE = Path(__file__).resolve().parent
-SV = "core-ontology/0.2"
+SV = "core-ontology/0.3"
 T = "tnt_demo"
 
 
@@ -422,7 +422,9 @@ def world():
     return W
 
 
-ORDER = ["Project", "Source", "Publication", "Entity", "IdentityDecision", "Claim", "ClaimReview", "Check", "ArtifactReceipt"]
+ORDER = ["Project", "Source", "Publication", "Entity", "IdentityDecision",
+         "ClassDef", "LinkDef", "IdentifierDef", "SchemaChange",
+         "Claim", "ClaimReview", "Check", "ArtifactReceipt"]
 
 
 def finalize(W):
@@ -506,5 +508,5 @@ def finalize(W):
                 r["receipt_id"] = "rcp:sha256:" + digest({k: v for k, v in r.items() if k not in ("receipt_id", "signature")})
                 r["signature"] = b64u(Ed25519PrivateKey.from_private_bytes(SEEDS[seed or r["key_id"]]).sign(r["receipt_id"].encode()))
     names = sorted(W, key=lambda n: (ORDER.index(W[n]["kind"]), n))
-    ds = {"dataset_format": "core-dataset/0.2", "ontology_version": SV, "records": [W[n] for n in names]}
+    ds = {"dataset_format": "core-dataset/0.3", "ontology_version": SV, "records": [W[n] for n in names]}
     return ds, {n: i for i, n in enumerate(names)}, trust, content

@@ -595,6 +595,29 @@
    "dimensions": [
     "CORPORATE"
    ]
+  },
+  {
+   "id": "schema.is_a",
+   "label_ru": "является экземпляром класса",
+   "domain": [
+    "PERSON",
+    "ORGANIZATION",
+    "REAL_ESTATE",
+    "MOVABLE_PROPERTY",
+    "EVENT",
+    "CONFLICT",
+    "EQUIPMENT",
+    "EQUIPMENT_MODEL",
+    "CONCEPT",
+    "THING"
+   ],
+   "range": {
+    "literal": [
+     "CLASS_REF"
+    ]
+   },
+   "cardinality": "MANY",
+   "dimensions": []
   }
  ],
  "artifact_formats": {

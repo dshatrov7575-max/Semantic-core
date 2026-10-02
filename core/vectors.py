@@ -946,3 +946,173 @@ VECTORS += [
       pre=add_source("s2e", "Текст источника N706 (будет изъят из общего хранилища после вычисления адресов)."),
       post=_no_bytes_bad_original),
 ]
+
+# ---- Cycle 9: «Схема как данные» (D27.1) ----
+_SV9 = "core-ontology/0.3"  # schema version for cycle 9 records
+
+
+def _classdef(name, root_type="ORGANIZATION", parent=None, **kw):
+    """Build a minimal valid ClassDef record."""
+    r = {"kind": "ClassDef", "class_id": f"sdf_{name}", "schema_version": _SV9,
+         "tenant_id": T, "root_type": root_type, "name": f"Класс {name}", "version": 1,
+         "created_at": "2026-10-02T10:00:00Z", "created_by": "usr_test_admin",
+         "marking": {"level": "INTERNAL", "categories": []}}
+    if parent:
+        r["parent_class_id"] = f"sdf_{parent}"
+    r.update(kw)
+    return r
+
+
+def _linkdef(name, domain, rng, **kw):
+    """Build a minimal valid LinkDef record."""
+    r = {"kind": "LinkDef", "link_id": f"sdf_lnk_{name}", "schema_version": _SV9,
+         "tenant_id": T, "predicate_id": f"schema.{name}",
+         "domain_class_id": f"sdf_{domain}", "range_class_id": f"sdf_{rng}",
+         "cardinality": "MANY", "version": 1,
+         "created_at": "2026-10-02T10:00:00Z", "created_by": "usr_test_admin",
+         "marking": {"level": "INTERNAL", "categories": []}}
+    r.update(kw)
+    return r
+
+
+def _identifierdef(name, root_type="ORGANIZATION", **kw):
+    """Build a minimal valid IdentifierDef record."""
+    r = {"kind": "IdentifierDef", "idef_id": f"sdf_id_{name}", "schema_version": _SV9,
+         "tenant_id": T, "scheme": f"ext.{name}", "applies_to_root_type": root_type,
+         "strength": "STRONG", "priority": 1, "version": 1,
+         "created_at": "2026-10-02T10:00:00Z", "created_by": "usr_test_admin",
+         "marking": {"level": "INTERNAL", "categories": []}}
+    r.update(kw)
+    return r
+
+
+def _schemachange(name, target_id, target_kind="ClassDef", change_type="ADD_CLASS", **kw):
+    """Build a minimal valid SchemaChange record."""
+    r = {"kind": "SchemaChange", "change_id": f"scx_{name}", "schema_version": _SV9,
+         "tenant_id": T, "change_type": change_type, "target_id": target_id,
+         "target_kind": target_kind, "description": f"Изменение {name}",
+         "recorded_at": "2026-10-02T10:00:00Z", "recorded_by": "usr_test_admin",
+         "marking": {"level": "INTERNAL", "categories": []}}
+    r.update(kw)
+    return r
+
+
+def _add_schema_world(W):
+    """Add a ClassDef + LinkDef + IdentifierDef + SchemaChange to the world."""
+    W["cls_org_sub"] = _classdef("org_sub", root_type="ORGANIZATION")
+    W["cls_person_vip"] = _classdef("person_vip", root_type="PERSON")
+    W["lnk_sub_vip"] = _linkdef("sub_to_vip", "org_sub", "person_vip")
+    W["idef_crm"] = _identifierdef("crm001", root_type="ORGANIZATION")
+    W["scx_add_org"] = _schemachange("add_org_sub", "sdf_org_sub", "ClassDef", "ADD_CLASS")
+
+
+VECTORS += [
+    # ---- positive ----
+    V("P801", [], "Цикл 9: ClassDef/LinkDef/IdentifierDef/SchemaChange — минимальный валидный набор",
+      pre=_add_schema_world),
+
+    # ---- ClassDef negatives ----
+    V("N801", ["REF_UNRESOLVED"], "ClassDef: parent_class_id не существует",
+      pre=lambda W: (W.__setitem__("cls_child",
+          _classdef("child", root_type="ORGANIZATION", parent="nonexistent")),
+          _add_schema_world(W))[1]),
+
+    V("N802", ["CROSS_SCOPE_REFERENCE"], "ClassDef: parent_class_id из другого tenant",
+      pre=lambda W: (
+          _add_schema_world(W),
+          W.__setitem__("cls_foreign_parent",
+              {**_classdef("foreign_parent", root_type="ORGANIZATION"), "tenant_id": "tnt_other"}),
+          W.__setitem__("cls_child_foreign",
+              _classdef("child_foreign", root_type="ORGANIZATION", parent="foreign_parent")),
+      )[2]),
+
+    V("N803", ["SCHEMA_INVALID"], "ClassDef: root_type наследника не совпадает с родителем (PERSON vs ORGANIZATION)",
+      pre=lambda W: (
+          _add_schema_world(W),
+          W.__setitem__("cls_child_bad_type",
+              _classdef("child_bad_type", root_type="PERSON", parent="org_sub")),
+      )[1]),
+
+    # ---- LinkDef negatives ----
+    V("N810", ["REF_UNRESOLVED"], "LinkDef: domain_class_id не существует",
+      pre=lambda W: (
+          _add_schema_world(W),
+          W.__setitem__("lnk_bad_domain",
+              _linkdef("bad_domain", "nonexistent_domain", "org_sub")),
+      )[1]),
+
+    V("N811", ["REF_UNRESOLVED"], "LinkDef: range_class_id не существует",
+      pre=lambda W: (
+          _add_schema_world(W),
+          W.__setitem__("lnk_bad_range",
+              _linkdef("bad_range", "org_sub", "nonexistent_range")),
+      )[1]),
+
+    # ---- SchemaChange negatives ----
+    V("N820", ["REF_UNRESOLVED"], "SchemaChange: target_id не существует в ClassDef",
+      pre=lambda W: (
+          _add_schema_world(W),
+          W.__setitem__("scx_bad_target",
+              _schemachange("bad_target", "sdf_nonexistent", "ClassDef", "ADD_CLASS")),
+      )[1]),
+]
+
+# ---- is_a Claim vectors ----
+# The world fixture already has entities; we add schema.is_a claims using the
+# same symbolic-reference mechanism that finalize() resolves.
+# finalize() computes claim_id and evidence spans from content bytes.
+# Key: project_id uses the world's symbolic key (e.g. "prj_conflict_land"),
+# subject uses entity_id key (e.g. "ent_c_developer"), source_id uses source key.
+
+def _isa_claim_world(W, claim_key, subject_entity_id, class_id,
+                     project_id="prj_conflict_land", source_key="s2",
+                     predicate="schema.is_a"):
+    """Add a schema.is_a Claim record to W using the same format as other claims in the world.
+    finalize() will compute claim_id and resolve symbolic refs."""
+    W[claim_key] = {
+        "kind": "Claim", "schema_version": _SV9, "project_id": project_id, "predicate": predicate,
+        "subject": subject_entity_id,
+        "object": {"literal": {"type": "CLASS_REF", "class_id": class_id, "tenant_id": T}},
+        "produced_by": {"kind": "HUMAN", "actor_id": "usr_test_admin"},
+        "recorded_at": "2026-10-02T12:00:00Z",
+        "evidence": [{"$ev": [source_key, "Генеральный директор компании Аркадий Ломов"]}],
+        "marking": CONF_PD,
+    }
+
+
+VECTORS += [
+    V("P802", [], "Цикл 9: schema.is_a — валидное утверждение, ClassDef совпадает по root_type (ORGANIZATION)",
+      pre=lambda W: (
+          _add_schema_world(W),
+          # ent_c_developer is an ORGANIZATION; sdf_org_sub.root_type = ORGANIZATION -> valid
+          _isa_claim_world(W, "claim_isa_ok", "ent_c_developer", "sdf_org_sub"),
+      )[1]),
+
+    V("N830", ["REF_UNRESOLVED"], "schema.is_a: class_id не существует в ClassDef",
+      pre=lambda W: (
+          _add_schema_world(W),
+          _isa_claim_world(W, "claim_isa_noclass", "ent_c_developer", "sdf_nonexistent_class"),
+      )[1]),
+
+    V("N831", ["PREDICATE_RANGE_VIOLATION"], "schema.is_a: объект — не CLASS_REF литерал (STRING вместо CLASS_REF)",
+      pre=lambda W: (
+          _add_schema_world(W),
+          W.__setitem__("claim_isa_bad_lit", {
+              "kind": "Claim", "schema_version": _SV9, "project_id": "prj_conflict_land", "predicate": "schema.is_a",
+              "subject": "ent_c_developer",
+              "object": {"literal": {"type": "STRING", "value": "sdf_org_sub"}},
+              "produced_by": {"kind": "HUMAN", "actor_id": "usr_test_admin"},
+              "recorded_at": "2026-10-02T12:00:00Z",
+              "evidence": [{"$ev": ["s2", "Генеральный директор компании Аркадий Ломов"]}],
+              "marking": CONF_PD,
+          }),
+      )[1]),
+
+    V("N832", ["PREDICATE_DOMAIN_VIOLATION"],
+      "schema.is_a: entity_type (PERSON) не совпадает с ClassDef.root_type (ORGANIZATION)",
+      pre=lambda W: (
+          _add_schema_world(W),
+          # ent_c_lomov is a PERSON; sdf_org_sub.root_type = ORGANIZATION -> mismatch
+          _isa_claim_world(W, "claim_isa_type_mismatch", "ent_c_lomov", "sdf_org_sub"),
+      )[1]),
+]
