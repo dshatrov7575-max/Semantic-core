@@ -1,11 +1,11 @@
-"""Vectors for core-ontology/0.2: each negative vector must yield EXACTLY its expected error-code set;
+"""Vectors for core-ontology/0.3: each negative vector must yield EXACTLY its expected error-code set;
 each positive vector (expected == []) must be clean. pre(W) mutates the symbolic world before content
 addresses/signatures are computed; post(ds, ix, env) tampers with the finished dataset, trust or content store.
 """
 import copy
 import hashlib
 
-from fixtures import (world, finalize, SV, T, INN_DEV, OGRN_DEV, OGRN_TRUB, INN_TRUB, INN_LOMOV, OGRNIP_IP,
+from fixtures import (world, finalize, SV, SV3, T, INN_DEV, OGRN_DEV, OGRN_TRUB, INN_TRUB, INN_LOMOV, OGRNIP_IP,
                       INT, PUB, CONF_PD, CONF_CS, CONF_CS_PD, srch, inn12, ogrnip)
 
 
@@ -947,172 +947,440 @@ VECTORS += [
       post=_no_bytes_bad_original),
 ]
 
-# ---- Cycle 9: «Схема как данные» (D27.1) ----
-_SV9 = "core-ontology/0.3"  # schema version for cycle 9 records
+# ---- Cycle 9: «Схема как данные» (D27.1) — ClassDef / LinkDef / IdentifierDef, schema.is_a, tenant predicates «x.…» ----
+# The valid world already holds a small schema of the SemanticWiki tenant (fixtures: sd_*, s20, c40–c46); every vector
+# below changes one thing in it.
+WK = "prj_wiki_whales"
+_IDF = {"ClassDef": "class_id", "LinkDef": "link_id", "IdentifierDef": "idef_id"}
+T_SD = "2026-09-02T13:00:00Z"      # after the schema of the world, before its claims (2026-09-03T09:30)
+T_LATE = "2026-09-04T10:00:00Z"    # after the claims of the world
 
 
-def _classdef(name, root_type="ORGANIZATION", parent=None, **kw):
-    """Build a minimal valid ClassDef record."""
-    r = {"kind": "ClassDef", "class_id": f"sdf_{name}", "schema_version": _SV9,
-         "tenant_id": T, "root_type": root_type, "name": f"Класс {name}", "version": 1,
-         "created_at": "2026-10-02T10:00:00Z", "created_by": "usr_test_admin",
-         "marking": {"level": "INTERNAL", "categories": []}}
-    if parent:
-        r["parent_class_id"] = f"sdf_{parent}"
-    r.update(kw)
-    return r
+def sd(key, kind, did, version, ctype, at=T_SD, tenant=T, marking=PUB, **body):
+    """add one version of a schema definition"""
+    def f(W):
+        W[key] = {"kind": kind, "schema_version": SV3, _IDF[kind]: did, "tenant_id": tenant, "version": version, **body,
+                  "marking": marking, "change": {"type": ctype, "description": "вектор", "recorded_at": at,
+                                                 "recorded_by": "usr_modeler1"}}
+    return f
 
 
-def _linkdef(name, domain, rng, **kw):
-    """Build a minimal valid LinkDef record."""
-    r = {"kind": "LinkDef", "link_id": f"sdf_lnk_{name}", "schema_version": _SV9,
-         "tenant_id": T, "predicate_id": f"schema.{name}",
-         "domain_class_id": f"sdf_{domain}", "range_class_id": f"sdf_{rng}",
-         "cardinality": "MANY", "version": 1,
-         "created_at": "2026-10-02T10:00:00Z", "created_by": "usr_test_admin",
-         "marking": {"level": "INTERNAL", "categories": []}}
-    r.update(kw)
-    return r
+def cls(key, did, version=1, ctype="ADD_CLASS", root="CONCEPT", name="Класс вектора", **kw):
+    return sd(key, "ClassDef", did, version, ctype, root_type=root, name=name, **kw)
 
 
-def _identifierdef(name, root_type="ORGANIZATION", **kw):
-    """Build a minimal valid IdentifierDef record."""
-    r = {"kind": "IdentifierDef", "idef_id": f"sdf_id_{name}", "schema_version": _SV9,
-         "tenant_id": T, "scheme": f"ext.{name}", "applies_to_root_type": root_type,
-         "strength": "STRONG", "priority": 1, "version": 1,
-         "created_at": "2026-10-02T10:00:00Z", "created_by": "usr_test_admin",
-         "marking": {"level": "INTERNAL", "categories": []}}
-    r.update(kw)
-    return r
+def nextv(src_key, key, ctype, at=T_SD, **changes):
+    """the next version of the definition W[src_key]: a copy with `changes` (value None = drop the field)"""
+    def f(W):
+        r = copy.deepcopy(W[src_key])
+        r["version"] += 1
+        r["change"] = {"type": ctype, "description": "вектор", "recorded_at": at, "recorded_by": "usr_modeler1"}
+        for k, v in changes.items():
+            if v is None:
+                r.pop(k, None)
+            else:
+                r[k] = v
+        W[key] = r
+    return f
 
 
-def _schemachange(name, target_id, target_kind="ClassDef", change_type="ADD_CLASS", **kw):
-    """Build a minimal valid SchemaChange record."""
-    r = {"kind": "SchemaChange", "change_id": f"scx_{name}", "schema_version": _SV9,
-         "tenant_id": T, "change_type": change_type, "target_id": target_id,
-         "target_kind": target_kind, "description": f"Изменение {name}",
-         "recorded_at": "2026-10-02T10:00:00Z", "recorded_by": "usr_test_admin",
-         "marking": {"level": "INTERNAL", "categories": []}}
-    r.update(kw)
-    return r
+def sdset(key, field, value):
+    return lambda W: W[key].__setitem__(field, value)
 
 
-def _add_schema_world(W):
-    """Add a ClassDef + LinkDef + IdentifierDef + SchemaChange to the world."""
-    W["cls_org_sub"] = _classdef("org_sub", root_type="ORGANIZATION")
-    W["cls_person_vip"] = _classdef("person_vip", root_type="PERSON")
-    W["lnk_sub_vip"] = _linkdef("sub_to_vip", "org_sub", "person_vip")
-    W["idef_crm"] = _identifierdef("crm001", root_type="ORGANIZATION")
-    W["scx_add_org"] = _schemachange("add_org_sub", "sdf_org_sub", "ClassDef", "ADD_CLASS")
+def sdtime(key, at):
+    return lambda W: W[key]["change"].__setitem__("recorded_at", at)
 
 
-VECTORS += [
-    # ---- positive ----
-    V("P801", [], "Цикл 9: ClassDef/LinkDef/IdentifierDef/SchemaChange — минимальный валидный набор",
-      pre=_add_schema_world),
+def kref(class_id):
+    return {"literal": {"type": "CLASS_REF", "class_id": class_id}}
 
-    # ---- ClassDef negatives ----
-    V("N801", ["REF_UNRESOLVED"], "ClassDef: parent_class_id не существует",
-      pre=lambda W: (W.__setitem__("cls_child",
-          _classdef("child", root_type="ORGANIZATION", parent="nonexistent")),
-          _add_schema_world(W))[1]),
 
-    V("N802", ["CROSS_SCOPE_REFERENCE"], "ClassDef: parent_class_id из другого tenant",
-      pre=lambda W: (
-          _add_schema_world(W),
-          W.__setitem__("cls_foreign_parent",
-              {**_classdef("foreign_parent", root_type="ORGANIZATION"), "tenant_id": "tnt_other"}),
-          W.__setitem__("cls_child_foreign",
-              _classdef("child_foreign", root_type="ORGANIZATION", parent="foreign_parent")),
-      )[2]),
+def v3(name):
+    """the record uses the vocabulary of 0.3 — it is marked 0.3"""
+    return lambda W: W[name].__setitem__("schema_version", SV3)
 
-    V("N803", ["SCHEMA_INVALID"], "ClassDef: root_type наследника не совпадает с родителем (PERSON vs ORGANIZATION)",
-      pre=lambda W: (
-          _add_schema_world(W),
-          W.__setitem__("cls_child_bad_type",
-              _classdef("child_bad_type", root_type="PERSON", parent="org_sub")),
-      )[1]),
 
-    # ---- LinkDef negatives ----
-    V("N810", ["REF_UNRESOLVED"], "LinkDef: domain_class_id не существует",
-      pre=lambda W: (
-          _add_schema_world(W),
-          W.__setitem__("lnk_bad_domain",
-              _linkdef("bad_domain", "nonexistent_domain", "org_sub")),
-      )[1]),
+def isa(name, subj, class_id, quote=("s10", "Синий кит"), marking=PUB, recorded="2026-09-03T09:30:00Z", prj=WK):
+    return seq(add_claim(name, prj, subj, "schema.is_a", kref(class_id), quote, marking, recorded), v3(name))
 
-    V("N811", ["REF_UNRESOLVED"], "LinkDef: range_class_id не существует",
-      pre=lambda W: (
-          _add_schema_world(W),
-          W.__setitem__("lnk_bad_range",
-              _linkdef("bad_range", "org_sub", "nonexistent_range")),
-      )[1]),
 
-    # ---- SchemaChange negatives ----
-    V("N820", ["REF_UNRESOLVED"], "SchemaChange: target_id не существует в ClassDef",
-      pre=lambda W: (
-          _add_schema_world(W),
-          W.__setitem__("scx_bad_target",
-              _schemachange("bad_target", "sdf_nonexistent", "ClassDef", "ADD_CLASS")),
-      )[1]),
-]
+def xclaim(name, subj, pred, obj, quote=("s10", "Синий кит"), marking=PUB, recorded="2026-09-03T10:00:00Z", prj=WK, q=None):
+    return seq(add_claim(name, prj, subj, pred, obj, quote, marking, recorded, q=q), v3(name))
 
-# ---- is_a Claim vectors ----
-# The world fixture already has entities; we add schema.is_a claims using the
-# same symbolic-reference mechanism that finalize() resolves.
-# finalize() computes claim_id and evidence spans from content bytes.
-# Key: project_id uses the world's symbolic key (e.g. "prj_conflict_land"),
-# subject uses entity_id key (e.g. "ent_c_developer"), source_id uses source key.
 
-def _isa_claim_world(W, claim_key, subject_entity_id, class_id,
-                     project_id="prj_conflict_land", source_key="s2",
-                     predicate="schema.is_a"):
-    """Add a schema.is_a Claim record to W using the same format as other claims in the world.
-    finalize() will compute claim_id and resolve symbolic refs."""
-    W[claim_key] = {
-        "kind": "Claim", "schema_version": _SV9, "project_id": project_id, "predicate": predicate,
-        "subject": subject_entity_id,
-        "object": {"literal": {"type": "CLASS_REF", "class_id": class_id, "tenant_id": T}},
-        "produced_by": {"kind": "HUMAN", "actor_id": "usr_test_admin"},
-        "recorded_at": "2026-10-02T12:00:00Z",
-        "evidence": [{"$ev": [source_key, "Генеральный директор компании Аркадий Ломов"]}],
-        "marking": CONF_PD,
-    }
+def thing(name, identity):
+    return seq(add_entity(name, WK, "THING", identity, PUB), v3(name))
+
+
+def drop(*names):
+    def f(W):
+        for n in names:
+            del W[n]
+    return f
+
+
+def lit(**kw):
+    return {"literal": kw}
+
+
+ATTR_LEN = {"predicate_id": "x.max_length", "name": "наибольшая длина", "value_type": "QUANTITY", "unit": "m",
+            "cardinality": "ONE", "required": True}
+ATTR_ITIS = {"predicate_id": "x.itis_tsn", "name": "номер ITIS", "value_type": "IDENTIFIER", "scheme": "x.itis",
+             "cardinality": "ONE", "required": False}
+ATTR_RANK = {"predicate_id": "x.rank", "name": "ранг", "value_type": "STRING", "cardinality": "ONE", "required": False}
+ATTR_NOTE = {"predicate_id": "x.note", "name": "заметка", "value_type": "STRING", "cardinality": "MANY", "required": False}
+FMT9 = [{"chars": "DIGIT", "min": 1, "max": 9}]
+WARN0 = ["CONTRADICTION_SINGLE_VALUED"]   # the one warning of the valid world
+
+
+def idef(key, did, scheme="x.zoobank", root="CONCEPT", strength="WEAK", priority=5, fmt=FMT9, **kw):
+    body = dict(scheme=scheme, name="Тип идентификатора вектора", applies_to_root_type=root, strength=strength, priority=priority, **kw)
+    if fmt is not None:
+        body["format"] = fmt
+    return sd(key, "IdentifierDef", did, 1, "ADD_IDENTIFIER", **body)
+
+
+def link(key, did, pred="x.related_to", dom="sdf_taxon", rng="sdf_taxon", **kw):
+    return sd(key, "LinkDef", did, 1, "ADD_LINK", predicate_id=pred, name="связь вектора", domain_class_id=dom,
+              range_class_id=rng, cardinality="MANY", **kw)
+
+
+def _secret_class(W):
+    """an INTERNAL class with an attribute; the skeleton is stated (INTERNAL) to be of it"""
+    cls("sd_secret", "sdf_secret", root="THING", marking=INT, attributes=[ATTR_NOTE])(W)
+    isa("c_isa_secret", "ent_wk_skeleton", "sdf_secret", ("s20", "скелет синего кита"), INT)(W)
+
+
+def _borrower(W):
+    """a tenant attribute on a class of borrowers in the compliance project"""
+    cls("sd_borrower", "sdf_borrower", root="ORGANIZATION", marking=PUB,
+        attributes=[{"predicate_id": "x.tender_note", "name": "заметка о закупке", "value_type": "STRING",
+                     "cardinality": "MANY", "required": False}])(W)
+    isa("c_isa_borrower", "ent_k_developer", "sdf_borrower", ("s7", "Победитель: ООО «Заречье-Девелопмент»"), CONF_CS,
+        "2026-09-26T10:00:00Z", "prj_compliance")(W)
+    xclaim("c_x_tender", "ent_k_developer", "x.tender_note", lit(type="STRING", value="победитель аукциона"),
+           ("s7", "Победитель: ООО «Заречье-Девелопмент»"), CONF_CS, "2026-09-26T10:05:00Z", "prj_compliance")(W)
 
 
 VECTORS += [
-    V("P802", [], "Цикл 9: schema.is_a — валидное утверждение, ClassDef совпадает по root_type (ORGANIZATION)",
-      pre=lambda W: (
-          _add_schema_world(W),
-          # ent_c_developer is an ORGANIZATION; sdf_org_sub.root_type = ORGANIZATION -> valid
-          _isa_claim_world(W, "claim_isa_ok", "ent_c_developer", "sdf_org_sub"),
-      )[1]),
+    # ---------------- versions and the journal entry of each version ----------------
+    V("P900", [], "версия 2 класса: переименование (RENAME_CLASS) — одно допустимое отличие",
+      pre=nextv("sd_taxon", "sd_taxon_v2", "RENAME_CLASS", name="Таксон (группа организмов)")),
+    V("P901", [], "связь выведена из употребления ПОСЛЕ утверждения c43: старое утверждение читается по своей версии схемы",
+      pre=nextv("sd_belongs", "sd_belongs_v2", "DEPRECATE_LINK", at=T_LATE, deprecated=True)),
+    V("P902", [], "атрибут x.max_length удалён версией 3 ПОСЛЕ утверждения c42: утверждение остаётся действительным",
+      pre=nextv("sd_whale_v2", "sd_whale_v3", "REMOVE_ATTRIBUTE", at=T_LATE, attributes=[ATTR_ITIS])),
+    V("P903", [], "CHANGE_ATTRIBUTE: кардинальность атрибута ONE → MANY (тип значения не тронут)",
+      pre=nextv("sd_whale_v2", "sd_whale_v3", "CHANGE_ATTRIBUTE", attributes=[{**ATTR_LEN, "cardinality": "MANY"}, ATTR_ITIS])),
+    V("P904", [], "CHANGE_IDENTIFIER_STRENGTH: сила типа идентификатора tenant STRONG → WEAK",
+      pre=nextv("sd_itis", "sd_itis_v2", "CHANGE_IDENTIFIER_STRENGTH", strength="WEAK")),
+    V("P905", [], "тот же class_id в другом tenant — другая схема (область схемы — tenant)",
+      pre=sd("sd_other", "ClassDef", "sdf_taxon", 1, "ADD_CLASS", tenant="tnt_other", root_type="ORGANIZATION", name="Чужой класс")),
+    V("P906", [], "IdentifierDef для встроенной схемы ru.inn: только порядок (приоритет) у корневого типа, без формата",
+      pre=idef("sd_inn", "sdf_inn_org", scheme="ru.inn", root="ORGANIZATION", strength="STRONG", priority=2, fmt=None)),
+    V("P907", [], "симметричная связь между сущностями одного класса", pre=link("sd_sym", "sdf_sym", symmetric=True)),
+    V("N900", ["DUPLICATE_ID"], "та же версия определения дважды (ключ записи схемы — tenant, id, версия)",
+      pre=lambda W: W.__setitem__("sd_taxon_dup", copy.deepcopy(W["sd_taxon"]))),
+    V("N901", ["SCHEMA_DEF_INVALID"], "версии идут не подряд: есть 1 и 2, добавлена 4 (она в схему не входит: её удаление "
+      "атрибута не действует на c42)",
+      pre=seq(nextv("sd_whale_v2", "sd_whale_v4", "REMOVE_ATTRIBUTE", attributes=[ATTR_ITIS]), sdset("sd_whale_v4", "version", 4))),
+    V("N902", ["TEMPORAL_ORDER_INVALID"], "версия 2 записана раньше версии 1",
+      pre=nextv("sd_taxon", "sd_taxon_v2", "RENAME_CLASS", at="2026-09-02T11:59:30Z", name="Таксон (группа)")),
+    V("N903", ["SCHEMA_CHANGE_INVALID"], "запись журнала не равна отличию: имя изменено, заявлено DEPRECATE_CLASS",
+      pre=nextv("sd_taxon", "sd_taxon_v2", "DEPRECATE_CLASS", name="Таксон (группа)")),
+    V("N904", ["SCHEMA_CHANGE_INVALID"], "два изменения в одной версии: имя и атрибут",
+      pre=nextv("sd_taxon", "sd_taxon_v2", "RENAME_CLASS", name="Таксон (группа)", attributes=[ATTR_RANK])),
+    V("N905", ["SCHEMA_CHANGE_INVALID"], "новая версия меняет маркировку определения (замороженное поле)",
+      pre=nextv("sd_taxon", "sd_taxon_v2", "RENAME_CLASS", marking=INT)),
+    V("N906", ["SCHEMA_CHANGE_INVALID"], "новая версия меняет родителя класса (замороженное поле)",
+      pre=nextv("sd_whale_v2", "sd_whale_v3", "RENAME_CLASS", parent_class_id="sdf_organism")),
+    V("N907", ["SCHEMA_CHANGE_INVALID"], "версия после вывода из употребления",
+      pre=seq(nextv("sd_exhibit", "sd_exhibit_v2", "DEPRECATE_CLASS", at=T_LATE, deprecated=True),
+              nextv("sd_exhibit_v2", "sd_exhibit_v3", "RENAME_CLASS", at="2026-09-04T11:00:00Z", name="Экспонат"))),
+    V("N915", ["TEMPORAL_ORDER_INVALID"], "версия 2 записана в ту же секунду, что версия 1 (порядок версий должен быть строгим)",
+      pre=nextv("sd_taxon", "sd_taxon_v2", "RENAME_CLASS", at="2026-09-02T12:00:00Z", name="Таксон (группа)")),
+    V("N916", ["SCHEMA_CHANGE_INVALID"], "возврат класса в употребление (снятие deprecated) — вывод из употребления окончателен",
+      pre=seq(nextv("sd_exhibit", "sd_exhibit_v2", "DEPRECATE_CLASS", at=T_LATE, deprecated=True),
+              nextv("sd_exhibit_v2", "sd_exhibit_v3", "DEPRECATE_CLASS", at="2026-09-04T11:00:00Z", deprecated=None))),
+    V("N917", ["SCHEMA_CHANGE_INVALID"], "вывод из употребления вместе с переименованием в одной версии",
+      pre=nextv("sd_exhibit", "sd_exhibit_v2", "DEPRECATE_CLASS", at=T_LATE, deprecated=True, name="Экспонат")),
+    V("N918", ["SCHEMA_CHANGE_INVALID"], "смена силы идентификатора вместе со сменой формата",
+      pre=nextv("sd_itis", "sd_itis_v2", "CHANGE_IDENTIFIER_STRENGTH", strength="WEAK", format=[{"chars": "DIGIT", "min": 1, "max": 8}])),
+    V("N919", ["SCHEMA_CHANGE_INVALID"], "CHANGE_ATTRIBUTE меняет два атрибута сразу",
+      pre=nextv("sd_whale_v2", "sd_whale_v3", "CHANGE_ATTRIBUTE",
+                attributes=[{**ATTR_LEN, "name": "длина"}, {**ATTR_ITIS, "name": "ITIS"}])),
+    V("N935", ["SCHEMA_CHANGE_INVALID"], "ADD_ATTRIBUTE: один атрибут добавлен и один удалён",
+      pre=nextv("sd_whale_v2", "sd_whale_v3", "ADD_ATTRIBUTE", at=T_LATE, attributes=[ATTR_LEN, ATTR_RANK])),
+    V("N936", ["SCHEMA_CHANGE_INVALID"], "REMOVE_ATTRIBUTE: один атрибут удалён и один добавлен",
+      pre=nextv("sd_whale_v2", "sd_whale_v3", "REMOVE_ATTRIBUTE", at=T_LATE, attributes=[ATTR_LEN, ATTR_RANK])),
+    V("N937", ["SCHEMA_CHANGE_INVALID"], "CHANGE_ATTRIBUTE: один атрибут изменён и один добавлен",
+      pre=nextv("sd_whale_v2", "sd_whale_v3", "CHANGE_ATTRIBUTE", at=T_LATE,
+                attributes=[{**ATTR_LEN, "name": "длина"}, ATTR_ITIS, ATTR_RANK])),
+    V("P924", [], "записи версий в наборе идут не по порядку версий (версия 2 раньше версии 1) — порядок записей не важен",
+      pre=nextv("sd_taxon", "sd_a_taxon_v2", "RENAME_CLASS", name="Таксон (группа организмов)")),
+    V("N908", ["SCHEMA_CHANGE_INVALID"], "CHANGE_ATTRIBUTE меняет тип значения атрибута (QUANTITY → STRING)",
+      pre=nextv("sd_whale_v2", "sd_whale_v3", "CHANGE_ATTRIBUTE",
+                attributes=[{"predicate_id": "x.max_length", "name": "наибольшая длина", "value_type": "STRING",
+                             "cardinality": "ONE", "required": True}, ATTR_ITIS])),
+    V("N939", ["SCHEMA_CHANGE_INVALID"], "CHANGE_ATTRIBUTE меняет только тип значения (STRING → BOOLEAN; единицы и схемы нет)",
+      pre=seq(nextv("sd_taxon", "sd_taxon_v2", "ADD_ATTRIBUTE", attributes=[ATTR_RANK]),
+              nextv("sd_taxon_v2", "sd_taxon_v3", "CHANGE_ATTRIBUTE", at="2026-09-02T14:00:00Z", attributes=[{**ATTR_RANK, "value_type": "BOOLEAN"}]))),
+    V("N947", ["SCHEMA_CHANGE_INVALID"], "CHANGE_ATTRIBUTE меняет только единицу атрибута (m → t)",
+      pre=nextv("sd_whale_v2", "sd_whale_v3", "CHANGE_ATTRIBUTE", at=T_LATE, attributes=[{**ATTR_LEN, "unit": "t"}, ATTR_ITIS])),
+    V("N948", ["SCHEMA_CHANGE_INVALID"], "CHANGE_ATTRIBUTE меняет только схему идентификатора атрибута (x.itis → ru.inn)",
+      pre=nextv("sd_whale_v2", "sd_whale_v3", "CHANGE_ATTRIBUTE", at=T_LATE, attributes=[ATTR_LEN, {**ATTR_ITIS, "scheme": "ru.inn"}])),
+    V("N909", ["SCHEMA_CHANGE_INVALID"], "первая версия класса с записью журнала ADD_LINK",
+      pre=cls("sd_new", "sdf_new", ctype="ADD_LINK")),
+    V("N910", ["SCHEMA_CHANGE_INVALID"], "версия 2 ничем не отличается от версии 1",
+      pre=nextv("sd_taxon", "sd_taxon_v2", "RENAME_CLASS")),
+    V("N911", ["SCHEMA_CHANGE_INVALID"], "ADD_ATTRIBUTE добавляет два атрибута сразу",
+      pre=nextv("sd_taxon", "sd_taxon_v2", "ADD_ATTRIBUTE", attributes=[ATTR_RANK, ATTR_NOTE])),
+    V("N912", ["SCHEMA_CHANGE_INVALID"], "REMOVE_ATTRIBUTE удаляет два атрибута сразу",
+      pre=nextv("sd_whale_v2", "sd_whale_v3", "REMOVE_ATTRIBUTE", at=T_LATE, attributes=None)),
+    V("N913", ["SCHEMA_CHANGE_INVALID"], "CHANGE_IDENTIFIER_STRENGTH заявлено, а изменён формат (замороженное поле)",
+      pre=nextv("sd_itis", "sd_itis_v2", "CHANGE_IDENTIFIER_STRENGTH", format=[{"chars": "DIGIT", "min": 1, "max": 8}])),
+    V("N914", ["SCHEMA_CHANGE_INVALID"], "новая версия связи меняет класс-диапазон (замороженное поле)",
+      pre=nextv("sd_belongs", "sd_belongs_v2", "RENAME_LINK", range_class_id="sdf_whale_species")),
 
-    V("N830", ["REF_UNRESOLVED"], "schema.is_a: class_id не существует в ClassDef",
-      pre=lambda W: (
-          _add_schema_world(W),
-          _isa_claim_world(W, "claim_isa_noclass", "ent_c_developer", "sdf_nonexistent_class"),
-      )[1]),
+    # ---------------- ClassDef ----------------
+    V("N920", ["REF_UNRESOLVED"], "родителя класса нет в схеме", pre=cls("sd_new", "sdf_new", parent_class_id="sdf_nowhere")),
+    V("N921", ["REF_UNRESOLVED"], "родитель класса есть только в схеме другого tenant (ответ тот же, что «нет»)",
+      pre=seq(sd("sd_foreign", "ClassDef", "sdf_foreign", 1, "ADD_CLASS", tenant="tnt_other", root_type="CONCEPT", name="Чужой"),
+              cls("sd_new", "sdf_new", parent_class_id="sdf_foreign"))),
+    V("N922", ["SCHEMA_DEF_INVALID"], "корневой тип наследника (THING) не равен корневому типу родителя (CONCEPT)",
+      pre=cls("sd_new", "sdf_new", root="THING", parent_class_id="sdf_taxon")),
+    V("N923", ["SCHEMA_DEF_INVALID"], "циклическое наследование A → B → A",
+      pre=seq(cls("sd_a", "sdf_cyc_a", parent_class_id="sdf_cyc_b"), cls("sd_b", "sdf_cyc_b", parent_class_id="sdf_cyc_a"))),
+    V("N924", ["SCHEMA_DEF_INVALID"], "класс — родитель самому себе", pre=cls("sd_a", "sdf_self", parent_class_id="sdf_self")),
+    V("N925", ["TEMPORAL_ORDER_INVALID"], "родитель записан позже наследника",
+      pre=seq(cls("sd_par", "sdf_par", at=T_LATE), cls("sd_new", "sdf_new", parent_class_id="sdf_par"))),
+    V("N926", ["SCHEMA_DEF_INVALID"], "родитель выведен из употребления до создания наследника",
+      pre=seq(cls("sd_par", "sdf_par", at="2026-09-02T12:20:00Z"),
+              nextv("sd_par", "sd_par_v2", "DEPRECATE_CLASS", at="2026-09-02T12:30:00Z", deprecated=True),
+              cls("sd_new", "sdf_new", parent_class_id="sdf_par"))),
+    V("P908", [], "наследник создан ДО вывода родителя из употребления — остаётся действительным",
+      pre=seq(cls("sd_par", "sdf_par", at="2026-09-02T12:20:00Z"), cls("sd_new", "sdf_new", parent_class_id="sdf_par"),
+              nextv("sd_par", "sd_par_v2", "DEPRECATE_CLASS", at=T_LATE, deprecated=True))),
+    V("N927", ["MARKING_BROADER_THAN_INPUT"], "наследник PUBLIC у родителя INTERNAL",
+      pre=seq(cls("sd_par", "sdf_par", at="2026-09-02T12:20:00Z", marking=INT), cls("sd_new", "sdf_new", parent_class_id="sdf_par"))),
+    V("N928", ["SCHEMA_DEF_INVALID"], "атрибут повторяется в одном классе",
+      pre=cls("sd_new", "sdf_new", attributes=[ATTR_RANK, {**ATTR_RANK, "name": "ранг ещё раз"}])),
+    V("N929", ["SCHEMA_DEF_INVALID"], "один предикат определён атрибутами двух классов",
+      pre=cls("sd_new", "sdf_new", attributes=[ATTR_LEN])),
+    V("N930", ["SCHEMA_DEF_INVALID"], "один предикат определён атрибутом класса и связью",
+      pre=link("sd_l", "sdf_lnk", pred="x.max_length")),
+    V("N931", ["REF_UNRESOLVED"], "атрибут-идентификатор с типом идентификатора, которого нет в схеме tenant",
+      pre=cls("sd_new", "sdf_new", attributes=[{**ATTR_ITIS, "predicate_id": "x.other_id", "scheme": "x.nowhere"}])),
+    V("N932", ["IDENTIFIER_SCHEME_INVALID", "REF_UNRESOLVED"], "тип идентификатора определён для другого корневого типа (THING, а класс — CONCEPT)",
+      pre=sdset("sd_itis", "applies_to_root_type", "THING")),
+    V("N933", ["REF_UNRESOLVED"], "тип идентификатора записан позже версии класса, которая на него ссылается",
+      pre=sdtime("sd_itis", "2026-09-02T12:20:00Z")),
+    V("N934", ["REF_UNRESOLVED"], "тип идентификатора выведен из употребления до версии класса, которая на него ссылается",
+      pre=seq(idef("sd_zb", "sdf_zb", at="2026-09-02T12:20:00Z"),
+              nextv("sd_zb", "sd_zb_v2", "DEPRECATE_IDENTIFIER", at="2026-09-02T12:30:00Z", deprecated=True),
+              cls("sd_new", "sdf_new", attributes=[{**ATTR_ITIS, "predicate_id": "x.zb_id", "scheme": "x.zoobank"}]))),
+    V("N938", ["REF_UNRESOLVED"], "тип идентификатора атрибута определён только в схеме другого tenant",
+      pre=seq(sd("sd_fid", "IdentifierDef", "sdf_fid", 1, "ADD_IDENTIFIER", at="2026-09-02T12:20:00Z", tenant="tnt_other",
+                 scheme="x.foreign", name="Чужой тип", applies_to_root_type="CONCEPT", strength="WEAK", priority=3, format=FMT9),
+              cls("sd_new", "sdf_new", attributes=[{**ATTR_ITIS, "predicate_id": "x.other_id", "scheme": "x.foreign"}]))),
+    V("P925", [], "тип идентификатора выведен из употребления ПОСЛЕ атрибута и утверждения; следующая версия класса "
+      "(переименование) атрибут не трогает — всё действительно",
+      pre=seq(nextv("sd_itis", "sd_itis_v2", "DEPRECATE_IDENTIFIER", at=T_LATE, deprecated=True),
+              nextv("sd_whale_v2", "sd_whale_v3", "RENAME_CLASS", at="2026-09-04T11:00:00Z", name="Виды китов"))),
+    V("P909", [], "атрибут-идентификатор встроенной схемы ru.inn: определение tenant не требуется",
+      pre=cls("sd_new", "sdf_new", root="ORGANIZATION",
+              attributes=[{**ATTR_ITIS, "predicate_id": "x.partner_inn", "scheme": "ru.inn"}])),
 
-    V("N831", ["PREDICATE_RANGE_VIOLATION"], "schema.is_a: объект — не CLASS_REF литерал (STRING вместо CLASS_REF)",
-      pre=lambda W: (
-          _add_schema_world(W),
-          W.__setitem__("claim_isa_bad_lit", {
-              "kind": "Claim", "schema_version": _SV9, "project_id": "prj_conflict_land", "predicate": "schema.is_a",
-              "subject": "ent_c_developer",
-              "object": {"literal": {"type": "STRING", "value": "sdf_org_sub"}},
-              "produced_by": {"kind": "HUMAN", "actor_id": "usr_test_admin"},
-              "recorded_at": "2026-10-02T12:00:00Z",
-              "evidence": [{"$ev": ["s2", "Генеральный директор компании Аркадий Ломов"]}],
-              "marking": CONF_PD,
-          }),
-      )[1]),
+    # ---------------- LinkDef ----------------
+    V("N940", ["REF_UNRESOLVED"], "класса-домена связи нет в схеме", pre=link("sd_l", "sdf_lnk", dom="sdf_nowhere")),
+    V("N941", ["REF_UNRESOLVED"], "класса-диапазона связи нет в схеме", pre=link("sd_l", "sdf_lnk", rng="sdf_nowhere")),
+    V("N942", ["REF_UNRESOLVED"], "класс-диапазон связи есть только в схеме другого tenant",
+      pre=seq(sd("sd_foreign", "ClassDef", "sdf_foreign", 1, "ADD_CLASS", tenant="tnt_other", root_type="CONCEPT", name="Чужой"),
+              link("sd_l", "sdf_lnk", rng="sdf_foreign"))),
+    V("N943", ["TEMPORAL_ORDER_INVALID"], "связь записана раньше своего класса", pre=link("sd_l", "sdf_lnk", at="2026-09-02T11:59:30Z")),
+    V("N944", ["SCHEMA_DEF_INVALID"], "класс-домен связи выведен из употребления до её создания",
+      pre=seq(cls("sd_old", "sdf_old", at="2026-09-02T12:20:00Z"),
+              nextv("sd_old", "sd_old_v2", "DEPRECATE_CLASS", at="2026-09-02T12:30:00Z", deprecated=True),
+              link("sd_l", "sdf_lnk", dom="sdf_old"))),
+    V("N945", ["SCHEMA_DEF_INVALID"], "симметричная связь между разными классами",
+      pre=link("sd_l", "sdf_lnk", dom="sdf_whale_species", rng="sdf_taxon", symmetric=True)),
+    V("N946", ["MARKING_BROADER_THAN_INPUT"], "связь PUBLIC на класс INTERNAL",
+      pre=seq(cls("sd_int", "sdf_int", at="2026-09-02T12:20:00Z", marking=INT), link("sd_l", "sdf_lnk", rng="sdf_int"))),
 
-    V("N832", ["PREDICATE_DOMAIN_VIOLATION"],
-      "schema.is_a: entity_type (PERSON) не совпадает с ClassDef.root_type (ORGANIZATION)",
-      pre=lambda W: (
-          _add_schema_world(W),
-          # ent_c_lomov is a PERSON; sdf_org_sub.root_type = ORGANIZATION -> mismatch
-          _isa_claim_world(W, "claim_isa_type_mismatch", "ent_c_lomov", "sdf_org_sub"),
-      )[1]),
+    # ---------------- IdentifierDef ----------------
+    V("N950", ["SCHEMA_DEF_INVALID"], "второе определение той же схемы для того же корневого типа",
+      pre=idef("sd_itis2", "sdf_itis_again", scheme="x.itis", priority=7)),
+    V("P910", [], "та же схема tenant для ДРУГОГО корневого типа — отдельное определение",
+      pre=idef("sd_itis2", "sdf_itis_thing", scheme="x.itis", root="THING", priority=1)),
+    V("P926", [], "та же схема и тот же корневой тип в схеме ДРУГОГО tenant — отдельное определение",
+      pre=sd("sd_fid", "IdentifierDef", "sdf_fid", 1, "ADD_IDENTIFIER", tenant="tnt_other", scheme="x.itis", name="Чужой ITIS",
+             applies_to_root_type="CONCEPT", strength="WEAK", priority=1, format=FMT9)),
+    V("N951", ["SCHEMA_DEF_INVALID"], "приоритет 1 у корневого типа CONCEPT уже занят", pre=idef("sd_zb", "sdf_zb", priority=1)),
+    V("N952", ["SCHEMA_DEF_INVALID"], "формат: min > max", pre=idef("sd_zb", "sdf_zb", fmt=[{"chars": "DIGIT", "min": 5, "max": 4}])),
+    V("N953", ["SCHEMA_DEF_INVALID"], "формат: значение длиннее 64 символов",
+      pre=idef("sd_zb", "sdf_zb", fmt=[{"chars": "DIGIT", "min": 1, "max": 64}, {"lit": "-"}])),
+    V("N954", ["SCHEMA_INVALID"], "схема tenant без формата", pre=idef("sd_zb", "sdf_zb", fmt=None)),
+    V("N955", ["SCHEMA_INVALID"], "встроенная схема ru.inn объявлена слабой",
+      pre=idef("sd_inn", "sdf_inn_org", scheme="ru.inn", root="ORGANIZATION", strength="WEAK", fmt=None)),
+    V("N956", ["SCHEMA_INVALID"], "встроенной схеме ru.inn задан формат (её проверяет ядро)",
+      pre=idef("sd_inn", "sdf_inn_org", scheme="ru.inn", root="ORGANIZATION", strength="STRONG")),
+    V("N957", ["SCHEMA_INVALID"], "формат как регулярное выражение — не принимается (формат — данные, список сегментов)",
+      pre=idef("sd_zb", "sdf_zb", fmt="(a+)+$")),
+    V("N958", ["SCHEMA_INVALID"], "схема вне пространства tenant и не встроенная (telegram)",
+      pre=idef("sd_zb", "sdf_zb", scheme="telegram")),
+
+    # ---------------- schema.is_a ----------------
+    V("N960", ["REF_UNRESOLVED"], "schema.is_a: класса нет в схеме", pre=isa("c_isa", "ent_wk_blue_colour", "sdf_nowhere")),
+    V("N961", ["REF_UNRESOLVED"], "schema.is_a: класс есть только в схеме другого tenant",
+      pre=seq(sd("sd_foreign", "ClassDef", "sdf_foreign", 1, "ADD_CLASS", tenant="tnt_other", root_type="CONCEPT", name="Чужой"),
+              isa("c_isa", "ent_wk_blue_colour", "sdf_foreign"))),
+    V("N962", ["TEMPORAL_ORDER_INVALID"], "schema.is_a записано раньше, чем класс",
+      pre=seq(cls("sd_new", "sdf_new", at=T_LATE), isa("c_isa", "ent_wk_blue_colour", "sdf_new"))),
+    V("N963", ["CLASS_NOT_INSTANTIABLE"], "schema.is_a на абстрактный класс", pre=isa("c_isa", "ent_wk_blue_colour", "sdf_organism")),
+    V("N964", ["CLASS_NOT_INSTANTIABLE"], "schema.is_a на класс, выведенный из употребления до записи утверждения",
+      pre=seq(cls("sd_new", "sdf_new"), nextv("sd_new", "sd_new_v2", "DEPRECATE_CLASS", at="2026-09-02T14:00:00Z", deprecated=True),
+              isa("c_isa", "ent_wk_blue_colour", "sdf_new"))),
+    V("P927", [], "schema.is_a записано в ту же секунду, что и класс («записан к моменту t» включает t)",
+      pre=seq(cls("sd_new", "sdf_new", at="2026-09-03T09:30:00Z"), isa("c_isa", "ent_wk_blue_colour", "sdf_new"))),
+    V("P911", [], "schema.is_a записано ДО вывода класса из употребления — остаётся действительным",
+      pre=seq(cls("sd_new", "sdf_new"), isa("c_isa", "ent_wk_blue_colour", "sdf_new"),
+              nextv("sd_new", "sd_new_v2", "DEPRECATE_CLASS", at=T_LATE, deprecated=True))),
+    V("N965", ["PREDICATE_DOMAIN_VIOLATION"], "schema.is_a: сущность THING, класс с корнем CONCEPT",
+      pre=isa("c_isa", "ent_wk_skeleton", "sdf_taxon", ("s20", "скелет синего кита"))),
+    V("N966", ["MARKING_BROADER_THAN_INPUT"], "schema.is_a PUBLIC на класс INTERNAL",
+      pre=seq(cls("sd_new", "sdf_new", marking=INT), isa("c_isa", "ent_wk_blue_colour", "sdf_new"))),
+    V("N967", ["PREDICATE_RANGE_VIOLATION"], "schema.is_a: объект — строка, а не ссылка на класс",
+      pre=xclaim("c_isa", "ent_wk_blue_colour", "schema.is_a", lit(type="STRING", value="sdf_taxon"))),
+    V("N968", ["SCHEMA_INVALID"], "CLASS_REF с полем tenant_id (класс всегда ищется в tenant проекта)",
+      pre=xclaim("c_isa", "ent_wk_blue_colour", "schema.is_a", lit(type="CLASS_REF", class_id="sdf_taxon", tenant_id="tnt_other"))),
+
+    # ---------------- claims with tenant predicates «x.…»: the claim against the schema of its time ----------------
+    V("N970", ["PREDICATE_UNKNOWN"], "предиката x.… нет в схеме tenant",
+      pre=xclaim("c_x", "ent_wk_blue", "x.nowhere", lit(type="STRING", value="вид"))),
+    V("N971", ["PREDICATE_UNKNOWN"], "атрибут добавлен версией 2 ПОЗЖЕ записи утверждения c44", pre=sdtime("sd_whale_v2", T_LATE)),
+    V("N972", ["PREDICATE_UNKNOWN"], "атрибут x.max_length удалён версией 3 ДО записи утверждения c42",
+      pre=nextv("sd_whale_v2", "sd_whale_v3", "REMOVE_ATTRIBUTE", attributes=[ATTR_ITIS])),
+    V("N973", ["PREDICATE_UNKNOWN"], "связь выведена из употребления ДО записи утверждения c43",
+      pre=nextv("sd_belongs", "sd_belongs_v2", "DEPRECATE_LINK", deprecated=True)),
+    V("N974", ["PREDICATE_UNKNOWN"], "предикат определён только в схеме другого tenant",
+      pre=seq(sd("sd_foreign", "ClassDef", "sdf_foreign", 1, "ADD_CLASS", tenant="tnt_other", root_type="CONCEPT", name="Чужой",
+                 attributes=[ATTR_RANK]),
+              xclaim("c_x", "ent_wk_blue", "x.rank", lit(type="STRING", value="вид")))),
+    V("N975", ["PREDICATE_DOMAIN_VIOLATION"], "атрибут класса «Вид китов» у сущности класса «Таксон» (вверх по дереву не наследуется)",
+      pre=xclaim("c_x", "ent_wk_baleen", "x.max_length", lit(type="QUANTITY", value="30", unit="m"), ("s10", "усатых китов"))),
+    V("P912", [], "атрибут родительского класса у экземпляра наследника (наследование вниз по дереву)",
+      pre=seq(nextv("sd_taxon", "sd_taxon_v2", "ADD_ATTRIBUTE", attributes=[ATTR_RANK]),
+              xclaim("c_x", "ent_wk_blue", "x.rank", lit(type="STRING", value="вид"), ("s10", "вид")))),
+    V("N976", ["PREDICATE_DOMAIN_VIOLATION"], "принадлежность классу записана позже утверждений с его атрибутами",
+      pre=setk("c41", "recorded_at", T_LATE)),
+    V("N987", ["PREDICATE_DOMAIN_VIOLATION"], "принадлежность классу отозвана до записи нового утверждения с атрибутом "
+      "(прежние утверждения, записанные до отзыва, остаются действительными)",
+      pre=seq(add_review("rev_c41_w", "c41", "WITHDRAWN", "2026-09-03T09:35:00Z", "2026-09-03T09:40:00Z"),
+              xclaim("c_x", "ent_wk_blue", "x.max_length", lit(type="QUANTITY", value="30", unit="m"),
+                     ("s10", "Длина синего кита достигает 30 метров"), recorded="2026-09-03T10:00:00Z"))),
+    V("N988", ["PREDICATE_DOMAIN_VIOLATION"], "принадлежность классу опровергнута (REFUTED) до записи нового утверждения с атрибутом",
+      pre=seq(add_review("rev_c41_r", "c41", "REFUTED", "2026-09-03T09:35:00Z", "2026-09-03T09:40:00Z"),
+              xclaim("c_x", "ent_wk_blue", "x.max_length", lit(type="QUANTITY", value="30", unit="m"),
+                     ("s10", "Длина синего кита достигает 30 метров"), recorded="2026-09-03T10:00:00Z"))),
+    V("N989", ["IDENTIFIER_CHECKSUM_INVALID"], "атрибут tenant со встроенной схемой ru.inn: контрольные цифры значения проверяет ядро",
+      pre=seq(nextv("sd_taxon", "sd_taxon_v2", "ADD_ATTRIBUTE", attributes=[{**ATTR_ITIS, "predicate_id": "x.keeper_inn", "scheme": "ru.inn"}]),
+              xclaim("c_x", "ent_wk_blue", "x.keeper_inn", lit(type="IDENTIFIER", scheme="ru.inn", value="1234567890"), ("s10", "вид")))),
+    V("P931", [], "атрибут tenant со встроенной схемой ru.inn: верный ИНН принят",
+      pre=seq(nextv("sd_taxon", "sd_taxon_v2", "ADD_ATTRIBUTE", attributes=[{**ATTR_ITIS, "predicate_id": "x.keeper_inn", "scheme": "ru.inn"}]),
+              xclaim("c_x", "ent_wk_blue", "x.keeper_inn", lit(type="IDENTIFIER", scheme="ru.inn", value=INN_DEV), ("s10", "вид")))),
+    V("P928", [], "принадлежность отозвана и восстановлена (ACCEPTED) до записи нового утверждения — действует последняя рецензия",
+      pre=seq(add_review("rev_c41_w", "c41", "WITHDRAWN", "2026-09-03T09:35:00Z", "2026-09-03T09:40:00Z"),
+              add_review("rev_c41_a", "c41", "ACCEPTED", "2026-09-03T09:45:00Z", "2026-09-03T09:50:00Z"),
+              xclaim("c_x", "ent_wk_blue", "x.max_length", lit(type="QUANTITY", value="30", unit="m"),
+                     ("s10", "Длина синего кита достигает 30 метров"), recorded="2026-09-03T10:00:00Z"))),
+    V("P929", [], "принадлежность отозвана ПОСЛЕ утверждений с атрибутами — они остаются; отозванная принадлежность не требует "
+      "обязательных атрибутов (предупреждения нет)",
+      pre=seq(drop("c42"), add_review("rev_c41_w", "c41", "WITHDRAWN", "2026-09-10T10:00:00Z", "2026-09-10T10:05:00Z")), warn=WARN0),
+    V("N977", ["PREDICATE_RANGE_VIOLATION"], "значение атрибута не того типа (STRING вместо QUANTITY)",
+      pre=setk("c42", "object", lit(type="STRING", value="тридцать метров"))),
+    V("N986", ["PREDICATE_RANGE_VIOLATION"], "значение строкового атрибута — целое число",
+      pre=seq(nextv("sd_taxon", "sd_taxon_v2", "ADD_ATTRIBUTE", attributes=[ATTR_RANK]),
+              xclaim("c_x", "ent_wk_blue", "x.rank", lit(type="INTEGER", value=7), ("s10", "вид")))),
+    V("N978", ["PREDICATE_RANGE_VIOLATION"], "значение атрибута не в той единице (t вместо m)",
+      pre=setk("c42", "object", lit(type="QUANTITY", value="30", unit="t"))),
+    V("N979", ["PREDICATE_RANGE_VIOLATION"], "объект атрибута — сущность",
+      pre=setk("c42", "object", {"entity": "ent_wk_baleen"})),
+    V("N980", ["PREDICATE_RANGE_VIOLATION"], "идентификатор не той схемы, что объявлена у атрибута",
+      pre=setk("c44", "object", lit(type="IDENTIFIER", scheme="telegram", value="180528"))),
+    V("N981", ["PREDICATE_RANGE_VIOLATION"], "объект связи — литерал", pre=setk("c43", "object", lit(type="STRING", value="усатые киты"))),
+    V("N982", ["PREDICATE_RANGE_VIOLATION"], "объект связи не является экземпляром класса-диапазона",
+      pre=setk("c43", "object", {"entity": "ent_wk_blue_colour"})),
+    V("N983", ["QUALIFIER_INVALID"], "у предиката схемы tenant квалификатор", pre=setq("c42", "property", "max_length")),
+    V("N984", ["MARKING_BROADER_THAN_INPUT"], "утверждение PUBLIC с атрибутом класса INTERNAL",
+      pre=seq(_secret_class, xclaim("c_x", "ent_wk_skeleton", "x.note", lit(type="STRING", value="скелет"), ("s20", "скелет синего кита")))),
+    V("P913", [], "утверждение INTERNAL с атрибутом класса INTERNAL",
+      pre=seq(_secret_class, xclaim("c_x", "ent_wk_skeleton", "x.note", lit(type="STRING", value="скелет"),
+                                    ("s20", "скелет синего кита"), INT))),
+    V("P914", [], "два разных значения атрибута с кардинальностью ONE — предупреждение о расхождении источников",
+      pre=xclaim("c_x", "ent_wk_blue", "x.max_length", lit(type="QUANTITY", value="33", unit="m"),
+                 ("s10", "Длина синего кита достигает 30 метров")), warn=WARN0 * 2),
+    V("N985", ["CHECK_CLAIM_DIMENSION_MISMATCH"], "утверждение с предикатом схемы tenant в измерении Проверки (у таких предикатов нет измерений риска)",
+      pre=seq(_borrower, add_finding("chk_tenders_1", finding("TENDERS", "FOUND", "LOW", ["c_x_tender"])))),
+    V("P915", [], "мир с атрибутом tenant в проекте проверок без ссылки из Проверки", pre=_borrower),
+
+    # ---------------- required attributes (warning) ----------------
+    V("P916", [], "у экземпляра класса нет обязательного атрибута — предупреждение",
+      pre=drop("c42"), warn=WARN0 + ["REQUIRED_ATTRIBUTE_MISSING"]),
+    V("P917", [], "обязательный атрибут есть, но утверждение отозвано — предупреждение",
+      pre=add_review("rev_c42_w", "c42", "WITHDRAWN", "2026-09-10T10:00:00Z", "2026-09-10T10:05:00Z"),
+      warn=WARN0 + ["REQUIRED_ATTRIBUTE_MISSING"]),
+    V("P918", [], "обязательный атрибут родителя не заполнен у экземпляров родителя и наследника — два предупреждения",
+      pre=nextv("sd_taxon", "sd_taxon_v2", "ADD_ATTRIBUTE", attributes=[{**ATTR_RANK, "required": True}]),
+      warn=WARN0 + ["REQUIRED_ATTRIBUTE_MISSING"] * 2),
+    V("P919", [], "обязательный атрибут удалён последней версией класса — предупреждения нет",
+      pre=seq(drop("c42"), nextv("sd_whale_v2", "sd_whale_v3", "REMOVE_ATTRIBUTE", at=T_LATE, attributes=[ATTR_ITIS])), warn=WARN0),
+
+    # ---------------- identifier literals of tenant schemes ----------------
+    V("N990", ["IDENTIFIER_SCHEME_INVALID"], "значение не в формате схемы tenant (буква среди цифр)",
+      pre=setk("c44", "object", lit(type="IDENTIFIER", scheme="x.itis", value="18O528"))),
+    V("N991", ["IDENTIFIER_SCHEME_INVALID"], "значение длиннее формата (10 цифр при максимуме 9)",
+      pre=setk("c44", "object", lit(type="IDENTIFIER", scheme="x.itis", value="1805281234"))),
+    V("N992", ["IDENTIFIER_SCHEME_INVALID"], "значение с пробелом в конце (формат — полное совпадение)",
+      pre=setk("c44", "object", lit(type="IDENTIFIER", scheme="x.itis", value="180528 "))),
+    V("N993", ["IDENTIFIER_SCHEME_INVALID"], "тип идентификатора выведен из употребления до записи утверждения",
+      pre=nextv("sd_itis", "sd_itis_v2", "DEPRECATE_IDENTIFIER", deprecated=True)),
+    V("P920", [], "формат с литералом: «ZB-» + 6 знаков",
+      pre=seq(idef("sd_zb", "sdf_zb", at="2026-09-02T12:20:00Z",
+                   fmt=[{"lit": "Z"}, {"lit": "B"}, {"lit": "-"}, {"chars": "ALNUM_UPPER", "min": 6, "max": 6}]),
+              nextv("sd_taxon", "sd_taxon_v2", "ADD_ATTRIBUTE", at="2026-09-02T12:30:00Z",
+                    attributes=[{**ATTR_ITIS, "predicate_id": "x.zb_id", "scheme": "x.zoobank"}]),
+              xclaim("c_x", "ent_wk_blue", "x.zb_id", lit(type="IDENTIFIER", scheme="x.zoobank", value="ZB-A1B2C3")))),
+    V("N994", ["IDENTIFIER_SCHEME_INVALID"], "литерал формата не совпал («ZB.» вместо «ZB-»: точка не «любой символ»)",
+      pre=seq(idef("sd_zb", "sdf_zb", at="2026-09-02T12:20:00Z",
+                   fmt=[{"lit": "Z"}, {"lit": "B"}, {"lit": "."}, {"chars": "ALNUM_UPPER", "min": 6, "max": 6}]),
+              nextv("sd_taxon", "sd_taxon_v2", "ADD_ATTRIBUTE", at="2026-09-02T12:30:00Z",
+                    attributes=[{**ATTR_ITIS, "predicate_id": "x.zb_id", "scheme": "x.zoobank"}]),
+              xclaim("c_x", "ent_wk_blue", "x.zb_id", lit(type="IDENTIFIER", scheme="x.zoobank", value="ZB-A1B2C3")))),
+
+    # ---------------- record versions: 0.2 records stay valid, 0.3 vocabulary needs a 0.3 record ----------------
+    V("P930", [], "записи прежних девяти видов в мире помечены core-ontology/0.2 (их производителям и адресам менять нечего); "
+      "та же запись с пометкой core-ontology/0.3 тоже действительна",
+      post=lambda d, ix, e: rec(d, ix, "ent_ts_pump").__setitem__("schema_version", "core-ontology/0.3")),
+    V("N996", ["SCHEMA_INVALID"], "сущность THING в записи, помеченной core-ontology/0.2",
+      post=lambda d, ix, e: rec(d, ix, "ent_wk_skeleton").__setitem__("schema_version", "core-ontology/0.2")),
+    V("N997", ["SCHEMA_INVALID"], "schema.is_a в записи, помеченной core-ontology/0.2",
+      pre=lambda W: W["c41"].__setitem__("schema_version", "core-ontology/0.2")),
+    V("N998", ["SCHEMA_INVALID"], "утверждение с предикатом tenant в записи, помеченной core-ontology/0.2",
+      pre=lambda W: W["c42"].__setitem__("schema_version", "core-ontology/0.2")),
+    V("N999", ["SCHEMA_INVALID"], "определение класса с пометкой core-ontology/0.2",
+      pre=lambda W: W["sd_taxon"].__setitem__("schema_version", "core-ontology/0.2")),
+
+    # ---------------- THING (the tenth root type) ----------------
+    V("N995", ["ENTITY_DUPLICATE_IN_PROJECT"], "вторая вещь с тем же названием в том же пространстве имён",
+      pre=thing("ent_wk_skeleton2", {"label": "скелет  синего кита", "lang": "ru", "namespace": "museum"})),
+    V("P921", [], "одноимённые вещи с разными пометками — разные сущности",
+      pre=seq(setid("ent_wk_skeleton", "disambiguator", "zoo-museum"),
+              thing("ent_wk_skeleton2", {"label": "Скелет синего кита", "lang": "ru", "namespace": "museum",
+                                                           "disambiguator": "city-museum"}))),
+    V("P922", [], "решение аналитика уточняет вещь пометкой (как понятие)",
+      pre=_qualify("idd_skeleton", WK, "ent_wk_skeleton", disambiguator="zoo-museum")),
+    V("P923", [], "вещи, совпадающие только по скелету (латинская «c»), — предупреждение, не ошибка",
+      pre=thing("ent_wk_skeleton2", {"label": "Cкелет синего кита", "lang": "ru", "namespace": "museum"}),
+      warn=["POSSIBLE_DUPLICATE"] + WARN0),
 ]

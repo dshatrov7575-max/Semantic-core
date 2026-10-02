@@ -1,7 +1,8 @@
 """Reference validator for core-ontology/0.3 (Архитектура семантики).
 
 Inputs (all three are separate on purpose):
-  dataset  - records (Project, Source, Entity, Claim, ClaimReview, Check, ArtifactReceipt, IdentityDecision, Publication);
+  dataset  - records (Project, Source, Entity, Claim, ClaimReview, Check, ArtifactReceipt, IdentityDecision, Publication,
+             and the tenant's schema-as-data: ClassDef, LinkDef, IdentifierDef — D27.1);
   trust    - trust anchors (service keys per tenant), configuration OUTSIDE the data they authenticate;
   content  - object store: source bytes by source_id (Source.content_inline is accepted as well) and the bytes of
              producer artifacts by artifact_digest ("sha256:<hex>"); a receipt is checked against its artifact (RR-07).
@@ -103,9 +104,11 @@ ERROR_CODES = [
     "CHECK_SEARCH_MISSING", "CHECK_CLAIM_NOT_ABOUT_SUBJECT", "CHECK_CLAIM_DIMENSION_MISMATCH",
     "CHECK_CLAIM_NOT_ACCEPTED_AT_COMPLETION", "CHECK_PREVIOUS_INVALID",
     "RECEIPT_KEY_INVALID", "RECEIPT_SIGNATURE_INVALID", "RECEIPT_CLAIM_BINDING_INVALID",
-    "IDENTITY_DECISION_INVALID", "ARTIFACT_INVALID", "GRAPH_NODE_INVALID", "PUBLICATION_INVALID", "ORIGINAL_INVALID", "VALIDATOR_INTERNAL_ERROR",
+    "IDENTITY_DECISION_INVALID", "ARTIFACT_INVALID", "GRAPH_NODE_INVALID", "PUBLICATION_INVALID", "ORIGINAL_INVALID",
+    "SCHEMA_DEF_INVALID", "SCHEMA_CHANGE_INVALID", "CLASS_NOT_INSTANTIABLE", "IDENTIFIER_SCHEME_INVALID",
+    "VALIDATOR_INTERNAL_ERROR",
 ]
-WARNING_CODES = ["CONTRADICTION_SINGLE_VALUED", "POSSIBLE_DUPLICATE"]
+WARNING_CODES = ["CONTRADICTION_SINGLE_VALUED", "POSSIBLE_DUPLICATE", "REQUIRED_ATTRIBUTE_MISSING"]
 
 FREE_TEXT_KEYS = {"content_inline", "quote", "note"}
 MAX_SAFE = 2**53 - 1
@@ -115,8 +118,8 @@ RISK = {"NONE": 0, "LOW": 1, "MEDIUM": 2, "HIGH": 3}
 ID_FIELD = {"Project": "project_id", "Source": "source_id", "Entity": "entity_id", "Claim": "claim_id",
             "ClaimReview": "review_id", "Check": "check_id", "ArtifactReceipt": "receipt_id",
             "IdentityDecision": "decision_id", "Publication": "publication_id",
-            "ClassDef": "class_id", "LinkDef": "link_id", "IdentifierDef": "idef_id",
-            "SchemaChange": "change_id"}
+            "ClassDef": "class_id", "LinkDef": "link_id", "IdentifierDef": "idef_id"}
+SCHEMA_KINDS = ("ClassDef", "LinkDef", "IdentifierDef")   # versioned: the key is (tenant_id, id, version)
 
 
 class Report:
@@ -493,6 +496,52 @@ CHECKSUMS = {"ru.inn": lambda v: inn_any_ok(v), "ru.ogrn": lambda v: ogrn_ok(v),
              "ru.ogrnip": lambda v: ogrnip_ok(v), "imo": lambda v: imo_ok(v)}
 
 
+# ---------- schema as data (D27.1) ----------
+assert not any(p["id"].startswith("x.") for p in PREDICATES["predicates"])   # «x.» is the tenants' namespace
+_FIRST_CHANGE = {"ClassDef": "ADD_CLASS", "LinkDef": "ADD_LINK", "IdentifierDef": "ADD_IDENTIFIER"}
+_ATTR_FROZEN = ("value_type", "unit", "scheme")
+_FORMAT_CLASS = {"DIGIT": "[0-9]", "UPPER": "[A-Z]", "LOWER": "[a-z]", "ALNUM": "[A-Za-z0-9]", "ALNUM_UPPER": "[A-Z0-9]"}
+
+
+def schema_change_of(kind, prev, cur):
+    """The ONE change a version makes to the previous one, derived from the difference (never taken on the writer's
+    word); None — the difference is not exactly one allowed change (frozen field touched, several changes, a version
+    after «deprecated», no change at all)."""
+    if prev is None:
+        return _FIRST_CHANGE[kind]
+    if prev.get("deprecated"):
+        return None
+    a = {k: v for k, v in prev.items() if k not in ("version", "change")}
+    b = {k: v for k, v in cur.items() if k not in ("version", "change")}
+    changed = {k for k in a.keys() | b.keys() if a.get(k) != b.get(k)}
+    suffix = {"ClassDef": "CLASS", "LinkDef": "LINK", "IdentifierDef": "IDENTIFIER"}[kind]
+    if changed == {"name"}:
+        return "RENAME_" + suffix
+    if changed == {"deprecated"}:
+        return "DEPRECATE_" + suffix
+    if kind == "IdentifierDef" and changed == {"strength"}:
+        return "CHANGE_IDENTIFIER_STRENGTH"
+    if kind == "ClassDef" and changed == {"attributes"}:
+        pa = {x["predicate_id"]: x for x in prev.get("attributes", [])}
+        ca = {x["predicate_id"]: x for x in cur.get("attributes", [])}
+        added, removed = ca.keys() - pa.keys(), pa.keys() - ca.keys()
+        diff = [k for k in pa.keys() & ca.keys() if pa[k] != ca[k]]
+        if len(added) == 1 and not removed and not diff:
+            return "ADD_ATTRIBUTE"
+        if len(removed) == 1 and not added and not diff:
+            return "REMOVE_ATTRIBUTE"
+        if len(diff) == 1 and not added and not removed and all(pa[diff[0]].get(f) == ca[diff[0]].get(f) for f in _ATTR_FROZEN):
+            return "CHANGE_ATTRIBUTE"
+    return None
+
+
+def format_regex(fmt):
+    """IdentifierDef.format (a list of segments — data, not a regular expression) -> anchored regex; the same
+    translation is done by the database (ac.format_regex), so both sides match the same strings by construction."""
+    return "".join(_FORMAT_CLASS[x["chars"]] + "{%d,%d}" % (x["min"], x["max"]) if "chars" in x else re.escape(x["lit"])
+                   for x in fmt)
+
+
 # ---------- helpers ----------
 
 def dominates(a, b):
@@ -570,17 +619,172 @@ def _semantic(ds, keys, content, R):
     for n, r in enumerate(ds["records"]):
         k = r["kind"]
         rid = r[ID_FIELD[k]]
+        if k in SCHEMA_KINDS:                       # the scope of the schema is the tenant; a definition has versions
+            rid = (r["tenant_id"], rid, r["version"])
         if rid in by[k]:
             R.err("DUPLICATE_ID", f"records[{n}]", f"{k} {rid} повторяется")
             continue
         by[k][rid] = r
     P, S, E, C, V, Kc, A = (by[x] for x in ("Project", "Source", "Entity", "Claim", "ClaimReview", "Check", "ArtifactReceipt"))
-    CD, LD, IDD, SCX = (by[x] for x in ("ClassDef", "LinkDef", "IdentifierDef", "SchemaChange"))
     preds = {p["id"]: p for p in PREDICATES["predicates"]}
     profiles = PREDICATES["check_profiles"]
 
     def tenant_of(project_id):
         return P[project_id]["tenant_id"] if project_id in P else None
+
+    # ---- schema as data (D27.1): ClassDef / LinkDef / IdentifierDef. A definition is a chain of versions 1..n of
+    # (tenant, id); every version carries its own journal entry `change` (who, when, what) — a definition without a
+    # journal entry cannot be written. The time of a version is change.recorded_at; «the schema at moment t» is the
+    # last version recorded by t.
+    chains = {k: defaultdict(list) for k in SCHEMA_KINDS}
+    for k in SCHEMA_KINDS:
+        for (tn, did, ver), r in by[k].items():
+            chains[k][(tn, did)].append(r)
+    for k in SCHEMA_KINDS:
+        for key, lst in chains[k].items():
+            lst.sort(key=lambda r: r["version"])
+            ref = f"{k} {key[0]}/{key[1]}"
+            if [r["version"] for r in lst] != list(range(1, len(lst) + 1)):
+                R.err("SCHEMA_DEF_INVALID", ref, "версии определения идут не подряд с 1")
+                del lst[next((n for n, r in enumerate(lst) if r["version"] != n + 1), len(lst)):]
+            prev = None
+            for r in lst:
+                if prev is not None and r["change"]["recorded_at"] <= prev["change"]["recorded_at"]:
+                    R.err("TEMPORAL_ORDER_INVALID", ref, f"версия {r['version']} записана не позже предыдущей")
+                if schema_change_of(k, prev, r) != r["change"]["type"]:
+                    R.err("SCHEMA_CHANGE_INVALID", ref, f"версия {r['version']}: запись журнала «{r['change']['type']}» не равна "
+                                                      "единственному допустимому отличию от предыдущей версии")
+                    del lst[r["version"] - 1:]      # a version that is not a lawful change is not part of the schema
+                    break
+                prev = r
+    CLS, LNK, IDF = (chains[k] for k in SCHEMA_KINDS)
+
+    def at(lst, t):
+        """the version of a definition in force at moment t (None = the latest)"""
+        ok = [r for r in lst if t is None or r["change"]["recorded_at"] <= t]
+        return ok[-1] if ok else None
+
+    def class_at(ref, tn, class_id, t, what):
+        """a class another record refers to must exist in the SAME tenant (a class of another tenant is simply not
+        there), be recorded by t and not be deprecated at t"""
+        lst = CLS.get((tn, class_id))
+        if not lst:
+            R.err("REF_UNRESOLVED", ref, f"{what}: класса {class_id} нет в схеме tenant")
+            return None
+        v = at(lst, t)
+        if v is None:
+            R.err("TEMPORAL_ORDER_INVALID", ref, f"{what}: класс {class_id} записан позже ссылки на него")
+        return v
+
+    def ancestors(tn, class_id):
+        """class_id and every class above it (the parent is frozen: version 1 decides)"""
+        out = []
+        while (tn, class_id) in CLS and CLS[(tn, class_id)] and class_id not in out:
+            out.append(class_id)
+            class_id = CLS[(tn, class_id)][0].get("parent_class_id")
+        return out
+
+    # tenant predicates «x.…»: a predicate has exactly ONE definer in its tenant (an attribute of one class or one
+    # link) — the one that declared it first; a later definition of the same predicate elsewhere is an error
+    declared = defaultdict(dict)                    # (tenant, predicate) -> {(kind, id): time of first declaration}
+    for (tn, did), lst in CLS.items():
+        for r in lst:
+            for a in r.get("attributes", []):
+                declared[(tn, a["predicate_id"])].setdefault(("ClassDef", did), r["change"]["recorded_at"])
+    for (tn, did), lst in LNK.items():
+        if lst:
+            declared[(tn, lst[0]["predicate_id"])][("LinkDef", did)] = lst[0]["change"]["recorded_at"]
+    definer = {}
+    for key, who in declared.items():
+        first = min(who, key=lambda d: (who[d], d))
+        definer[key] = first
+        for kind, did in sorted(who):
+            if (kind, did) != first:
+                R.err("SCHEMA_DEF_INVALID", f"{kind} {key[0]}/{did}", f"предикат {key[1]} уже определён в {first[1]}")
+
+    def idef_at(tn, scheme, root_type, t):
+        """the identifier definition of a tenant scheme for a root type in force at t (not deprecated)"""
+        for (tn2, _), lst in IDF.items():
+            if tn2 == tn and lst and lst[0]["scheme"] == scheme and lst[0]["applies_to_root_type"] == root_type:
+                v = at(lst, t)
+                if v is not None and not v.get("deprecated"):
+                    return v
+        return None
+
+    for (tn, did), lst in CLS.items():
+        if not lst:
+            continue
+        first, ref = lst[0], f"ClassDef {tn}/{did}"
+        t1 = first["change"]["recorded_at"]
+        if "parent_class_id" in first:
+            if did in ancestors(tn, first["parent_class_id"]):
+                R.err("SCHEMA_DEF_INVALID", ref, "циклическое наследование классов")
+            else:
+                par = class_at(ref, tn, first["parent_class_id"], t1, "родитель")
+                if par is not None:
+                    if par["root_type"] != first["root_type"]:
+                        R.err("SCHEMA_DEF_INVALID", ref, "корневой тип наследника не равен корневому типу родителя")
+                    if par.get("deprecated"):
+                        R.err("SCHEMA_DEF_INVALID", ref, "родитель выведен из употребления")
+                    if not dominates(first["marking"], par["marking"]):
+                        R.err("MARKING_BROADER_THAN_INPUT", ref, "маркировка наследника шире маркировки родителя")
+        prev = {}
+        for r in lst:
+            attrs = r.get("attributes", [])
+            if len({a["predicate_id"] for a in attrs}) != len(attrs):
+                R.err("SCHEMA_DEF_INVALID", ref, f"версия {r['version']}: атрибут повторяется")
+            for a in attrs:
+                if a != prev.get(a["predicate_id"]) and a["value_type"] == "IDENTIFIER" and a["scheme"] not in CHECKSUMS \
+                        and idef_at(tn, a["scheme"], r["root_type"], r["change"]["recorded_at"]) is None:
+                    R.err("REF_UNRESOLVED", ref, f"атрибут {a['predicate_id']}: тип идентификатора {a['scheme']} не определён "
+                                                 "в схеме tenant для этого корневого типа")
+            prev = {a["predicate_id"]: a for a in attrs}
+
+    for (tn, did), lst in LNK.items():
+        if not lst:
+            continue
+        first, ref = lst[0], f"LinkDef {tn}/{did}"
+        for f in ("domain_class_id", "range_class_id"):
+            cl = class_at(ref, tn, first[f], first["change"]["recorded_at"], f)
+            if cl is not None:
+                if cl.get("deprecated"):
+                    R.err("SCHEMA_DEF_INVALID", ref, f"{f}: класс выведен из употребления")
+                if not dominates(first["marking"], cl["marking"]):
+                    R.err("MARKING_BROADER_THAN_INPUT", ref, f"маркировка связи шире маркировки класса {f}")
+        if first.get("symmetric") and first["domain_class_id"] != first["range_class_id"]:
+            R.err("SCHEMA_DEF_INVALID", ref, "симметричная связь — только между сущностями одного класса")
+
+    seen_scheme, seen_prio = {}, {}
+    for (tn, did), lst in sorted(IDF.items()):
+        if not lst:
+            continue
+        first, ref = lst[0], f"IdentifierDef {tn}/{did}"
+        k1 = (tn, first["scheme"], first["applies_to_root_type"])
+        if seen_scheme.setdefault(k1, did) != did:
+            R.err("SCHEMA_DEF_INVALID", ref, f"тип идентификатора {first['scheme']} для {first['applies_to_root_type']} уже определён")
+        k2 = (tn, first["applies_to_root_type"], first["priority"])
+        if seen_prio.setdefault(k2, did) != did:
+            R.err("SCHEMA_DEF_INVALID", ref, f"приоритет {first['priority']} для {first['applies_to_root_type']} уже занят")
+        if "format" in first and (any(x["min"] > x["max"] for x in first["format"] if "chars" in x)
+                                  or sum(x.get("max", 1) for x in first["format"]) > 64):
+            R.err("SCHEMA_DEF_INVALID", ref, "формат: min > max или длина значения больше 64")
+
+    def x_predicate(tn, pid, t):
+        """the definition of a tenant predicate in force at t: None, or a registry-like spec"""
+        if (tn, pid) not in definer:
+            return None
+        kind, did = definer[(tn, pid)]
+        if kind == "LinkDef":
+            v = at(LNK[(tn, did)], t)
+            if v is None or v.get("deprecated"):
+                return None
+            return {"link": v, "class_id": v["domain_class_id"], "cardinality": v["cardinality"], "marking": v["marking"],
+                    "dimensions": [], "id": pid}
+        v = at(CLS[(tn, did)], t)
+        a = next((a for a in (v or {}).get("attributes", []) if a["predicate_id"] == pid), None)
+        if a is None:
+            return None
+        return {"attr": a, "class_id": did, "cardinality": a["cardinality"], "marking": v["marking"], "dimensions": [], "id": pid}
 
     # ---- sources: bytes and content addressing
     source_bytes, bad_sources = {}, set()
@@ -690,7 +894,7 @@ def _semantic(ds, keys, content, R):
         e, eid = ents[0], ids[0]
         t, idn = e["entity_type"], e["identity"]
         field = "place" if t in ("EVENT", "CONFLICT") else "disambiguator"
-        fits = (t in ("EVENT", "CONFLICT", "CONCEPT") or (t == "PERSON" and "birth_date" in idn)) and field in d
+        fits = (t in ("EVENT", "CONFLICT", "CONCEPT", "THING") or (t == "PERSON" and "birth_date" in idn)) and field in d
         merged_before = e["status"] == "MERGED" and e["status_changed_at"] <= d["decided_at"]
         if not fits or field in idn or merged_before or eid in qualify:
             R.err("IDENTITY_DECISION_INVALID", did, f"{eid}: уточнение допустимо один раз, только недостающего {field} "
@@ -749,6 +953,28 @@ def _semantic(ds, keys, content, R):
             R.warn("POSSIBLE_DUPLICATE", ",".join(sorted(set().union(*open_pairs))),
                    f"{prj}: {x[0]} совпадает по скелету — нужно решение аналитика (IdentityDecision)")
 
+    # ---- class membership (schema.is_a): (project, entity) -> [(recorded_at, class_id)]; membership is a claim like
+    # any other — with evidence and time; the entity type stays the immutable root
+    member = defaultdict(list)
+    for cid, c in C.items():
+        lit = c["object"].get("literal")
+        if c["predicate"] == "schema.is_a" and lit and lit["type"] == "CLASS_REF":
+            member[(c["project_id"], c["subject"])].append((c["recorded_at"], lit["class_id"], cid))
+    rv_idx = defaultdict(list)
+    for rv in V.values():
+        rv_idx[rv["claim_id"]].append((rv["recorded_at"], rv["status"]))
+
+    def stands(cid, t):
+        """the claim was not refuted or withdrawn by moment t (by the system time of its reviews)"""
+        lst = [x for x in rv_idx.get(cid, ()) if x[0] <= t]
+        return not lst or max(lst)[1] not in ("REFUTED", "WITHDRAWN")
+
+    def instance_of(tn, prj, eid, class_id, t):
+        """eid was stated (by t) to be of class_id or of a class below it, and that statement stands at t"""
+        return any(rt <= t and stands(icid, t) and class_id in ancestors(tn, k) for rt, k, icid in member.get((prj, eid), ()))
+
+    xpred_of = {}   # claim_id -> the tenant predicate definition it was checked against
+
     # ---- claims
     for cid, c in C.items():
         if claim_digest_id(c) != cid:
@@ -771,9 +997,55 @@ def _semantic(ds, keys, content, R):
                 R.err("CROSS_SCOPE_REFERENCE", cid, "объект из другого проекта")
                 obj_ent = None
         p = preds.get(c["predicate"])
-        if p is None:
+        tn, t_rec = tenant_of(c["project_id"]), c["recorded_at"]
+        lit = c["object"].get("literal")
+        if lit is not None and lit["type"] == "IDENTIFIER" and lit["scheme"] in CHECKSUMS:
+            # built-in schemes are checked by the core whatever the predicate — a registry one or an attribute of the tenant
+            if not (_ascii_digits(lit["value"]) and CHECKSUMS[lit["scheme"]](lit["value"])):
+                R.err("IDENTIFIER_CHECKSUM_INVALID", cid, f"{lit['scheme']}: контрольные цифры литерала")
+        if lit is not None and lit["type"] == "IDENTIFIER" and lit["scheme"].startswith("x.") and subj is not None:
+            # a tenant identifier scheme: defined for the subject's root type at the time of the claim, value in its format
+            idf = idef_at(tn, lit["scheme"], subj["entity_type"], t_rec)
+            if idf is None:
+                R.err("IDENTIFIER_SCHEME_INVALID", cid, f"тип идентификатора {lit['scheme']} не определён для {subj['entity_type']}")
+            elif not re.fullmatch(format_regex(idf["format"]), lit["value"]):
+                R.err("IDENTIFIER_SCHEME_INVALID", cid, f"значение не в формате {lit['scheme']}")
+        if p is None and c["predicate"].startswith("x."):
+            # ---- the claim against the schema of ITS time (D27.1): an attribute of a class or a link between classes
+            xp = x_predicate(tn, c["predicate"], t_rec)
+            if xp is None:
+                R.err("PREDICATE_UNKNOWN", cid, f"{c['predicate']}: в схеме tenant на момент записи такого предиката нет")
+            else:
+                xpred_of[cid] = xp
+                if subj is not None and not instance_of(tn, c["project_id"], subj["entity_id"], xp["class_id"], t_rec):
+                    R.err("PREDICATE_DOMAIN_VIOLATION", cid, f"субъект не является экземпляром класса {xp['class_id']}")
+                if "attr" in xp:
+                    a = xp["attr"]
+                    if (lit is None or lit["type"] != a["value_type"] or lit.get("unit") != a.get("unit")
+                            or (lit["type"] == "IDENTIFIER" and lit["scheme"] != a["scheme"])):
+                        R.err("PREDICATE_RANGE_VIOLATION", cid, "значение не того типа, единицы или схемы, что объявлены у атрибута")
+                else:
+                    rng_class = xp["link"]["range_class_id"]
+                    if lit is not None or (obj_ent is not None
+                                           and not instance_of(tn, c["project_id"], obj_ent["entity_id"], rng_class, t_rec)):
+                        R.err("PREDICATE_RANGE_VIOLATION", cid, f"объект не является экземпляром класса {rng_class}")
+                if c.get("qualifiers"):
+                    R.err("QUALIFIER_INVALID", cid, "у предикатов схемы tenant нет квалификаторов")
+                if not dominates(c["marking"], xp["marking"]):
+                    R.err("MARKING_BROADER_THAN_INPUT", cid, "маркировка утверждения шире маркировки определения в схеме")
+        elif p is None:
             R.err("PREDICATE_UNKNOWN", cid, c["predicate"])
         else:
+            if c["predicate"] == "schema.is_a" and lit is not None and lit["type"] == "CLASS_REF":
+                cl = class_at(cid, tn, lit["class_id"], t_rec, "schema.is_a")
+                if cl is not None:
+                    if cl.get("is_abstract") or cl.get("deprecated"):
+                        R.err("CLASS_NOT_INSTANTIABLE", cid, f"класс {lit['class_id']} абстрактный или выведен из употребления")
+                    if subj is not None and subj["entity_type"] != cl["root_type"]:
+                        R.err("PREDICATE_DOMAIN_VIOLATION", cid, f"тип сущности {subj['entity_type']} не равен корневому типу "
+                                                                 f"класса {cl['root_type']}")
+                    if not dominates(c["marking"], cl["marking"]):
+                        R.err("MARKING_BROADER_THAN_INPUT", cid, "маркировка утверждения шире маркировки класса")
             if subj is not None and subj["entity_type"] not in p["domain"]:
                 R.err("PREDICATE_DOMAIN_VIOLATION", cid, f"{subj['entity_type']} не в domain {c['predicate']}")
             rng = p["range"]
@@ -786,10 +1058,6 @@ def _semantic(ds, keys, content, R):
                         or (lit["type"] == "IDENTIFIER" and "schemes" in rng and lit["scheme"] not in rng["schemes"])
                         or (lit["type"] == "QUANTITY" and "units" in rng and lit["unit"] not in rng["units"])):
                     R.err("PREDICATE_RANGE_VIOLATION", cid, "литерал вне range (тип, схема идентификатора или единица)")
-                if lit["type"] == "IDENTIFIER" and lit["scheme"] in CHECKSUMS:
-                    v = lit["value"]
-                    if not (_ascii_digits(v) and CHECKSUMS[lit["scheme"]](v)):
-                        R.err("IDENTIFIER_CHECKSUM_INVALID", cid, f"{lit['scheme']}: контрольные цифры литерала")
             spec = p.get("qualifiers", {})
             q = c.get("qualifiers", {})
             for name, v in q.items():
@@ -865,7 +1133,7 @@ def _semantic(ds, keys, content, R):
     # ---- contradictions (warnings)
     groups = defaultdict(list)
     for cid, c in C.items():
-        p = preds.get(c["predicate"])
+        p = preds.get(c["predicate"]) or xpred_of.get(cid)
         if p and p["cardinality"] == "ONE" and status_at(cid, None) not in ("REFUTED", "WITHDRAWN"):
             groups[(c["project_id"], resolve(c["subject"]), c["predicate"])].append(c)
     for key, lst in groups.items():
@@ -876,6 +1144,23 @@ def _semantic(ds, keys, content, R):
                            and y.get("valid_from", "0000") <= x.get("valid_to", "9999"))
                 if overlap and canon(x["object"]) != canon(y["object"]):
                     R.warn("CONTRADICTION_SINGLE_VALUED", f"{x['claim_id']}|{y['claim_id']}", f"{key[2]}: источники расходятся")
+
+    # ---- required attributes of the schema in force now: an entity stated to be of a class (or below it) has no
+    # live claim with a required attribute of that class — a warning, the gap is the analyst's to close
+    has = {(c["project_id"], c["subject"], c["predicate"]) for cid, c in C.items()
+           if status_at(cid, None) not in ("REFUTED", "WITHDRAWN")}
+    for (prj, eid), lst in sorted(member.items()):
+        tn, need = tenant_of(prj), {}
+        for _, k, icid in lst:
+            if status_at(icid, None) in ("REFUTED", "WITHDRAWN"):
+                continue                                   # a withdrawn membership asks for nothing
+            for anc in ancestors(tn, k):
+                for a in at(CLS[(tn, anc)], None).get("attributes", []):
+                    if a["required"]:
+                        need[a["predicate_id"]] = anc
+        for pid, anc in sorted(need.items()):
+            if (prj, eid, pid) not in has:
+                R.warn("REQUIRED_ATTRIBUTE_MISSING", eid, f"{prj}: нет обязательного атрибута {pid} класса {anc}")
 
     # ---- Checks
     for kid, k in Kc.items():
@@ -941,7 +1226,7 @@ def _semantic(ds, keys, content, R):
                 touches = {resolve(c["subject"])} | ({resolve(c["object"]["entity"])} if "entity" in c["object"] else set())
                 if subj_id not in touches:
                     R.err("CHECK_CLAIM_NOT_ABOUT_SUBJECT", kid, f"{cid} не о субъекте")
-                p = preds.get(c["predicate"])
+                p = preds.get(c["predicate"]) or xpred_of.get(cid)
                 if p is not None and f["dimension"] not in p["dimensions"]:
                     R.err("CHECK_CLAIM_DIMENSION_MISMATCH", kid, f"{c['predicate']} не относится к {f['dimension']}")
                 # any ACCEPTED review recorded by completion implies the claim was recorded before it (review rules)
@@ -1179,84 +1464,6 @@ def _semantic(ds, keys, content, R):
     for (dg, nid), cids in node_uses.items():
         if len(cids) > 1:
             R.err("GRAPH_NODE_INVALID", nid, f"один узел графа — несколько доказательств ({len(cids)})")
-
-    # ---- schema records (D27.1, cycle 9): ClassDef, LinkDef, IdentifierDef, SchemaChange ----
-    valid_entity_types = {"PERSON", "ORGANIZATION", "REAL_ESTATE", "MOVABLE_PROPERTY", "EVENT",
-                          "CONFLICT", "EQUIPMENT", "EQUIPMENT_MODEL", "CONCEPT", "THING"}
-
-    # ClassDef: tenant isolation; parent_class_id must exist within same tenant
-    for cdef_id, cdef in CD.items():
-        if "parent_class_id" in cdef:
-            parent = CD.get(cdef["parent_class_id"])
-            if parent is None:
-                R.err("REF_UNRESOLVED", cdef_id, f"parent_class_id {cdef['parent_class_id']} не найден")
-            elif parent["tenant_id"] != cdef["tenant_id"]:
-                R.err("CROSS_SCOPE_REFERENCE", cdef_id, "parent_class_id из другого tenant")
-            elif parent["root_type"] != cdef["root_type"]:
-                R.err("SCHEMA_INVALID", cdef_id, "root_type наследника должен совпадать с root_type родителя")
-        # cycle detection: parent chain must not loop
-        seen_chain = {cdef_id}
-        cur = cdef
-        while "parent_class_id" in cur:
-            pid = cur["parent_class_id"]
-            if pid in seen_chain:
-                R.err("SCHEMA_INVALID", cdef_id, "циклическое наследование классов")
-                break
-            seen_chain.add(pid)
-            cur = CD.get(pid, {})
-
-    # LinkDef: domain/range class_ids must exist within same tenant
-    for ldef_id, ldef in LD.items():
-        for ref_field in ("domain_class_id", "range_class_id"):
-            ref_id = ldef[ref_field]
-            ref_cls = CD.get(ref_id)
-            if ref_cls is None:
-                R.err("REF_UNRESOLVED", ldef_id, f"{ref_field} {ref_id} не найден")
-            elif ref_cls["tenant_id"] != ldef["tenant_id"]:
-                R.err("CROSS_SCOPE_REFERENCE", ldef_id, f"{ref_field} из другого tenant")
-        if "inverse_predicate_id" in ldef:
-            inv_pred = ldef["inverse_predicate_id"]
-            if inv_pred not in preds:
-                R.err("PREDICATE_UNKNOWN", ldef_id, f"inverse_predicate_id {inv_pred} не зарегистрирован")
-
-    # IdentifierDef: applies_to_root_type must be a valid EntityType
-    for idef_id, idef in IDD.items():
-        if idef["applies_to_root_type"] not in valid_entity_types:
-            R.err("SCHEMA_INVALID", idef_id, f"applies_to_root_type {idef['applies_to_root_type']} не EntityType")
-
-    # SchemaChange: target_id must exist as the named target_kind
-    for scx_id, scx in SCX.items():
-        kind_map = {"ClassDef": CD, "LinkDef": LD, "IdentifierDef": IDD}
-        target_store = kind_map.get(scx["target_kind"])
-        if target_store is not None and scx["target_id"] not in target_store:
-            R.err("REF_UNRESOLVED", scx_id, f"target_id {scx['target_id']} не найден в {scx['target_kind']}")
-
-    # ---- is_a Claims (schema.is_a predicate) ----
-    # Every Claim with predicate schema.is_a must:
-    #   1. have object.literal.type == CLASS_REF
-    #   2. class_id in CLASS_REF must exist as ClassDef in this dataset
-    #   3. entity's entity_type must match class's root_type
-    for cid, c in C.items():
-        if c["predicate"] != "schema.is_a":
-            continue
-        lit = c["object"].get("literal")
-        if lit is None or lit.get("type") != "CLASS_REF":
-            R.err("PREDICATE_RANGE_VIOLATION", cid, "schema.is_a: объект должен быть литералом CLASS_REF")
-            continue
-        class_id = lit.get("class_id")
-        cls = CD.get(class_id)
-        if cls is None:
-            R.err("REF_UNRESOLVED", cid, f"schema.is_a: class_id {class_id} не найден")
-            continue
-        # tenant isolation: class must belong to same tenant as claim's project
-        claim_tenant = tenant_of(c["project_id"])
-        if claim_tenant is not None and cls["tenant_id"] != claim_tenant:
-            R.err("CROSS_SCOPE_REFERENCE", cid, "schema.is_a: ClassDef из другого tenant")
-        # entity root_type must match class root_type
-        subj_ent = E.get(c["subject"])
-        if subj_ent is not None and subj_ent["entity_type"] != cls["root_type"]:
-            R.err("PREDICATE_DOMAIN_VIOLATION", cid,
-                  f"schema.is_a: entity_type {subj_ent['entity_type']} != ClassDef.root_type {cls['root_type']}")
 
 
 def main(argv):

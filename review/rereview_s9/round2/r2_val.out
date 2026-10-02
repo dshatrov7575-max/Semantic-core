@@ -1,0 +1,10 @@
+класс выведен из употребления в 09:00, is_a в 09:30, x-утверждение в 10:00
+    -> ['CLASS_NOT_INSTANTIABLE']
+CHANGE_ATTRIBUTE меняет value_type STRING -> DATE
+    -> ['SCHEMA_CHANGE_INVALID']
+CHANGE_ATTRIBUTE меняет unit m -> km
+    -> ['SCHEMA_CHANGE_INVALID']
+CHANGE_ATTRIBUTE меняет scheme ru.inn -> ru.ogrn
+    -> ['SCHEMA_CHANGE_INVALID']
+класс с change.recorded_at = 2099-01-01 (валидатор не знает «сейчас»)
+    -> ПРИНЯТО

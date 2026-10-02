@@ -138,5 +138,9 @@ BEGIN
     ns := coalesce(i->>'namespace', '') || '|' || (i->>'lang') || '|';
     scheme := 'concept'; value := ns || ac.base_key(i->>'label'); strength := 'WEAK'; qual := i->>'disambiguator'; RETURN NEXT;
     scheme := 'skel:concept'; value := ns || ac.skel(i->>'label'); strength := 'SOFT'; qual := NULL; RETURN NEXT;
+  ELSIF t = 'THING' THEN            -- the tenth root (cycle 9): the same identity rules as a concept
+    ns := coalesce(i->>'namespace', '') || '|' || (i->>'lang') || '|';
+    scheme := 'thing'; value := ns || ac.base_key(i->>'label'); strength := 'WEAK'; qual := i->>'disambiguator'; RETURN NEXT;
+    scheme := 'skel:thing'; value := ns || ac.skel(i->>'label'); strength := 'SOFT'; qual := NULL; RETURN NEXT;
   END IF;
 END $$;

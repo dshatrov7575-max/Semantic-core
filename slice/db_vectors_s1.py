@@ -29,6 +29,12 @@ def main():
             res, msg = "N/A", f"{type(ex).__name__}"
         else:
             L.psql(L.DDL_ALL)
+            try:
+                # originals are registered by the gateway BEFORE the import, as load_s1.main() does; without this every
+                # vector was refused for one and the same reason (ORIGINAL_INVALID) and the sweep measured nothing
+                L.register_originals(ds, ct)
+            except Exception:  # noqa: BLE001 - a vector that corrupts the original itself: the import below reports it
+                pass
             r = L.psql(sql)
             if r.returncode:
                 res = "REJECTED"

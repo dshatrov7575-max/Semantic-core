@@ -1,0 +1,87 @@
+
+$ python3 ../snapshot2/core/model_constructor.py init TMP/m.json
+Создан пустой набор /tmp/tmp.IVmE46Yl2W/m.json
+(exit 0)
+
+$ python3 ../snapshot2/core/model_constructor.py add-class TMP/m.json sdf_org_sub --tenant tnt_demo --by usr_modeler1 --description тест --root-type ORGANIZATION --name Дочерние --at 2026-10-01T10:00:00Z
+Записано: ClassDef sdf_org_sub версия 1 (ADD_CLASS)
+(exit 0)
+
+$ python3 ../snapshot2/core/model_constructor.py validate TMP/m.json
+схема и набор действительны
+(exit 0)
+== отказы ==
+
+$ python3 ../snapshot2/core/model_constructor.py add-class TMP/m.json sdf_child --tenant tnt_demo --by usr_modeler1 --description тест --root-type PERSON --name x --parent sdf_no_such_parent
+ERROR REF_UNRESOLVED ClassDef tnt_demo/sdf_child родитель: класса sdf_no_such_parent нет в схеме tenant
+ОТКАЗ: валидатор отверг изменение — файл не изменён
+(exit 1)
+
+$ python3 ../snapshot2/core/model_constructor.py add-class TMP/m.json sdf_child2 --tenant tnt_demo --by usr_modeler1 --description тест --root-type PERSON --name 
+ERROR SCHEMA_INVALID /records/1/name '' should be non-empty
+ERROR SCHEMA_INVALID /records/1/name '' does not match '\\S'
+ОТКАЗ: валидатор отверг изменение — файл не изменён
+(exit 1)
+
+$ python3 ../snapshot2/core/model_constructor.py add-class TMP/m.json sdf_secret --tenant tnt_demo --by usr_modeler1 --description тест --root-type PERSON --name S --marking RESTRICTED:COMMERCIAL_SECRET --at 2026-10-01T10:01:00Z
+Записано: ClassDef sdf_secret версия 1 (ADD_CLASS)
+(exit 0)
+
+$ python3 ../snapshot2/core/model_constructor.py add-class TMP/m.json sdf_pubkid --tenant tnt_demo --by usr_modeler1 --description тест --root-type PERSON --name K --parent sdf_secret --marking PUBLIC --at 2026-10-01T10:02:00Z
+ERROR MARKING_BROADER_THAN_INPUT ClassDef tnt_demo/sdf_pubkid маркировка наследника шире маркировки родителя
+ОТКАЗ: валидатор отверг изменение — файл не изменён
+(exit 1)
+== атрибуты, версии ==
+
+$ python3 ../snapshot2/core/model_constructor.py add-attribute TMP/m.json sdf_org_sub --tenant tnt_demo --by usr_modeler1 --description тест --predicate x.crm_id --name номер CRM --type STRING --required --at 2026-10-01T10:03:00Z
+Записано: ClassDef sdf_org_sub версия 2 (ADD_ATTRIBUTE)
+(exit 0)
+
+$ python3 ../snapshot2/core/model_constructor.py add-attribute TMP/m.json sdf_org_sub --tenant tnt_demo --by usr_modeler1 --description тест --predicate x.crm_id --name повтор --type STRING --at 2026-10-01T10:04:00Z
+ERROR SCHEMA_CHANGE_INVALID ClassDef tnt_demo/sdf_org_sub версия 3: запись журнала «ADD_ATTRIBUTE» не равна единственному допустимому отличию от предыдущей версии
+ОТКАЗ: валидатор отверг изменение — файл не изменён
+(exit 1)
+
+$ python3 ../snapshot2/core/model_constructor.py add-identifier TMP/m.json sdf_id_bad --tenant tnt_demo --by usr_modeler1 --description тест --scheme x.badfmt --root-type ORGANIZATION --name B --strength WEAK --priority 3 --format DIGIT:9-1
+ERROR SCHEMA_DEF_INVALID IdentifierDef tnt_demo/sdf_id_bad формат: min > max или длина значения больше 64
+ОТКАЗ: валидатор отверг изменение — файл не изменён
+(exit 1)
+
+$ python3 ../snapshot2/core/model_constructor.py add-identifier TMP/m.json sdf_id_inn --tenant tnt_demo --by usr_modeler1 --description тест --scheme ru.inn --root-type ORGANIZATION --name ИНН --strength WEAK --priority 1
+ERROR SCHEMA_INVALID /records/3/strength 'STRONG' was expected
+ОТКАЗ: валидатор отверг изменение — файл не изменён
+(exit 1)
+
+$ python3 ../snapshot2/core/model_constructor.py rename TMP/m.json sdf_org_sub --tenant tnt_demo --by usr_modeler1 --description тест --name Новое имя --at 2026-10-01T10:02:30Z
+ERROR TEMPORAL_ORDER_INVALID ClassDef tnt_demo/sdf_org_sub версия 3 записана не позже предыдущей
+ОТКАЗ: валидатор отверг изменение — файл не изменён
+(exit 1)
+
+$ python3 ../snapshot2/core/model_constructor.py rename TMP/m.json sdf_org_sub --tenant tnt_demo --by usr_modeler1 --description тест --name Новое имя --at 2026-10-01T10:05:00Z
+Записано: ClassDef sdf_org_sub версия 3 (RENAME_CLASS)
+(exit 0)
+
+$ python3 ../snapshot2/core/model_constructor.py deprecate TMP/m.json sdf_org_sub --tenant tnt_demo --by usr_modeler1 --description тест --at 2026-10-01T10:06:00Z
+Записано: ClassDef sdf_org_sub версия 4 (DEPRECATE_CLASS)
+(exit 0)
+
+$ python3 ../snapshot2/core/model_constructor.py rename TMP/m.json sdf_org_sub --tenant tnt_demo --by usr_modeler1 --description тест --name После вывода --at 2026-10-01T10:07:00Z
+ERROR SCHEMA_CHANGE_INVALID ClassDef tnt_demo/sdf_org_sub версия 5: запись журнала «RENAME_CLASS» не равна единственному допустимому отличию от предыдущей версии
+ОТКАЗ: валидатор отверг изменение — файл не изменён
+(exit 1)
+
+$ python3 ../snapshot2/core/model_constructor.py add-class TMP/m.json sdf_future --tenant tnt_demo --by usr_modeler1 --description тест --root-type PERSON --name F --at 2099-01-01T00:00:00Z
+Записано: ClassDef sdf_future версия 1 (ADD_CLASS)
+(exit 0)
+
+$ python3 ../snapshot2/core/model_constructor.py journal TMP/m.json --tenant tnt_demo
+2026-10-01T10:03:00Z usr_modeler1 ADD_ATTRIBUTE ClassDef sdf_org_sub v2: тест
+2026-10-01T10:05:00Z usr_modeler1 RENAME_CLASS ClassDef sdf_org_sub v3: тест
+2026-10-01T10:06:00Z usr_modeler1 DEPRECATE_CLASS ClassDef sdf_org_sub v4: тест
+2099-01-01T00:00:00Z usr_modeler1 ADD_CLASS ClassDef sdf_future v1: тест
+(exit 0)
+
+$ python3 ../snapshot2/core/model_constructor.py validate TMP/m.json
+схема и набор действительны
+(exit 0)
+записей в файле: 6 [('sdf_org_sub', 1, 'ADD_CLASS'), ('sdf_secret', 1, 'ADD_CLASS'), ('sdf_org_sub', 2, 'ADD_ATTRIBUTE'), ('sdf_org_sub', 3, 'RENAME_CLASS'), ('sdf_org_sub', 4, 'DEPRECATE_CLASS'), ('sdf_future', 1, 'ADD_CLASS')]

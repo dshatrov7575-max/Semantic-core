@@ -37,7 +37,7 @@ DB-A36 REJECTED | второй receipt на то же утверждение (S4
 DB-A37 REJECTED | receipt с ключом вне реестра доверия tenant (свой запуск и свой артефакт, S4) | ERROR:  insert or update on table "artifact_receipts" violates foreign key constraint "artifact_receipts_tenant_id_key_id_fkey"
 DB-A38 REJECTED | PIPELINE-утверждение без receipt (проверка при COMMIT) | ERROR:  RECEIPT_CLAIM_BINDING_INVALID: clm:sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa: PIPELINE-утверждение без receipt
 DB-A39 REJECTED | приложение пишет в реестр доверия | ERROR:  permission denied for table keys
-DB-A40 REJECTED | предикат вне реестра | ERROR:  insert or update on table "claims" violates foreign key constraint "claim_predicate_known"
+DB-A40 REJECTED | предикат вне реестра | ERROR:  PREDICATE_UNKNOWN: person.shoe_size (claim_predicate_known)
 DB-A41 REJECTED | организация как субъект даты рождения (domain) | ERROR:  PREDICATE_DOMAIN_VIOLATION: ORGANIZATION не в domain person.birth_date
 DB-A42 REJECTED | дата рождения строкой (range) | ERROR:  PREDICATE_RANGE_VIOLATION: person.birth_date: тип объекта вне range
 DB-A43 REJECTED | valid_from позже valid_to | ERROR:  new row for relation "claims" violates check constraint "claim_valid_time_order"
@@ -55,7 +55,7 @@ DB-A54 REJECTED | RS-01 D01: удалить ключи идентичности,
 DB-A55 REJECTED | RS-01 D03: подменить значение ключа | ERROR:  permission denied for table entity_keys
 DB-A56 REJECTED | RS-01: ИНН с неверной контрольной цифрой в identity (база сама считает контрольные суммы) | ERROR:  IDENTIFIER_CHECKSUM_INVALID: ru.inn физлица
 DB-A57 REJECTED | RS-01: физлицо без идентичности (нет ИНН, ОГРНИП, даты и пометки) | ERROR:  ENTITY_IDENTITY_INSUFFICIENT: PERSON без ИНН, ОГРНИП, даты рождения и disambiguator
-DB-A58 REJECTED | RS-02 D05: временная таблица с триггером для подмешивания доказательства | ERROR:  permission denied to create temporary tables in database "ac_s6"
+DB-A58 REJECTED | RS-02 D05: временная таблица с триггером для подмешивания доказательства | ERROR:  permission denied to create temporary tables in database "ac_v08"
 DB-A59 REJECTED | RS-03 D09: завершить Проверку с утверждением, которое к моменту завершения опровергнуто | ERROR:  CHECK_CLAIM_NOT_ACCEPTED_AT_COMPLETION: chk_tenders_1
 DB-A60 REJECTED | RS-03 D10: понизить маркировку Проверки после привязки утверждения | ERROR:  permission denied for table checks
 DB-A61 REJECTED | RS-03 D10 (через тело): изменить маркировку в теле открытой Проверки | ERROR:  CHECK_IMMUTABLE: у Проверки меняются только статус и итог
@@ -78,13 +78,13 @@ DB-A77 REJECTED | D13: живая роль ставит печать истор�
 DB-A78 REJECTED | S21-01: тег «ｱ-9» (полуширинная катакана) после «ア-9» | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: equipment уже принадлежит другой сущности проекта
 DB-A79 REJECTED | RS-12: тёзка «Ломо́в» (U+0301) с той же датой, без ИНН | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: person.fio_dob совпадает у ent_d_lomov и ent_d_ns
 DB-A80 REJECTED | RS-14: «К 1.12» — та же задвижка, что «К-1/12» | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: equipment уже принадлежит другой сущности проекта
-DB-A81 REJECTED | D13: ac_migrator пишет рецензию «задним числом» до печати истории | ERROR:  TEMPORAL_ORDER_INVALID: история до 2026-10-02 00:47:39.120581+03 запечатана
+DB-A81 REJECTED | D13: ac_migrator пишет рецензию «задним числом» до печати истории | ERROR:  TEMPORAL_ORDER_INVALID: история до 2026-10-02 14:33:50.692341+03 запечатана
 DB-A82 REJECTED | D13: ac_migrator дописывает утверждение в Проверку, закрытую до печати | ERROR:  CHECK_CLOSED: в закрытую Проверку нельзя добавлять утверждения
 OK-01 OK | новое утверждение «сейчас»: доказательство проверено по байтам | 1
 OK-02 OK | рецензия с заявленным «задним» временем: база ставит системное время | true
 OK-03 OK | ещё одна Проверка того же субъекта (Compliance: многократность) | 4
 OK-04 OK | слияние нового дубля: ключи переходят к выжившей сущности, время ставит база | ent_d_developer true
-OK-05 OK | все цитаты всех утверждений подтверждаются байтами источников | 34/34
+OK-05 OK | все цитаты всех утверждений подтверждаются байтами источников | 41/41
 OK-06 OK | RS-15: уточнить оригинал «Усатые киты», затем завести омоним с другой пометкой | 2
 OK-07 OK | RS-13: насос «H-101» латиницей вместе с решением «различны» в одной транзакции | 2
 

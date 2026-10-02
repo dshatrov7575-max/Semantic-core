@@ -1,438 +1,374 @@
-"""Конструктор модели — CLI для работы с записями схемы (D27.1, cycle 9).
+#!/usr/bin/env python3
+"""Model Constructor (D27.1) — a command-line client of the schema registry: it edits the tenant's schema as RECORDS.
 
-Команды:
-  add-class   — создать ClassDef
-  add-link    — создать LinkDef
-  add-iddef   — создать IdentifierDef
-  list        — вывести записи схемы из файла датасета
-  export      — экспортировать схему tenant в JSON
+The schema lives in a dataset file (core-dataset/0.3) as ClassDef / LinkDef / IdentifierDef records; every command adds
+exactly ONE new version of ONE definition with its journal entry, runs the WHOLE dataset through the normative
+validator and writes the file only if the validator has no errors. No tables are generated: the physical model is
+never touched (the database loads the same records, slice/schema_s9.py).
 
-Каждая операция add-* проверяет созданную запись через validator (только схема-записи).
-
-python3 model_constructor.py --help
-python3 model_constructor.py add-class --help
+  init            FILE
+  add-class       FILE sdf_ID --tenant T --root-type TYPE --name N [--parent sdf_P] [--abstract]
+  add-attribute   FILE sdf_ID --tenant T --predicate x.p --name N --type TYPE [--unit u] [--scheme s] [--many] [--required]
+  change-attribute FILE sdf_ID --tenant T --predicate x.p [--name N] [--one | --many] [--required | --optional]
+  remove-attribute FILE sdf_ID --tenant T --predicate x.p
+  add-link        FILE sdf_ID --tenant T --predicate x.p --name N --domain sdf_A --range sdf_B [--one] [--symmetric]
+  add-identifier  FILE sdf_ID --tenant T --scheme x.s|ru.inn|… --root-type TYPE --name N --strength STRONG|WEAK
+                                --priority K [--format DIGIT:1-9,lit:-,ALNUM_UPPER:6]
+  set-strength    FILE sdf_ID --tenant T --strength STRONG|WEAK
+  rename          FILE sdf_ID --tenant T --name N
+  deprecate       FILE sdf_ID --tenant T
+  show            FILE --tenant T [--at 2026-10-02T12:00:00Z]      the schema in force (inherited attributes included)
+  journal         FILE --tenant T                                   who changed what and when
+  validate        FILE [--trust trust.json] [--content-dir DIR]
+Common options of the editing commands: --by usr_…|svc_… (required), --description TEXT (required), --note TEXT,
+  --at ISO-time (default: now, UTC), --marking LEVEL[:CATEGORY,…] (first version only; default INTERNAL),
+  --trust / --content-dir (when the file also holds claims with sources).
+Exit code: 0 — written (or valid), 1 — refused (the file is left untouched), 2 — usage error.
 """
 import argparse
+import copy
 import json
+import os
 import sys
-import re
+import tempfile
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-HERE = Path(__file__).resolve().parent
-SV = "core-ontology/0.3"
+import validator as VAL
 
-ROOT_TYPES = [
-    "PERSON", "ORGANIZATION", "REAL_ESTATE", "MOVABLE_PROPERTY",
-    "EVENT", "CONFLICT", "EQUIPMENT", "EQUIPMENT_MODEL", "CONCEPT", "THING"
-]
-
-CARDINALITIES = ["ONE", "MANY"]
-STRENGTHS = ["STRONG", "WEAK"]
-
-CHANGE_TYPES = [
-    "ADD_CLASS", "RENAME_CLASS", "DEPRECATE_CLASS",
-    "ADD_ATTRIBUTE", "CHANGE_ATTRIBUTE_CARDINALITY", "REMOVE_ATTRIBUTE",
-    "ADD_LINK", "REMOVE_LINK",
-    "ADD_IDENTIFIER_DEF", "CHANGE_IDENTIFIER_STRENGTH",
-]
-
-TARGET_KINDS = ["ClassDef", "LinkDef", "IdentifierDef"]
-
-_SDF = re.compile(r'^sdf_[a-z0-9_]{2,64}$')
-_TNT = re.compile(r'^tnt_[a-z0-9_]{2,64}$')
-_ACT = re.compile(r'^(usr|svc)_[a-z0-9_]{2,64}$')
-_SCX = re.compile(r'^scx_[a-z0-9_]{2,64}$')
-_PRED = re.compile(r'^[a-z]+\.[a-z_]+$')
-_SCHEME = re.compile(r'^[a-z][a-z0-9.]{1,40}$')
+SV, DF = "core-ontology/0.3", "core-dataset/0.3"
+IDF = {"ClassDef": "class_id", "LinkDef": "link_id", "IdentifierDef": "idef_id"}
+ROOTS = ["PERSON", "ORGANIZATION", "REAL_ESTATE", "MOVABLE_PROPERTY", "EVENT", "CONFLICT", "EQUIPMENT", "EQUIPMENT_MODEL",
+         "CONCEPT", "THING"]
+TYPES = ["STRING", "DATE", "QUANTITY", "MONEY", "IDENTIFIER", "BOOLEAN", "INTEGER"]
 
 
-def err(msg):
-    print(f"ERROR: {msg}", file=sys.stderr)
-    sys.exit(1)
+T0 = time.time()
 
 
-def now_utc():
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+class Refused(Exception):
+    pass
 
 
-def default_marking(level="INTERNAL"):
-    return {"level": level, "categories": []}
-
-
-def validate_id(val, pattern, name):
-    if not pattern.match(val):
-        err(f"{name} '{val}' не соответствует шаблону {pattern.pattern}")
-    return val
-
-
-# ──────────────────────────── add-class ────────────────────────────
-
-def cmd_add_class(args):
-    class_id = validate_id(args.class_id, _SDF, "class_id")
-    tenant_id = validate_id(args.tenant_id, _TNT, "tenant_id")
-    created_by = validate_id(args.created_by, _ACT, "created_by")
-    if args.root_type not in ROOT_TYPES:
-        err(f"root_type '{args.root_type}' не допустим; варианты: {ROOT_TYPES}")
-    if args.parent and not _SDF.match(args.parent):
-        err(f"parent_class_id '{args.parent}' не соответствует формату sdf_…")
-
-    rec = {
-        "kind": "ClassDef",
-        "schema_version": SV,
-        "class_id": class_id,
-        "tenant_id": tenant_id,
-        "root_type": args.root_type,
-        "name": args.name,
-        "version": args.version,
-        "created_at": args.created_at or now_utc(),
-        "created_by": created_by,
-        "marking": default_marking(args.marking_level),
-    }
-    if args.label_ru:
-        rec["label_ru"] = args.label_ru
-    if args.parent:
-        rec["parent_class_id"] = args.parent
-    if args.abstract:
-        rec["is_abstract"] = True
-
-    out = json.dumps(rec, ensure_ascii=False, indent=2)
-    if args.out:
-        Path(args.out).write_text(out, encoding="utf-8")
-        print(f"Записано: {args.out}")
-    else:
-        print(out)
-
-
-# ──────────────────────────── add-link ────────────────────────────
-
-def cmd_add_link(args):
-    link_id = validate_id(args.link_id, _SDF, "link_id")
-    tenant_id = validate_id(args.tenant_id, _TNT, "tenant_id")
-    created_by = validate_id(args.created_by, _ACT, "created_by")
-    domain_id = validate_id(args.domain_class_id, _SDF, "domain_class_id")
-    range_id = validate_id(args.range_class_id, _SDF, "range_class_id")
-    pred = validate_id(args.predicate_id, _PRED, "predicate_id")
-    if args.cardinality not in CARDINALITIES:
-        err(f"cardinality '{args.cardinality}' не допустим; варианты: {CARDINALITIES}")
-    if args.inverse and not _PRED.match(args.inverse):
-        err(f"inverse_predicate_id '{args.inverse}' не соответствует формату")
-
-    rec = {
-        "kind": "LinkDef",
-        "schema_version": SV,
-        "link_id": link_id,
-        "tenant_id": tenant_id,
-        "predicate_id": pred,
-        "domain_class_id": domain_id,
-        "range_class_id": range_id,
-        "cardinality": args.cardinality,
-        "version": args.version,
-        "created_at": args.created_at or now_utc(),
-        "created_by": created_by,
-        "marking": default_marking(args.marking_level),
-    }
-    if args.label_ru:
-        rec["label_ru"] = args.label_ru
-    if args.symmetric:
-        rec["symmetric"] = True
-    if args.inverse:
-        rec["inverse_predicate_id"] = args.inverse
-
-    out = json.dumps(rec, ensure_ascii=False, indent=2)
-    if args.out:
-        Path(args.out).write_text(out, encoding="utf-8")
-        print(f"Записано: {args.out}")
-    else:
-        print(out)
-
-
-# ──────────────────────────── add-iddef ────────────────────────────
-
-def cmd_add_iddef(args):
-    idef_id = validate_id(args.idef_id, _SDF, "idef_id")
-    tenant_id = validate_id(args.tenant_id, _TNT, "tenant_id")
-    created_by = validate_id(args.created_by, _ACT, "created_by")
-    if not _SCHEME.match(args.scheme):
-        err(f"scheme '{args.scheme}' не соответствует формату")
-    if args.applies_to not in ROOT_TYPES:
-        err(f"applies_to_root_type '{args.applies_to}' не допустим; варианты: {ROOT_TYPES}")
-    if args.strength not in STRENGTHS:
-        err(f"strength '{args.strength}' не допустим; варианты: {STRENGTHS}")
-
-    rec = {
-        "kind": "IdentifierDef",
-        "schema_version": SV,
-        "idef_id": idef_id,
-        "tenant_id": tenant_id,
-        "scheme": args.scheme,
-        "applies_to_root_type": args.applies_to,
-        "strength": args.strength,
-        "priority": args.priority,
-        "version": args.version,
-        "created_at": args.created_at or now_utc(),
-        "created_by": created_by,
-        "marking": default_marking(args.marking_level),
-    }
-    if args.label_ru:
-        rec["label_ru"] = args.label_ru
-    if args.norm_regex:
-        rec["normalization_regex"] = args.norm_regex
-    if args.val_regex:
-        rec["validation_regex"] = args.val_regex
-
-    out = json.dumps(rec, ensure_ascii=False, indent=2)
-    if args.out:
-        Path(args.out).write_text(out, encoding="utf-8")
-        print(f"Записано: {args.out}")
-    else:
-        print(out)
-
-
-# ──────────────────────────── add-change ────────────────────────────
-
-def cmd_add_change(args):
-    change_id = validate_id(args.change_id, _SCX, "change_id")
-    tenant_id = validate_id(args.tenant_id, _TNT, "tenant_id")
-    recorded_by = validate_id(args.recorded_by, _ACT, "recorded_by")
-    target_id = validate_id(args.target_id, _SDF, "target_id")
-    if args.change_type not in CHANGE_TYPES:
-        err(f"change_type '{args.change_type}' не допустим; варианты: {CHANGE_TYPES}")
-    if args.target_kind not in TARGET_KINDS:
-        err(f"target_kind '{args.target_kind}' не допустим; варианты: {TARGET_KINDS}")
-
-    rec = {
-        "kind": "SchemaChange",
-        "schema_version": SV,
-        "change_id": change_id,
-        "tenant_id": tenant_id,
-        "change_type": args.change_type,
-        "target_id": target_id,
-        "target_kind": args.target_kind,
-        "description": args.description,
-        "recorded_at": args.recorded_at or now_utc(),
-        "recorded_by": recorded_by,
-        "marking": default_marking(args.marking_level),
-    }
-    if args.migration_note:
-        rec["migration_note"] = args.migration_note
-
-    out = json.dumps(rec, ensure_ascii=False, indent=2)
-    if args.out:
-        Path(args.out).write_text(out, encoding="utf-8")
-        print(f"Записано: {args.out}")
-    else:
-        print(out)
-
-
-# ──────────────────────────── list ────────────────────────────
-
-def cmd_list(args):
-    path = Path(args.dataset)
-    if not path.exists():
-        err(f"Файл не найден: {path}")
-    data = json.loads(path.read_text(encoding="utf-8"))
-
-    records = data if isinstance(data, list) else data.get("records", [])
-    kinds_filter = set(args.kinds.split(",")) if args.kinds else None
-    tenant_filter = args.tenant or None
-
-    rows = []
-    for r in records:
-        k = r.get("kind", "")
-        if kinds_filter and k not in kinds_filter:
-            continue
-        if tenant_filter and r.get("tenant_id") != tenant_filter:
-            continue
-        # pick display ID
-        rec_id = (r.get("class_id") or r.get("link_id") or r.get("idef_id")
-                  or r.get("change_id") or r.get("kind", "?"))
-        rows.append((k, rec_id, r.get("tenant_id", ""), r.get("name") or r.get("scheme") or r.get("change_type", "")))
-
-    if args.json:
-        filtered = []
-        for r in records:
-            k = r.get("kind", "")
-            if kinds_filter and k not in kinds_filter:
-                continue
-            if tenant_filter and r.get("tenant_id") != tenant_filter:
-                continue
-            filtered.append(r)
-        print(json.dumps(filtered, ensure_ascii=False, indent=2))
-        return
-
-    if not rows:
-        print("(нет записей)")
-        return
-
-    col_k = max(len(r[0]) for r in rows)
-    col_i = max(len(r[1]) for r in rows)
-    col_t = max(len(r[2]) for r in rows)
-    fmt = f"{{:<{col_k}}}  {{:<{col_i}}}  {{:<{col_t}}}  {{}}"
-    print(fmt.format("kind", "id", "tenant_id", "name/scheme/change_type"))
-    print("-" * (col_k + col_i + col_t + 40))
-    for k, i, t, n in rows:
-        print(fmt.format(k, i, t, n))
-    print(f"\nИтого: {len(rows)}")
-
-
-# ──────────────────────────── export ────────────────────────────
-
-def cmd_export(args):
-    path = Path(args.dataset)
-    if not path.exists():
-        err(f"Файл не найден: {path}")
-    data = json.loads(path.read_text(encoding="utf-8"))
-    records = data if isinstance(data, list) else data.get("records", [])
-
-    tenant = args.tenant
-    schema_kinds = {"ClassDef", "LinkDef", "IdentifierDef", "SchemaChange"}
-    export = [r for r in records
-              if r.get("kind") in schema_kinds
-              and (not tenant or r.get("tenant_id") == tenant)]
-
-    result = {
-        "schema_version": SV,
-        "exported_at": now_utc(),
-        "tenant_id": tenant or "*",
-        "records": export,
-    }
-    out = json.dumps(result, ensure_ascii=False, indent=2)
-    if args.out:
-        Path(args.out).write_text(out, encoding="utf-8")
-        print(f"Экспортировано {len(export)} записей → {args.out}")
-    else:
-        print(out)
-
-
-# ──────────────────────────── validate-schema ────────────────────────────
-
-def cmd_validate_schema(args):
-    """Валидирует только schema-записи из датасета через validator."""
+def load(path):
     try:
-        from validator import validate
-    except ImportError:
-        err("validator.py не найден в Python path; запустите из /home/claude/as/core/")
-
-    path = Path(args.dataset)
-    if not path.exists():
-        err(f"Файл не найден: {path}")
-    data = json.loads(path.read_text(encoding="utf-8"))
-    records = data if isinstance(data, list) else data.get("records", [])
-
-    r = validate(records)
-    codes = r.codes()
-    if codes:
-        for code, rec_id, msg in r._errors:
-            print(f"  {code}  {rec_id}  {msg}", file=sys.stderr)
-        print(f"\nОШИБКИ: {len(codes)}", file=sys.stderr)
-        sys.exit(1)
-    else:
-        print(f"OK — {len(records)} записей, ошибок нет")
+        ds = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, ValueError, RecursionError) as ex:
+        raise Refused(f"не удалось прочитать {path}: {type(ex).__name__}")
+    if not isinstance(ds, dict) or not isinstance(ds.get("records"), list):
+        raise Refused(f"{path}: это не набор данных ядра (нет списка records)")
+    return ds
 
 
-# ──────────────────────────── argparse ────────────────────────────
+def content_of(args):
+    content = {}
+    if getattr(args, "content_dir", None):
+        for f in Path(args.content_dir).iterdir():
+            if f.is_file():
+                content["src:sha256:" + f.name] = content["sha256:" + f.name] = f.read_bytes()
+    trust = json.loads(Path(args.trust).read_text(encoding="utf-8")) if getattr(args, "trust", None) else None
+    return trust, content
 
-def build_parser():
-    p = argparse.ArgumentParser(
-        prog="model_constructor.py",
-        description="Конструктор модели: создание/список/экспорт схемных записей (ClassDef, LinkDef, IdentifierDef).",
-    )
+
+def check(ds, args):
+    trust, content = content_of(args)
+    rep = VAL.validate(ds, trust, content)
+    for e in rep.errors:
+        print("ERROR", e["code"], e["ref"], e["msg"], file=sys.stderr)
+    for w in rep.warnings:
+        print("WARN ", w["code"], w["ref"], w["msg"], file=sys.stderr)
+    return not rep.errors
+
+
+def save(path, ds):
+    """atomically: a refused or interrupted command never leaves a half-written file"""
+    p = Path(path)
+    fd, tmp = tempfile.mkstemp(dir=str(p.parent), prefix=p.name + ".", suffix=".tmp")
+    with os.fdopen(fd, "w", encoding="utf-8") as f:
+        json.dump(ds, f, ensure_ascii=False, indent=1)
+        f.write("\n")
+    os.replace(tmp, p)
+
+
+def chain(ds, tenant, did):
+    """-> (kind, versions sorted) of the definition (tenant, id); the id may be a class, a link or an identifier type"""
+    found = {}
+    for r in ds["records"]:
+        if isinstance(r, dict) and r.get("kind") in IDF and r.get("tenant_id") == tenant and r.get(IDF[r["kind"]]) == did:
+            found.setdefault(r["kind"], []).append(r)
+    if len(found) > 1:
+        raise Refused(f"{did}: идентификатор принадлежит определениям разных видов ({', '.join(sorted(found))}) — уточните файл")
+    for kind, lst in found.items():
+        return kind, sorted(lst, key=lambda r: r.get("version", 0))
+    return None, []
+
+
+def change(args, ctype):
+    if args.at and args.at > datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"):
+        raise Refused("время записи изменения из будущего")
+    ch = {"type": ctype, "description": args.description,
+          "recorded_at": args.at or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "recorded_by": args.by}
+    if args.note:
+        ch["migration_note"] = args.note
+    return ch
+
+
+def marking(spec):
+    level, _, cats = (spec or "INTERNAL").partition(":")
+    return {"level": level, "categories": [c for c in cats.split(",") if c]}
+
+
+def first(args, kind, ctype, **body):
+    return {"kind": kind, "schema_version": SV, IDF[kind]: args.id, "tenant_id": args.tenant, "version": 1, **body,
+            "marking": marking(args.marking), "change": change(args, ctype)}
+
+
+def nxt(ds, args, kinds, ctype):
+    kind, lst = chain(ds, args.tenant, args.id)
+    if not lst:
+        raise Refused(f"определения {args.id} нет в схеме tenant {args.tenant}")
+    if kind not in kinds:
+        raise Refused(f"{args.id} — {kind}; команда применима к: {', '.join(kinds)}")
+    if args.marking:
+        raise Refused("маркировка задаётся только первой версией определения и не меняется")
+    while not args.at and datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ") <= lst[-1]["change"]["recorded_at"] \
+            and time.time() < T0 + 3:
+        time.sleep(0.2)          # versions are ordered by time to the second: a command in the same second waits for the next one
+    r = copy.deepcopy(lst[-1])
+    r["version"] += 1
+    r["change"] = change(args, ctype if isinstance(ctype, str) else ctype[kind])
+    return r
+
+
+def parse_format(spec):
+    out = []
+    for part in spec.split(","):
+        name, _, rng = part.partition(":")
+        if name == "lit":
+            out.append({"lit": rng})
+        else:
+            lo, _, hi = rng.partition("-")
+            if not (lo.isdigit() and (hi or lo).isdigit()):
+                raise Refused(f"формат: «{part}» — ожидается КЛАСС:мин-макс или lit:знак")
+            out.append({"chars": name, "min": int(lo), "max": int(hi or lo)})
+    return out
+
+
+def edit(ds, args):  # noqa: C901
+    """-> the ONE new record the command adds"""
+    c = args.cmd
+    if c == "add-class":
+        body = {"root_type": args.root_type, "name": args.name}
+        if args.parent:
+            body["parent_class_id"] = args.parent
+        if args.abstract:
+            body["is_abstract"] = True
+        return first(args, "ClassDef", "ADD_CLASS", **body)
+    if c == "add-link":
+        body = {"predicate_id": args.predicate, "name": args.name, "domain_class_id": args.domain, "range_class_id": args.range,
+                "cardinality": "ONE" if args.one else "MANY"}
+        if args.symmetric:
+            body["symmetric"] = True
+        return first(args, "LinkDef", "ADD_LINK", **body)
+    if c == "add-identifier":
+        body = {"scheme": args.scheme, "name": args.name, "applies_to_root_type": args.root_type, "strength": args.strength,
+                "priority": args.priority}
+        if args.format:
+            body["format"] = parse_format(args.format)
+        return first(args, "IdentifierDef", "ADD_IDENTIFIER", **body)
+    if c == "rename":
+        r = nxt(ds, args, list(IDF), {"ClassDef": "RENAME_CLASS", "LinkDef": "RENAME_LINK", "IdentifierDef": "RENAME_IDENTIFIER"})
+        r["name"] = args.name
+        return r
+    if c == "deprecate":
+        r = nxt(ds, args, list(IDF), {"ClassDef": "DEPRECATE_CLASS", "LinkDef": "DEPRECATE_LINK", "IdentifierDef": "DEPRECATE_IDENTIFIER"})
+        r["deprecated"] = True
+        return r
+    if c == "set-strength":
+        r = nxt(ds, args, ["IdentifierDef"], "CHANGE_IDENTIFIER_STRENGTH")
+        r["strength"] = args.strength
+        return r
+    if c == "add-attribute":
+        r = nxt(ds, args, ["ClassDef"], "ADD_ATTRIBUTE")
+        a = {"predicate_id": args.predicate, "name": args.name, "value_type": args.type,
+             "cardinality": "MANY" if args.many else "ONE", "required": bool(args.required)}
+        if args.unit:
+            a["unit"] = args.unit
+        if args.scheme:
+            a["scheme"] = args.scheme
+        r.setdefault("attributes", []).append(a)
+        return r
+    attrs = None
+    if c in ("change-attribute", "remove-attribute"):
+        r = nxt(ds, args, ["ClassDef"], "CHANGE_ATTRIBUTE" if c == "change-attribute" else "REMOVE_ATTRIBUTE")
+        attrs = r.get("attributes", [])
+        pos = next((n for n, a in enumerate(attrs) if a["predicate_id"] == args.predicate), None)
+        if pos is None:
+            raise Refused(f"у класса {args.id} нет атрибута {args.predicate} (унаследованные меняются в классе, где объявлены)")
+    if c == "remove-attribute":
+        del attrs[pos]
+        if not attrs:
+            r.pop("attributes")
+        return r
+    if c == "change-attribute":
+        a = attrs[pos]
+        if args.name:
+            a["name"] = args.name
+        if args.one or args.many:
+            a["cardinality"] = "ONE" if args.one else "MANY"
+        if args.required or args.optional:
+            a["required"] = bool(args.required)
+        return r
+    raise Refused(f"неизвестная команда {c}")
+
+
+def in_force(ds, tenant, at):
+    """the latest version of every definition of the tenant recorded by `at` -> {kind: {id: record}}"""
+    out = {k: {} for k in IDF}
+    for r in sorted((r for r in ds["records"] if r.get("kind") in IDF and r.get("tenant_id") == tenant),
+                    key=lambda r: r["version"]):
+        if at is None or r["change"]["recorded_at"] <= at:
+            out[r["kind"]][r[IDF[r["kind"]]]] = r
+    return out
+
+
+def show(ds, args):
+    m = in_force(ds, args.tenant, args.at)
+    cls = m["ClassDef"]
+
+    def up(cid):
+        seen = []
+        while cid in cls and cid not in seen:
+            seen.append(cid)
+            cid = cls[cid].get("parent_class_id")
+        return seen
+
+    flag = lambda r: (" [абстрактный]" if r.get("is_abstract") else "") + (" [выведен из употребления]" if r.get("deprecated") else "")  # noqa: E731
+    print(f"Схема tenant {args.tenant}" + (f" на {args.at}" if args.at else "") + f": классов {len(cls)}, связей {len(m['LinkDef'])}, "
+          f"типов идентификаторов {len(m['IdentifierDef'])}")
+    for cid in sorted(cls, key=lambda c: (list(reversed(up(c))), c)):
+        k = cls[cid]
+        print(f"{'  ' * (len(up(cid)) - 1)}{cid} v{k['version']} «{k['name']}» ({k['root_type']}, {k['marking']['level']}){flag(k)}")
+        for anc in reversed(up(cid)):
+            for a in cls[anc].get("attributes", []):
+                kind = a["value_type"] + (f" {a['unit']}" if "unit" in a else "") + (f" {a['scheme']}" if "scheme" in a else "")
+                print(f"{'  ' * len(up(cid))}- {a['predicate_id']} «{a['name']}»: {kind}, {a['cardinality']}"
+                      + (", обязательный" if a["required"] else "") + (f" (от {anc})" if anc != cid else ""))
+    for lid, r in sorted(m["LinkDef"].items()):
+        print(f"связь {lid} v{r['version']} {r['predicate_id']} «{r['name']}»: {r['domain_class_id']} -> {r['range_class_id']}, "
+              f"{r['cardinality']}" + (", симметричная" if r.get("symmetric") else "") + flag(r))
+    for iid, r in sorted(m["IdentifierDef"].items(), key=lambda x: (x[1]["applies_to_root_type"], x[1]["priority"])):
+        print(f"идентификатор {iid} v{r['version']} {r['scheme']} «{r['name']}»: {r['applies_to_root_type']}, {r['strength']}, "
+              f"приоритет {r['priority']}" + flag(r))
+
+
+def journal(ds, args):
+    rows = sorted((r for r in ds["records"] if r.get("kind") in IDF and r.get("tenant_id") == args.tenant),
+                  key=lambda r: (r["change"]["recorded_at"], r["kind"], r[IDF[r["kind"]]], r["version"]))
+    for r in rows:
+        ch = r["change"]
+        print(f"{ch['recorded_at']} {ch['recorded_by']} {ch['type']} {r['kind']} {r[IDF[r['kind']]]} v{r['version']}: {ch['description']}")
+
+
+def parser():
+    p = argparse.ArgumentParser(prog="model_constructor.py", description="Конструктор модели: схема tenant как записи (D27.1)")
     sub = p.add_subparsers(dest="cmd", required=True)
 
-    # shared args helper
-    def add_common(sp):
-        sp.add_argument("--tenant-id", required=True, metavar="tnt_…", help="TenantId")
-        sp.add_argument("--created-by", default="usr_test_admin", metavar="usr_…|svc_…")
-        sp.add_argument("--created-at", default=None, metavar="ISO8601", help="дата создания (по умолч. сейчас)")
-        sp.add_argument("--version", type=int, default=1, metavar="N")
-        sp.add_argument("--marking-level", default="INTERNAL",
-                        choices=["PUBLIC", "INTERNAL", "CONFIDENTIAL"], metavar="LEVEL")
-        sp.add_argument("--out", default=None, metavar="FILE.json", help="файл для сохранения; без флага — stdout")
+    def cmd(name, edit_cmd=True, need_id=True):
+        s = sub.add_parser(name)
+        s.add_argument("file")
+        if need_id:
+            s.add_argument("id")
+        s.add_argument("--trust")
+        s.add_argument("--content-dir")
+        if name != "validate" and name != "init":
+            s.add_argument("--tenant", required=True)
+        if edit_cmd:
+            s.add_argument("--by", required=True)
+            s.add_argument("--description", required=True)
+            s.add_argument("--note")
+            s.add_argument("--at")
+            s.add_argument("--marking")
+        return s
 
-    # add-class
-    ac = sub.add_parser("add-class", help="Создать ClassDef")
-    ac.add_argument("class_id", metavar="sdf_…")
-    ac.add_argument("--root-type", required=True, choices=ROOT_TYPES)
-    ac.add_argument("--name", required=True)
-    ac.add_argument("--label-ru", default=None)
-    ac.add_argument("--parent", default=None, metavar="sdf_…", dest="parent")
-    ac.add_argument("--abstract", action="store_true")
-    add_common(ac)
-    ac.set_defaults(func=cmd_add_class)
-
-    # add-link
-    al = sub.add_parser("add-link", help="Создать LinkDef")
-    al.add_argument("link_id", metavar="sdf_…")
-    al.add_argument("--predicate-id", required=True, metavar="ns.predicate")
-    al.add_argument("--domain-class-id", required=True, metavar="sdf_…")
-    al.add_argument("--range-class-id", required=True, metavar="sdf_…")
-    al.add_argument("--cardinality", required=True, choices=CARDINALITIES)
-    al.add_argument("--label-ru", default=None)
-    al.add_argument("--symmetric", action="store_true")
-    al.add_argument("--inverse", default=None, metavar="ns.predicate")
-    add_common(al)
-    al.set_defaults(func=cmd_add_link)
-
-    # add-iddef
-    ai = sub.add_parser("add-iddef", help="Создать IdentifierDef")
-    ai.add_argument("idef_id", metavar="sdf_…")
-    ai.add_argument("--scheme", required=True, metavar="inn|ogrn|…")
-    ai.add_argument("--applies-to", required=True, choices=ROOT_TYPES, metavar="ROOT_TYPE")
-    ai.add_argument("--strength", required=True, choices=STRENGTHS)
-    ai.add_argument("--priority", type=int, default=10)
-    ai.add_argument("--label-ru", default=None)
-    ai.add_argument("--norm-regex", default=None, metavar="REGEX")
-    ai.add_argument("--val-regex", default=None, metavar="REGEX")
-    add_common(ai)
-    ai.set_defaults(func=cmd_add_iddef)
-
-    # add-change
-    ach = sub.add_parser("add-change", help="Создать SchemaChange (запись журнала)")
-    ach.add_argument("change_id", metavar="scx_…")
-    ach.add_argument("--change-type", required=True, choices=CHANGE_TYPES)
-    ach.add_argument("--target-id", required=True, metavar="sdf_…")
-    ach.add_argument("--target-kind", required=True, choices=TARGET_KINDS)
-    ach.add_argument("--description", required=True)
-    ach.add_argument("--migration-note", default=None)
-    ach.add_argument("--tenant-id", required=True, metavar="tnt_…")
-    ach.add_argument("--recorded-by", default="usr_test_admin", metavar="usr_…|svc_…")
-    ach.add_argument("--recorded-at", default=None, metavar="ISO8601")
-    ach.add_argument("--marking-level", default="INTERNAL",
-                     choices=["PUBLIC", "INTERNAL", "CONFIDENTIAL"])
-    ach.add_argument("--out", default=None, metavar="FILE.json")
-    ach.set_defaults(func=cmd_add_change)
-
-    # list
-    ls = sub.add_parser("list", help="Вывести записи схемы из датасета")
-    ls.add_argument("dataset", metavar="FILE.json")
-    ls.add_argument("--kinds", default=None,
-                    metavar="ClassDef,LinkDef,…",
-                    help="фильтр по kind (через запятую)")
-    ls.add_argument("--tenant", default=None, metavar="tnt_…")
-    ls.add_argument("--json", action="store_true", help="вывод в JSON")
-    ls.set_defaults(func=cmd_list)
-
-    # export
-    ex = sub.add_parser("export", help="Экспортировать схему tenant из датасета")
-    ex.add_argument("dataset", metavar="FILE.json")
-    ex.add_argument("--tenant", default=None, metavar="tnt_…")
-    ex.add_argument("--out", default=None, metavar="FILE.json")
-    ex.set_defaults(func=cmd_export)
-
-    # validate-schema
-    vs = sub.add_parser("validate-schema", help="Проверить schema-записи через validator")
-    vs.add_argument("dataset", metavar="FILE.json")
-    vs.set_defaults(func=cmd_validate_schema)
-
+    cmd("init", False, False)
+    cmd("validate", False, False)
+    cmd("journal", False, False)
+    cmd("show", False, False).add_argument("--at")
+    s = cmd("add-class")
+    s.add_argument("--root-type", required=True, choices=ROOTS)
+    s.add_argument("--name", required=True)
+    s.add_argument("--parent")
+    s.add_argument("--abstract", action="store_true")
+    s = cmd("add-attribute")
+    s.add_argument("--predicate", required=True)
+    s.add_argument("--name", required=True)
+    s.add_argument("--type", required=True, choices=TYPES)
+    s.add_argument("--unit")
+    s.add_argument("--scheme")
+    s.add_argument("--many", action="store_true")
+    s.add_argument("--required", action="store_true")
+    s = cmd("change-attribute")
+    s.add_argument("--predicate", required=True)
+    s.add_argument("--name")
+    g = s.add_mutually_exclusive_group()
+    g.add_argument("--one", action="store_true")
+    g.add_argument("--many", action="store_true")
+    g = s.add_mutually_exclusive_group()
+    g.add_argument("--required", action="store_true")
+    g.add_argument("--optional", action="store_true")
+    cmd("remove-attribute").add_argument("--predicate", required=True)
+    s = cmd("add-link")
+    s.add_argument("--predicate", required=True)
+    s.add_argument("--name", required=True)
+    s.add_argument("--domain", required=True)
+    s.add_argument("--range", required=True)
+    s.add_argument("--one", action="store_true")
+    s.add_argument("--symmetric", action="store_true")
+    s = cmd("add-identifier")
+    s.add_argument("--scheme", required=True)
+    s.add_argument("--root-type", required=True, choices=ROOTS)
+    s.add_argument("--name", required=True)
+    s.add_argument("--strength", required=True, choices=["STRONG", "WEAK"])
+    s.add_argument("--priority", required=True, type=int)
+    s.add_argument("--format")
+    cmd("set-strength").add_argument("--strength", required=True, choices=["STRONG", "WEAK"])
+    cmd("rename").add_argument("--name", required=True)
+    cmd("deprecate")
     return p
 
 
-def main(argv=None):
-    parser = build_parser()
-    args = parser.parse_args(argv)
-    args.func(args)
+def main(argv):
+    args = parser().parse_args(argv[1:])
+    try:
+        if args.cmd == "init":
+            if Path(args.file).exists():
+                raise Refused(f"{args.file} уже существует")
+            save(args.file, {"dataset_format": DF, "ontology_version": SV, "records": []})
+            print(f"Создан пустой набор {args.file}")
+            return 0
+        ds = load(args.file)
+        if args.cmd == "validate":
+            ok = check(ds, args)
+            print("схема и набор действительны" if ok else "ОТВЕРГНУТО валидатором")
+            return 0 if ok else 1
+        if args.cmd in ("show", "journal"):
+            if not check(ds, args):
+                raise Refused("набор не проходит валидатор — показывать нечего")
+            (show if args.cmd == "show" else journal)(ds, args)
+            return 0
+        rec = edit(ds, args)
+        new = {**ds, "records": ds["records"] + [rec]}
+        if not check(new, args):
+            raise Refused("валидатор отверг изменение — файл не изменён")
+        save(args.file, new)
+        print(f"Записано: {rec['kind']} {rec[IDF[rec['kind']]]} версия {rec['version']} ({rec['change']['type']})")
+        return 0
+    except Refused as ex:
+        print(f"ОТКАЗ: {ex}", file=sys.stderr)
+        return 1
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main(sys.argv))

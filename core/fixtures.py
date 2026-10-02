@@ -20,7 +20,8 @@ from jcs import digest, canon_bytes
 from validator import inn_ok, ogrn_ok, ogrnip_ok, text_digest_of, publication_address
 
 HERE = Path(__file__).resolve().parent
-SV = "core-ontology/0.3"
+SV = "core-ontology/0.2"       # records of the nine kinds known since 0.2: their producers and content addresses do not change
+SV3 = "core-ontology/0.3"      # records that use the vocabulary of 0.3 (schema definitions, THING, schema.is_a, tenant predicates)
 T = "tnt_demo"
 
 
@@ -339,6 +340,62 @@ def world():
     clm("c26", "prj_wiki_whales", "ent_wk_blue", "wiki.property", L(type="QUANTITY", value="150", unit="t"),
         [("s10", "масса — 150 тонн")], PUB, t_wk, q={"property": "max_mass"})
 
+    # ---- schema as data (D27.1, cycle 9): the SemanticWiki tenant models its own classes, attributes, links and
+    # identifier types as RECORDS; a class of an entity is a claim (schema.is_a) with evidence like any other
+    src("s20", "DOCUMENT", "Карточка вида и музейная справка",
+        "Синий кит (Balaenoptera musculus): номер в каталоге ITIS — 180528. "
+        "В зоологическом музее выставлен скелет синего кита длиной 27 метров.",
+        "2026-09-02T09:30:00Z", PUB)
+    ent("ent_wk_skeleton", "prj_wiki_whales", "THING", {"label": "Скелет синего кита", "lang": "ru", "namespace": "museum"},
+        "Скелет синего кита (зоологический музей)", PUB)
+    W["ent_wk_skeleton"]["schema_version"] = SV3
+
+    def sdef(key, kind, idf, did, version, ctype, at, descr, **body):
+        add(key, {"kind": kind, "schema_version": SV3, idf: did, "tenant_id": T, "version": version, **body, "marking": PUB,
+                   "change": {"type": ctype, "description": descr, "recorded_at": at, "recorded_by": "usr_modeler1"}})
+
+    max_len = {"predicate_id": "x.max_length", "name": "наибольшая длина", "value_type": "QUANTITY", "unit": "m",
+               "cardinality": "ONE", "required": True}
+    sdef("sd_organism", "ClassDef", "class_id", "sdf_organism", 1, "ADD_CLASS", "2026-09-02T11:59:00Z",
+         "общий абстрактный класс живых организмов", root_type="CONCEPT", name="Живой организм", is_abstract=True)
+    sdef("sd_taxon", "ClassDef", "class_id", "sdf_taxon", 1, "ADD_CLASS", "2026-09-02T12:00:00Z",
+         "таксон: группа организмов любого ранга", root_type="CONCEPT", name="Таксон", parent_class_id="sdf_organism")
+    sdef("sd_whale_v1", "ClassDef", "class_id", "sdf_whale_species", 1, "ADD_CLASS", "2026-09-02T12:01:00Z",
+         "вид китов — таксон ранга вида", root_type="CONCEPT", name="Вид китов", parent_class_id="sdf_taxon",
+         attributes=[max_len])
+    sdef("sd_belongs", "LinkDef", "link_id", "sdf_belongs_to", 1, "ADD_LINK", "2026-09-02T12:02:00Z",
+         "вид входит в таксон более высокого ранга", predicate_id="x.belongs_to", name="входит в таксон",
+         domain_class_id="sdf_whale_species", range_class_id="sdf_taxon", cardinality="MANY")
+    sdef("sd_exhibit", "ClassDef", "class_id", "sdf_exhibit", 1, "ADD_CLASS", "2026-09-02T12:03:00Z",
+         "музейный экспонат — вещь, а не понятие", root_type="THING", name="Музейный экспонат",
+         attributes=[{"predicate_id": "x.exhibit_length", "name": "длина экспоната", "value_type": "QUANTITY", "unit": "m",
+                      "cardinality": "ONE", "required": False}])
+    sdef("sd_itis", "IdentifierDef", "idef_id", "sdf_itis", 1, "ADD_IDENTIFIER", "2026-09-02T12:05:00Z",
+         "номер таксона в каталоге ITIS", scheme="x.itis", name="Номер ITIS", applies_to_root_type="CONCEPT",
+         strength="STRONG", priority=1, format=[{"chars": "DIGIT", "min": 1, "max": 9}])
+    # version 2 of the class: one more attribute; claims recorded before it are read by version 1
+    sdef("sd_whale_v2", "ClassDef", "class_id", "sdf_whale_species", 2, "ADD_ATTRIBUTE", "2026-09-02T12:10:00Z",
+         "добавлен номер ITIS", root_type="CONCEPT", name="Вид китов", parent_class_id="sdf_taxon",
+         attributes=[max_len, {"predicate_id": "x.itis_tsn", "name": "номер ITIS", "value_type": "IDENTIFIER",
+                               "scheme": "x.itis", "cardinality": "ONE", "required": False}])
+    t_sd = "2026-09-03T09:30:00Z"
+    KREF = lambda k: {"literal": {"type": "CLASS_REF", "class_id": k}}  # noqa: E731
+    clm("c40", "prj_wiki_whales", "ent_wk_baleen", "schema.is_a", KREF("sdf_taxon"), [("s10", "усатых китов")], PUB, t_sd)
+    clm("c41", "prj_wiki_whales", "ent_wk_blue", "schema.is_a", KREF("sdf_whale_species"),
+        [("s10", "Синий кит — вид усатых китов")], PUB, t_sd)
+    clm("c42", "prj_wiki_whales", "ent_wk_blue", "x.max_length", L(type="QUANTITY", value="30", unit="m"),
+        [("s10", "Длина синего кита достигает 30 метров")], PUB, t_sd)
+    clm("c43", "prj_wiki_whales", "ent_wk_blue", "x.belongs_to", E("ent_wk_baleen"),
+        [("s10", "Синий кит — вид усатых китов")], PUB, t_sd)
+    clm("c44", "prj_wiki_whales", "ent_wk_blue", "x.itis_tsn", L(type="IDENTIFIER", scheme="x.itis", value="180528"),
+        [("s20", "номер в каталоге ITIS — 180528")], PUB, t_sd)
+    clm("c45", "prj_wiki_whales", "ent_wk_skeleton", "schema.is_a", KREF("sdf_exhibit"),
+        [("s20", "В зоологическом музее выставлен скелет синего кита")], PUB, t_sd)
+    clm("c46", "prj_wiki_whales", "ent_wk_skeleton", "x.exhibit_length", L(type="QUANTITY", value="27", unit="m"),
+        [("s20", "скелет синего кита длиной 27 метров")], PUB, t_sd)
+    for cn in ("c40", "c41", "c42", "c43", "c44", "c45", "c46"):
+        W[cn]["schema_version"] = SV3
+
     # ---- reviews: declared decision time + system record time ----
     def rev(name, claim, status, at, rec_at, note=None):
         r = {"kind": "ClaimReview", "review_id": name, "claim_id": "@C:" + claim, "status": status,
@@ -423,7 +480,7 @@ def world():
 
 
 ORDER = ["Project", "Source", "Publication", "Entity", "IdentityDecision",
-         "ClassDef", "LinkDef", "IdentifierDef", "SchemaChange",
+         "ClassDef", "LinkDef", "IdentifierDef",
          "Claim", "ClaimReview", "Check", "ArtifactReceipt"]
 
 
@@ -508,5 +565,5 @@ def finalize(W):
                 r["receipt_id"] = "rcp:sha256:" + digest({k: v for k, v in r.items() if k not in ("receipt_id", "signature")})
                 r["signature"] = b64u(Ed25519PrivateKey.from_private_bytes(SEEDS[seed or r["key_id"]]).sign(r["receipt_id"].encode()))
     names = sorted(W, key=lambda n: (ORDER.index(W[n]["kind"]), n))
-    ds = {"dataset_format": "core-dataset/0.3", "ontology_version": SV, "records": [W[n] for n in names]}
+    ds = {"dataset_format": "core-dataset/0.3", "ontology_version": SV3, "records": [W[n] for n in names]}
     return ds, {n: i for i, n in enumerate(names)}, trust, content

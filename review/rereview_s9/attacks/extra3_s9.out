@@ -1,0 +1,15 @@
+$ INSERT INTO ac.class_defs VALUES ('sdf_selfp','tnt_demo','PERSON','x',NULL,'sdf_selfp',NULL,1,now(),'usr_rev','{"level":"PUBLIC","categories":[]}');
+ERROR:  REF_UNRESOLVED: parent_class_id sdf_selfp не найден в tenant tnt_demo
+CONTEXT:  PL/pgSQL function ac.fail(text,text) line 2 at RAISE
+$ INSERT INTO ac.class_defs VALUES ('sdf_cyc_a','tnt_demo','PERSON','x',NULL,'sdf_cyc_b',NULL,1,now(),'usr_rev','{"level":"PUBLIC","categories":[]}'), ('sdf_cyc_b','tnt_demo','PERSON','x',NULL,'sdf_cyc_a',NULL,1,now(),'usr_rev','{"level":"PUBLIC","categories":[]}');
+ERROR:  REF_UNRESOLVED: parent_class_id sdf_cyc_b не найден в tenant tnt_demo
+CONTEXT:  PL/pgSQL function ac.fail(text,text) line 2 at RAISE
+$ INSERT INTO ac.class_defs VALUES ('sdf_badroot','tnt_demo','PERSON','x',NULL,'sdf_org_sub',NULL,1,now(),'usr_rev','{"level":"PUBLIC","categories":[]}');
+ERROR:  SCHEMA_INVALID: root_type PERSON наследника не совпадает с root_type родителя
+CONTEXT:  PL/pgSQL function ac.fail(text,text) line 2 at RAISE
+$ UPDATE ac.link_defs SET label_ru='x';
+ERROR:  APPEND_ONLY: UPDATE на ac.link_defs запрещён
+CONTEXT:  PL/pgSQL function ac.forbid() line 3 at RAISE
+$ DELETE FROM ac.identifier_defs;
+ERROR:  APPEND_ONLY: DELETE на ac.identifier_defs запрещён
+CONTEXT:  PL/pgSQL function ac.forbid() line 3 at RAISE

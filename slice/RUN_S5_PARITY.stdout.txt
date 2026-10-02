@@ -1,7 +1,7 @@
-pub_norm               inputs=20015  mismatches=0
-text_digest            inputs=20015  mismatches=0
-url_norm               inputs=20018  mismatches=0
-url_outlet             inputs=20018  mismatches=0
-text_digest(bytes)     inputs=6666   mismatches=0
+pub_norm               inputs=6016   mismatches=0
+text_digest            inputs=6016   mismatches=0
+url_norm               inputs=6019   mismatches=0
+url_outlet             inputs=6019   mismatches=0
+text_digest(bytes)     inputs=2000   mismatches=0
 publication_address    inputs=500    mismatches=0
 S5_PARITY=PASS

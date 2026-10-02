@@ -224,7 +224,7 @@ CREATE TRIGGER observations_no_update BEFORE UPDATE OR DELETE ON ac.source_obser
 CREATE TABLE ac.entities (
   entity_id          text PRIMARY KEY CHECK (entity_id ~ '^ent_[a-z0-9_]{2,64}$'),
   project_id         text NOT NULL REFERENCES ac.projects,
-  entity_type        text NOT NULL CHECK (entity_type IN ('PERSON','ORGANIZATION','REAL_ESTATE','MOVABLE_PROPERTY','EVENT','CONFLICT','EQUIPMENT','EQUIPMENT_MODEL','CONCEPT')),
+  entity_type        text NOT NULL CHECK (entity_type IN ('PERSON','ORGANIZATION','REAL_ESTATE','MOVABLE_PROPERTY','EVENT','CONFLICT','EQUIPMENT','EQUIPMENT_MODEL','CONCEPT','THING')),
   identity           jsonb NOT NULL,
   status             text NOT NULL CHECK (status IN ('ACTIVE','MERGED','RETIRED')),
   merged_into        text,
@@ -412,7 +412,7 @@ BEGIN
     PERFORM ac.fail('CROSS_SCOPE_REFERENCE', 'уточняемая сущность не найдена в проекте решения');
   END IF;
   IF NOT ((e.entity_type IN ('EVENT','CONFLICT') AND NEW.field = 'place')
-          OR (e.entity_type = 'CONCEPT' AND NEW.field = 'disambiguator')
+          OR (e.entity_type IN ('CONCEPT', 'THING') AND NEW.field = 'disambiguator')
           OR (e.entity_type = 'PERSON' AND e.identity ? 'birth_date' AND NEW.field = 'disambiguator'))
      OR e.identity ? NEW.field OR e.status = 'MERGED'
      OR EXISTS (SELECT 1 FROM ac.identity_decisions d WHERE d.entity_a = NEW.entity_a AND d.decision = 'QUALIFY') THEN

@@ -1,0 +1,6 @@
+мутант «особое правило is_a не выдаёт PREDICATE_RANGE_VIOLATION (ошибка удалена, continue оставлен)»: SURVIVED (N831 проходит за счёт общего правила range)
+имя класса из одних пробелов и пустой label_ru (схема: NonEmpty = minLength 1 + шаблон \S):
+  [review09e] INSERT INTO ac.class_defs VALUES ('sdf_blank','tnt_demo','PERSON',' ','',NULL,NULL,1,now(),'usr_rev','{"level":"PUBLIC","categories":[]}'); 
+      => OK (принято)
+  [review09e] INSERT INTO ac.class_defs VALUES ('sdf_notenant','tnt_no_such_tenant_anywhere','PERSON','x',NULL,NULL,NULL,1,now(),'usr_rev','{"level":"PUBLIC","categories":[]}'); SELECT count(*) FROM ac.projects WHE 
+      => 0

@@ -1,0 +1,23 @@
+14:33:50 rc=0 slice/RUN_LOAD_S1.stdout.txt :: KEYS PARITY (DB-derived == validator): OK rows=45
+14:34:01 rc=0 slice/RUN_KEYS_PARITY.stdout.txt :: PARITY_RESULT=PASS
+14:34:05 rc=0 slice/RUN_S1.stdout.txt :: S2_RESULT=PASS
+14:34:40 rc=0 slice/RUN_RS_REGRESSION.stdout.txt :: D22 held    P1 | гонка слабых ключей: два параллельных INSERT без блокировки | s1=COMMIT s2=ERROR:  ENTIT
+14:34:52 rc=0 slice/RUN_S22_REGRESSION.stdout.txt :: S22_REGRESSION=PASS
+14:35:31 rc=0 slice/RUN_S23_RACES.stdout.txt :: S23_RACES=PASS
+14:35:42 rc=0 slice/RUN_S24_REGRESSION.stdout.txt :: S24_REGRESSION=PASS (перезапущен после правки стража пометки версии)
+14:35:48 rc=0 slice/RUN_S3.stdout.txt :: S3_RESULT=PASS
+14:35:59 rc=0 slice/RUN_S4.stdout.txt :: S4_RESULT=PASS
+14:36:10 rc=0 slice/RUN_S4_ATTACKS.stdout.txt :: S4_ATTACKS=PASS
+14:36:26 rc=0 slice/RUN_S5.stdout.txt :: S5_RESULT=PASS
+14:36:30 rc=0 slice/RUN_S5_ATTACKS.stdout.txt :: S5_ATTACKS=PASS
+14:36:52 rc=0 slice/RUN_S5_RACES.stdout.txt :: S5_RACES=PASS
+14:36:54 rc=0 slice/RUN_S5_PARITY.stdout.txt :: S5_PARITY=PASS
+14:37:09 rc=0 slice/RUN_S5B.stdout.txt :: S5B_RESULT=PASS
+14:37:12 rc=0 slice/RUN_S5B_ATTACKS.stdout.txt :: S5B_ATTACKS=PASS
+14:39:01 rc=0 slice/RUN_S9.stdout.txt :: S9: ALL PASS
+14:39:23 rc=0 slice/RUN_S9_ATTACKS.stdout.txt :: attacks=85 findings=0
+14:39:24 rc=0 slice/RUN_ADAPTER.stdout.txt :: ADAPTER_RESULT=PASS
+14:39:24 rc=0 store/RUN_STORE.stdout.txt :: STORE_RESULT=PASS
+14:39:34 rc=0 slice/RUN_S5_EXHAUSTIVE.stdout.txt :: S5_EXHAUSTIVE=PASS
+14:49:30 rc=0 slice/DB_VECTORS_S1.stdout.txt :: negative_vectors=403 rejected_by_db=396 accepted_by_db=0 not_representable=7
+done

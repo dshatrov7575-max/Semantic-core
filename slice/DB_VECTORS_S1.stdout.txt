@@ -89,7 +89,7 @@ N121 | ENTITY_MERGE_INVALID | REJECTED | ERROR:  ENTITY_MERGE_INVALID: ent_d_lom
 N122 | ENTITY_MERGE_INVALID | REJECTED | ERROR:  ENTITY_MERGE_INVALID: ent_d_x: цель того же проекта и типа, ACTIVE на момент слияния, не шире по маркировке
 N123 | ENTITY_MERGE_INVALID | REJECTED | ERROR:  ENTITY_MERGE_INVALID: ent_d_lomov_media: цель того же проекта и типа, ACTIVE на момент слияния, не шире по маркировке
 N124 | TEMPORAL_ORDER_INVALID | REJECTED | ERROR:  new row for relation "entities" violates check constraint "entities_check2"
-N130 | PREDICATE_UNKNOWN | REJECTED | ERROR:  insert or update on table "claims" violates foreign key constraint "claim_predicate_known"
+N130 | PREDICATE_UNKNOWN | REJECTED | ERROR:  PREDICATE_UNKNOWN: wiki.mass (claim_predicate_known)
 N131 | PREDICATE_DOMAIN_VIOLATION | REJECTED | ERROR:  PREDICATE_DOMAIN_VIOLATION: ORGANIZATION не в domain corp.director_of
 N132 | PREDICATE_RANGE_VIOLATION | REJECTED | ERROR:  PREDICATE_RANGE_VIOLATION: person.birth_date: тип объекта вне range
 N133 | PREDICATE_RANGE_VIOLATION | REJECTED | ERROR:  PREDICATE_RANGE_VIOLATION: prop.owns: тип объекта вне range
@@ -297,14 +297,114 @@ N612 | PUBLICATION_INVALID | REJECTED | ERROR:  new row for relation "publicatio
 N613 | PUBLICATION_INVALID | REJECTED | ERROR:  new row for relation "publications" violates check constraint "publication_url"
 N614 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка публикации шире маркировки её источника
 N615 | PUBLICATION_INVALID | REJECTED | ERROR:  PUBLICATION_INVALID: нет ни одного источника этого издания с этим текстом, полученного к recorded_at
-N700 | ORIGINAL_INVALID | ACCEPTED | 
-N701 | ORIGINAL_INVALID | ACCEPTED | 
-N702 | ORIGINAL_INVALID | ACCEPTED | 
+N700 | ORIGINAL_INVALID | REJECTED | ERROR:  ORIGINAL_INVALID: оригинал не зарегистрирован в хранилище объектов этого tenant
+N701 | ORIGINAL_INVALID | REJECTED | ERROR:  ORIGINAL_INVALID: оригинал не зарегистрирован в хранилище объектов этого tenant
+N702 | ORIGINAL_INVALID | REJECTED | ERROR:  ORIGINAL_INVALID: длина оригинала не совпадает с зарегистрированной
 N703 | SCHEMA_INVALID | N/A | KeyError
+N704 | ORIGINAL_INVALID | REJECTED | ERROR:  ORIGINAL_INVALID: оригинал не зарегистрирован в хранилище объектов этого tenant
+N705 | ORIGINAL_INVALID | REJECTED | ERROR:  ORIGINAL_INVALID: длина оригинала не совпадает с зарегистрированной
+N706 | ORIGINAL_INVALID | REJECTED | ERROR:  ORIGINAL_INVALID: оригинал не зарегистрирован в хранилище объектов этого tenant
+N900 | DUPLICATE_ID | REJECTED | ERROR:  SCHEMA_DEF_INVALID: версии определения идут подряд с 1: ожидается 2
+N901 | SCHEMA_DEF_INVALID | REJECTED | ERROR:  SCHEMA_DEF_INVALID: версии определения идут подряд с 1: ожидается 3
+N902 | TEMPORAL_ORDER_INVALID | REJECTED | ERROR:  SCHEMA_DEF_INVALID: версии определения идут подряд с 1: ожидается 1
+N903 | SCHEMA_CHANGE_INVALID | REJECTED | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «DEPRECATE_CLASS» не равна единственному допустимому отличию от предыдущей версии
+N904 | SCHEMA_CHANGE_INVALID | REJECTED | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «RENAME_CLASS» не равна единственному допустимому отличию от предыдущей версии
+N905 | SCHEMA_CHANGE_INVALID | REJECTED | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «RENAME_CLASS» не равна единственному допустимому отличию от предыдущей версии
+N906 | SCHEMA_CHANGE_INVALID | REJECTED | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «RENAME_CLASS» не равна единственному допустимому отличию от предыдущей версии
+N907 | SCHEMA_CHANGE_INVALID | REJECTED | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «RENAME_CLASS» не равна единственному допустимому отличию от предыдущей версии
+N915 | TEMPORAL_ORDER_INVALID | REJECTED | ERROR:  TEMPORAL_ORDER_INVALID: версия записана не позже предыдущей
+N916 | SCHEMA_CHANGE_INVALID | REJECTED | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «DEPRECATE_CLASS» не равна единственному допустимому отличию от предыдущей версии
+N917 | SCHEMA_CHANGE_INVALID | REJECTED | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «DEPRECATE_CLASS» не равна единственному допустимому отличию от предыдущей версии
+N918 | SCHEMA_CHANGE_INVALID | REJECTED | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «CHANGE_IDENTIFIER_STRENGTH» не равна единственному допустимому отличию от предыдущей версии
+N919 | SCHEMA_CHANGE_INVALID | REJECTED | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «CHANGE_ATTRIBUTE» не равна единственному допустимому отличию от предыдущей версии
+N935 | SCHEMA_CHANGE_INVALID | REJECTED | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «ADD_ATTRIBUTE» не равна единственному допустимому отличию от предыдущей версии
+N936 | SCHEMA_CHANGE_INVALID | REJECTED | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «REMOVE_ATTRIBUTE» не равна единственному допустимому отличию от предыдущей версии
+N937 | SCHEMA_CHANGE_INVALID | REJECTED | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «CHANGE_ATTRIBUTE» не равна единственному допустимому отличию от предыдущей версии
+N908 | SCHEMA_CHANGE_INVALID | REJECTED | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «CHANGE_ATTRIBUTE» не равна единственному допустимому отличию от предыдущей версии
+N939 | SCHEMA_CHANGE_INVALID | REJECTED | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «CHANGE_ATTRIBUTE» не равна единственному допустимому отличию от предыдущей версии
+N947 | SCHEMA_CHANGE_INVALID | REJECTED | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «CHANGE_ATTRIBUTE» не равна единственному допустимому отличию от предыдущей версии
+N948 | SCHEMA_CHANGE_INVALID | REJECTED | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «CHANGE_ATTRIBUTE» не равна единственному допустимому отличию от предыдущей версии
+N909 | SCHEMA_CHANGE_INVALID | REJECTED | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «ADD_LINK» не равна единственному допустимому отличию от предыдущей версии
+N910 | SCHEMA_CHANGE_INVALID | REJECTED | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «RENAME_CLASS» не равна единственному допустимому отличию от предыдущей версии
+N911 | SCHEMA_CHANGE_INVALID | REJECTED | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «ADD_ATTRIBUTE» не равна единственному допустимому отличию от предыдущей версии
+N912 | SCHEMA_CHANGE_INVALID | REJECTED | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «REMOVE_ATTRIBUTE» не равна единственному допустимому отличию от предыдущей версии
+N913 | SCHEMA_CHANGE_INVALID | REJECTED | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «CHANGE_IDENTIFIER_STRENGTH» не равна единственному допустимому отличию от предыдущей версии
+N914 | SCHEMA_CHANGE_INVALID | REJECTED | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «RENAME_LINK» не равна единственному допустимому отличию от предыдущей версии
+N920 | REF_UNRESOLVED | REJECTED | ERROR:  REF_UNRESOLVED: родитель: класса sdf_nowhere нет в схеме tenant
+N921 | REF_UNRESOLVED | REJECTED | ERROR:  REF_UNRESOLVED: родитель: класса sdf_foreign нет в схеме tenant
+N922 | SCHEMA_DEF_INVALID | REJECTED | ERROR:  SCHEMA_DEF_INVALID: корневой тип наследника не равен корневому типу родителя
+N923 | SCHEMA_DEF_INVALID | REJECTED | ERROR:  REF_UNRESOLVED: родитель: класса sdf_cyc_b нет в схеме tenant
+N924 | SCHEMA_DEF_INVALID | REJECTED | ERROR:  REF_UNRESOLVED: родитель: класса sdf_self нет в схеме tenant
+N925 | TEMPORAL_ORDER_INVALID | REJECTED | ERROR:  REF_UNRESOLVED: родитель: класса sdf_par нет в схеме tenant
+N926 | SCHEMA_DEF_INVALID | REJECTED | ERROR:  SCHEMA_DEF_INVALID: родитель: класс sdf_par выведен из употребления
+N927 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: родитель: маркировка определения шире маркировки класса sdf_par
+N928 | SCHEMA_DEF_INVALID | REJECTED | ERROR:  SCHEMA_DEF_INVALID: атрибут повторяется
+N929 | SCHEMA_DEF_INVALID | REJECTED | ERROR:  SCHEMA_DEF_INVALID: предикат x.max_length уже определён в sdf_whale_species
+N930 | SCHEMA_DEF_INVALID | REJECTED | ERROR:  SCHEMA_DEF_INVALID: предикат x.max_length уже определён в sdf_whale_species
+N931 | REF_UNRESOLVED | REJECTED | ERROR:  REF_UNRESOLVED: атрибут x.other_id: тип идентификатора x.nowhere не определён в схеме tenant для этого корневого типа
+N932 | IDENTIFIER_SCHEME_INVALID,REF_UNRESOLVED | REJECTED | ERROR:  REF_UNRESOLVED: атрибут x.itis_tsn: тип идентификатора x.itis не определён в схеме tenant для этого корневого типа
+N933 | REF_UNRESOLVED | REJECTED | ERROR:  REF_UNRESOLVED: атрибут x.itis_tsn: тип идентификатора x.itis не определён в схеме tenant для этого корневого типа
+N934 | REF_UNRESOLVED | REJECTED | ERROR:  REF_UNRESOLVED: атрибут x.zb_id: тип идентификатора x.zoobank не определён в схеме tenant для этого корневого типа
+N938 | REF_UNRESOLVED | REJECTED | ERROR:  REF_UNRESOLVED: атрибут x.other_id: тип идентификатора x.foreign не определён в схеме tenant для этого корневого типа
+N940 | REF_UNRESOLVED | REJECTED | ERROR:  REF_UNRESOLVED: domain_class_id: класса sdf_nowhere нет в схеме tenant
+N941 | REF_UNRESOLVED | REJECTED | ERROR:  REF_UNRESOLVED: range_class_id: класса sdf_nowhere нет в схеме tenant
+N942 | REF_UNRESOLVED | REJECTED | ERROR:  REF_UNRESOLVED: range_class_id: класса sdf_foreign нет в схеме tenant
+N943 | TEMPORAL_ORDER_INVALID | REJECTED | ERROR:  REF_UNRESOLVED: domain_class_id: класса sdf_taxon нет в схеме tenant
+N944 | SCHEMA_DEF_INVALID | REJECTED | ERROR:  SCHEMA_DEF_INVALID: domain_class_id: класс sdf_old выведен из употребления
+N945 | SCHEMA_DEF_INVALID | REJECTED | ERROR:  new row for relation "link_defs" violates check constraint "link_symmetric_one_class"
+N946 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: range_class_id: маркировка определения шире маркировки класса sdf_int
+N950 | SCHEMA_DEF_INVALID | REJECTED | ERROR:  SCHEMA_DEF_INVALID: тип идентификатора x.itis для CONCEPT уже определён
+N951 | SCHEMA_DEF_INVALID | REJECTED | ERROR:  SCHEMA_DEF_INVALID: приоритет 1 для CONCEPT уже занят
+N952 | SCHEMA_DEF_INVALID | REJECTED | ERROR:  new row for relation "identifier_defs" violates check constraint "identifier_format_shape"
+N953 | SCHEMA_DEF_INVALID | REJECTED | ERROR:  new row for relation "identifier_defs" violates check constraint "identifier_format_shape"
+N954 | SCHEMA_INVALID | REJECTED | ERROR:  new row for relation "identifier_defs" violates check constraint "identifier_tenant_scheme_has_format"
+N955 | SCHEMA_INVALID | REJECTED | ERROR:  new row for relation "identifier_defs" violates check constraint "identifier_builtin_is_strong"
+N956 | SCHEMA_INVALID | REJECTED | ERROR:  new row for relation "identifier_defs" violates check constraint "identifier_tenant_scheme_has_format"
+N957 | SCHEMA_INVALID | REJECTED | ERROR:  invalid input syntax for type json
+N958 | SCHEMA_INVALID | REJECTED | ERROR:  new row for relation "identifier_defs" violates check constraint "identifier_builtin_is_strong"
+N960 | REF_UNRESOLVED | REJECTED | ERROR:  REF_UNRESOLVED: schema.is_a: класса sdf_nowhere нет в схеме tenant
+N961 | REF_UNRESOLVED | REJECTED | ERROR:  REF_UNRESOLVED: schema.is_a: класса sdf_foreign нет в схеме tenant
+N962 | TEMPORAL_ORDER_INVALID | REJECTED | ERROR:  TEMPORAL_ORDER_INVALID: schema.is_a: класс записан позже утверждения
+N963 | CLASS_NOT_INSTANTIABLE | REJECTED | ERROR:  CLASS_NOT_INSTANTIABLE: класс sdf_organism абстрактный или выведен из употребления
+N964 | CLASS_NOT_INSTANTIABLE | REJECTED | ERROR:  CLASS_NOT_INSTANTIABLE: класс sdf_new абстрактный или выведен из употребления
+N965 | PREDICATE_DOMAIN_VIOLATION | REJECTED | ERROR:  PREDICATE_DOMAIN_VIOLATION: тип сущности THING не равен корневому типу класса CONCEPT
+N966 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки класса
+N967 | PREDICATE_RANGE_VIOLATION | REJECTED | ERROR:  PREDICATE_RANGE_VIOLATION: schema.is_a: тип объекта вне range
+N968 | SCHEMA_INVALID | REJECTED | ERROR:  SCHEMA_INVALID: CLASS_REF — ровно {type, class_id}: класс ищется в tenant проекта
+N970 | PREDICATE_UNKNOWN | REJECTED | ERROR:  PREDICATE_UNKNOWN: x.nowhere: в схеме tenant на момент записи такого предиката нет
+N971 | PREDICATE_UNKNOWN | REJECTED | ERROR:  PREDICATE_UNKNOWN: x.itis_tsn: в схеме tenant на момент записи такого предиката нет
+N972 | PREDICATE_UNKNOWN | REJECTED | ERROR:  PREDICATE_UNKNOWN: x.max_length: в схеме tenant на момент записи такого предиката нет
+N973 | PREDICATE_UNKNOWN | REJECTED | ERROR:  PREDICATE_UNKNOWN: x.belongs_to: в схеме tenant на момент записи такого предиката нет
+N974 | PREDICATE_UNKNOWN | REJECTED | ERROR:  PREDICATE_UNKNOWN: x.rank: в схеме tenant на момент записи такого предиката нет
+N975 | PREDICATE_DOMAIN_VIOLATION | REJECTED | ERROR:  PREDICATE_DOMAIN_VIOLATION: субъект не является экземпляром класса sdf_whale_species
+N976 | PREDICATE_DOMAIN_VIOLATION | REJECTED | ERROR:  PREDICATE_DOMAIN_VIOLATION: субъект не является экземпляром класса sdf_whale_species
+N987 | PREDICATE_DOMAIN_VIOLATION | REJECTED | ERROR:  PREDICATE_DOMAIN_VIOLATION: субъект не является экземпляром класса sdf_whale_species
+N988 | PREDICATE_DOMAIN_VIOLATION | REJECTED | ERROR:  PREDICATE_DOMAIN_VIOLATION: субъект не является экземпляром класса sdf_whale_species
+N989 | IDENTIFIER_CHECKSUM_INVALID | REJECTED | ERROR:  IDENTIFIER_CHECKSUM_INVALID: контрольные цифры литерала (S24-01)
+N977 | PREDICATE_RANGE_VIOLATION | REJECTED | ERROR:  PREDICATE_RANGE_VIOLATION: значение не того типа, единицы или схемы, что объявлены у атрибута
+N986 | PREDICATE_RANGE_VIOLATION | REJECTED | ERROR:  PREDICATE_RANGE_VIOLATION: значение не того типа, единицы или схемы, что объявлены у атрибута
+N978 | PREDICATE_RANGE_VIOLATION | REJECTED | ERROR:  PREDICATE_RANGE_VIOLATION: значение не того типа, единицы или схемы, что объявлены у атрибута
+N979 | PREDICATE_RANGE_VIOLATION | REJECTED | ERROR:  PREDICATE_RANGE_VIOLATION: значение не того типа, единицы или схемы, что объявлены у атрибута
+N980 | PREDICATE_RANGE_VIOLATION | REJECTED | ERROR:  PREDICATE_RANGE_VIOLATION: значение не того типа, единицы или схемы, что объявлены у атрибута
+N981 | PREDICATE_RANGE_VIOLATION | REJECTED | ERROR:  PREDICATE_RANGE_VIOLATION: объект не является экземпляром класса sdf_taxon
+N982 | PREDICATE_RANGE_VIOLATION | REJECTED | ERROR:  PREDICATE_RANGE_VIOLATION: объект не является экземпляром класса sdf_taxon
+N983 | QUALIFIER_INVALID | REJECTED | ERROR:  QUALIFIER_INVALID: у предикатов схемы tenant нет квалификаторов
+N984 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки определения в схеме
+N985 | CHECK_CLAIM_DIMENSION_MISMATCH | REJECTED | ERROR:  CHECK_CLAIM_DIMENSION_MISMATCH: x.tender_note не относится к TENDERS
+N990 | IDENTIFIER_SCHEME_INVALID | REJECTED | ERROR:  IDENTIFIER_SCHEME_INVALID: значение не в формате x.itis
+N991 | IDENTIFIER_SCHEME_INVALID | REJECTED | ERROR:  IDENTIFIER_SCHEME_INVALID: значение не в формате x.itis
+N992 | IDENTIFIER_SCHEME_INVALID | REJECTED | ERROR:  IDENTIFIER_SCHEME_INVALID: значение не в формате x.itis
+N993 | IDENTIFIER_SCHEME_INVALID | REJECTED | ERROR:  IDENTIFIER_SCHEME_INVALID: тип идентификатора x.itis не определён для CONCEPT
+N994 | IDENTIFIER_SCHEME_INVALID | REJECTED | ERROR:  IDENTIFIER_SCHEME_INVALID: значение не в формате x.zoobank
+N996 | SCHEMA_INVALID | ACCEPTED | 
+N997 | SCHEMA_INVALID | REJECTED | ERROR:  SCHEMA_INVALID: schema_version: словарь core-ontology/0.3 (schema.is_a, предикаты и схемы tenant) — только в записи 0.3
+N998 | SCHEMA_INVALID | REJECTED | ERROR:  SCHEMA_INVALID: schema_version: словарь core-ontology/0.3 (schema.is_a, предикаты и схемы tenant) — только в записи 0.3
+N999 | SCHEMA_INVALID | ACCEPTED | 
+N995 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: thing совпадает у ent_wk_skeleton и ent_wk_skeleton2
 
 код ошибки | отвергнуто БД | принято БД | не представимо в SQL
 ARTIFACT_INVALID | 23 | 1 | 0
-CHECK_CLAIM_DIMENSION_MISMATCH | 1 | 0 | 0
+CHECK_CLAIM_DIMENSION_MISMATCH | 2 | 0 | 0
 CHECK_CLAIM_NOT_ABOUT_SUBJECT | 1 | 0 | 0
 CHECK_CLAIM_NOT_ACCEPTED_AT_COMPLETION | 4 | 0 | 0
 CHECK_DIMENSION_MISSING | 1 | 0 | 0
@@ -316,32 +416,36 @@ CHECK_SEARCH_MISSING | 4 | 0 | 0
 CHECK_SUBJECT_INVALID | 6 | 0 | 0
 CLAIM_ID_MISMATCH | 0 | 1 | 0
 CLAIM_REVIEW_AMBIGUOUS | 1 | 0 | 0
+CLASS_NOT_INSTANTIABLE | 2 | 0 | 0
 CROSS_SCOPE_REFERENCE | 8 | 0 | 0
-DUPLICATE_ID | 3 | 0 | 0
-ENTITY_DUPLICATE_IN_PROJECT | 50 | 0 | 0
+DUPLICATE_ID | 4 | 0 | 0
+ENTITY_DUPLICATE_IN_PROJECT | 51 | 0 | 0
 ENTITY_IDENTITY_INSUFFICIENT | 10 | 0 | 0
 ENTITY_MERGE_INVALID | 8 | 0 | 0
 EVIDENCE_SPAN_INVALID | 8 | 0 | 0
 GRAPH_NODE_INVALID | 27 | 0 | 0
-IDENTIFIER_CHECKSUM_INVALID | 9 | 0 | 0
+IDENTIFIER_CHECKSUM_INVALID | 10 | 0 | 0
+IDENTIFIER_SCHEME_INVALID | 6 | 0 | 0
 IDENTITY_DECISION_INVALID | 7 | 0 | 0
-MARKING_BROADER_THAN_INPUT | 12 | 0 | 0
+MARKING_BROADER_THAN_INPUT | 16 | 0 | 0
 MARKING_PD_MISSING | 1 | 0 | 0
-ORIGINAL_INVALID | 0 | 3 | 0
-PREDICATE_DOMAIN_VIOLATION | 1 | 0 | 0
-PREDICATE_RANGE_VIOLATION | 6 | 0 | 0
-PREDICATE_UNKNOWN | 1 | 0 | 0
+ORIGINAL_INVALID | 6 | 0 | 0
+PREDICATE_DOMAIN_VIOLATION | 6 | 0 | 0
+PREDICATE_RANGE_VIOLATION | 14 | 0 | 0
+PREDICATE_UNKNOWN | 6 | 0 | 0
 PUBLICATION_INVALID | 9 | 0 | 0
-QUALIFIER_INVALID | 9 | 0 | 0
+QUALIFIER_INVALID | 10 | 0 | 0
 RECEIPT_CLAIM_BINDING_INVALID | 10 | 0 | 1
 RECEIPT_ID_MISMATCH | 0 | 1 | 0
 RECEIPT_KEY_INVALID | 11 | 1 | 0
 RECEIPT_SIGNATURE_INVALID | 0 | 1 | 0
-REF_UNRESOLVED | 13 | 0 | 3
-SCHEMA_INVALID | 10 | 9 | 4
+REF_UNRESOLVED | 25 | 0 | 3
+SCHEMA_CHANGE_INVALID | 22 | 0 | 0
+SCHEMA_DEF_INVALID | 14 | 0 | 0
+SCHEMA_INVALID | 18 | 11 | 4
 SOURCE_CONTENT_UNAVAILABLE | 2 | 0 | 0
 SOURCE_DIGEST_MISMATCH | 4 | 1 | 0
-TEMPORAL_ORDER_INVALID | 10 | 0 | 0
+TEMPORAL_ORDER_INVALID | 15 | 0 | 0
 TRUST_CONFIG_INVALID | 5 | 1 | 0
 
-negative_vectors=303 rejected_by_db=278 accepted_by_db=18 not_representable=7
+negative_vectors=403 rejected_by_db=379 accepted_by_db=17 not_representable=7

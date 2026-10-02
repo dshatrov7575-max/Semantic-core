@@ -1,7 +1,7 @@
 {
  "$schema": "https://json-schema.org/draft/2020-12/schema",
- "$id": "urn:as:core-ontology:0.2",
- "title": "Архитектура семантики — онтология ядра v0.2.2 (dataset)",
+ "$id": "urn:as:core-ontology:0.3",
+ "title": "Архитектура семантики — онтология ядра v0.3 (dataset)",
  "type": "object",
  "additionalProperties": false,
  "required": [
@@ -11,10 +11,10 @@
  ],
  "properties": {
   "dataset_format": {
-   "const": "core-dataset/0.2"
+   "const": "core-dataset/0.3"
   },
   "ontology_version": {
-   "const": "core-ontology/0.2"
+   "const": "core-ontology/0.3"
   },
   "records": {
    "type": "array",
@@ -116,7 +116,8 @@
     "CONFLICT",
     "EQUIPMENT",
     "EQUIPMENT_MODEL",
-    "CONCEPT"
+    "CONCEPT",
+    "THING"
    ]
   },
   "Dimension": {
@@ -170,7 +171,10 @@
    "type": "object",
    "properties": {
     "schema_version": {
-     "const": "core-ontology/0.2"
+     "enum": [
+      "core-ontology/0.2",
+      "core-ontology/0.3"
+     ]
     }
    },
    "required": [
@@ -194,7 +198,10 @@
       "Check",
       "ArtifactReceipt",
       "IdentityDecision",
-      "Publication"
+      "Publication",
+      "ClassDef",
+      "LinkDef",
+      "IdentifierDef"
      ]
     }
    },
@@ -308,6 +315,42 @@
      },
      "then": {
       "$ref": "#/$defs/Publication"
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "ClassDef"
+       }
+      }
+     },
+     "then": {
+      "$ref": "#/$defs/ClassDef"
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "LinkDef"
+       }
+      }
+     },
+     "then": {
+      "$ref": "#/$defs/LinkDef"
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "IdentifierDef"
+       }
+      }
+     },
+     "then": {
+      "$ref": "#/$defs/IdentifierDef"
      }
     }
    ]
@@ -703,6 +746,41 @@
        }
       }
      }
+    },
+    {
+     "if": {
+      "properties": {
+       "entity_type": {
+        "const": "THING"
+       }
+      }
+     },
+     "then": {
+      "properties": {
+       "identity": {
+        "$ref": "#/$defs/IdThing"
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "entity_type": {
+        "const": "THING"
+       }
+      },
+      "required": [
+       "entity_type"
+      ]
+     },
+     "then": {
+      "properties": {
+       "schema_version": {
+        "const": "core-ontology/0.3"
+       }
+      }
+     }
     }
    ]
   },
@@ -982,7 +1060,8 @@
       "MONEY",
       "IDENTIFIER",
       "BOOLEAN",
-      "INTEGER"
+      "INTEGER",
+      "CLASS_REF"
      ]
     }
    },
@@ -1150,6 +1229,27 @@
        "type": true,
        "value": {
         "type": "integer"
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "type": {
+        "const": "CLASS_REF"
+       }
+      }
+     },
+     "then": {
+      "additionalProperties": false,
+      "required": [
+       "class_id"
+      ],
+      "properties": {
+       "type": true,
+       "class_id": {
+        "$ref": "#/$defs/SchemaDefId"
        }
       }
      }
@@ -1344,7 +1444,79 @@
     "marking": {
      "$ref": "#/$defs/Marking"
     }
-   }
+   },
+   "allOf": [
+    {
+     "if": {
+      "properties": {
+       "predicate": {
+        "pattern": "^(x\\.|schema\\.is_a$)"
+       }
+      },
+      "required": [
+       "predicate"
+      ]
+     },
+     "then": {
+      "properties": {
+       "schema_version": {
+        "const": "core-ontology/0.3"
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "object": {
+        "properties": {
+         "literal": {
+          "anyOf": [
+           {
+            "properties": {
+             "type": {
+              "const": "CLASS_REF"
+             }
+            },
+            "required": [
+             "type"
+            ]
+           },
+           {
+            "properties": {
+             "type": {
+              "const": "IDENTIFIER"
+             },
+             "scheme": {
+              "pattern": "^x\\."
+             }
+            },
+            "required": [
+             "type",
+             "scheme"
+            ]
+           }
+          ]
+         }
+        },
+        "required": [
+         "literal"
+        ]
+       }
+      },
+      "required": [
+       "object"
+      ]
+     },
+     "then": {
+      "properties": {
+       "schema_version": {
+        "const": "core-ontology/0.3"
+       }
+      }
+     }
+    }
+   ]
   },
   "ClaimReview": {
    "type": "object",
@@ -2216,6 +2388,454 @@
     "recorded_at": {
      "$ref": "#/$defs/Timestamp"
     }
+   }
+  },
+  "SchemaDefId": {
+   "type": "string",
+   "pattern": "^sdf_[a-z0-9_]{2,64}$"
+  },
+  "IdThing": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "label",
+    "lang"
+   ],
+   "properties": {
+    "label": {
+     "$ref": "#/$defs/NonEmpty"
+    },
+    "lang": {
+     "type": "string",
+     "pattern": "^[a-z]{2,3}$"
+    },
+    "namespace": {
+     "type": "string",
+     "pattern": "^[a-z0-9_]{2,64}$"
+    },
+    "disambiguator": {
+     "$ref": "#/$defs/Disambiguator"
+    }
+   }
+  },
+  "ClassDef": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "kind",
+    "schema_version",
+    "class_id",
+    "tenant_id",
+    "version",
+    "root_type",
+    "name",
+    "change",
+    "marking"
+   ],
+   "properties": {
+    "kind": {
+     "const": "ClassDef"
+    },
+    "schema_version": {
+     "const": "core-ontology/0.3"
+    },
+    "class_id": {
+     "$ref": "#/$defs/SchemaDefId"
+    },
+    "tenant_id": {
+     "$ref": "#/$defs/TenantId"
+    },
+    "version": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 9999
+    },
+    "root_type": {
+     "$ref": "#/$defs/EntityType"
+    },
+    "name": {
+     "$ref": "#/$defs/NonEmpty"
+    },
+    "parent_class_id": {
+     "$ref": "#/$defs/SchemaDefId"
+    },
+    "is_abstract": {
+     "const": true
+    },
+    "deprecated": {
+     "const": true
+    },
+    "attributes": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 200,
+     "items": {
+      "$ref": "#/$defs/AttributeDef"
+     }
+    },
+    "change": {
+     "$ref": "#/$defs/SchemaChangeInfo"
+    },
+    "marking": {
+     "$ref": "#/$defs/Marking"
+    }
+   }
+  },
+  "LinkDef": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "kind",
+    "schema_version",
+    "link_id",
+    "tenant_id",
+    "version",
+    "predicate_id",
+    "name",
+    "domain_class_id",
+    "range_class_id",
+    "cardinality",
+    "change",
+    "marking"
+   ],
+   "properties": {
+    "kind": {
+     "const": "LinkDef"
+    },
+    "schema_version": {
+     "const": "core-ontology/0.3"
+    },
+    "link_id": {
+     "$ref": "#/$defs/SchemaDefId"
+    },
+    "tenant_id": {
+     "$ref": "#/$defs/TenantId"
+    },
+    "version": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 9999
+    },
+    "predicate_id": {
+     "$ref": "#/$defs/TenantPredicateId"
+    },
+    "name": {
+     "$ref": "#/$defs/NonEmpty"
+    },
+    "domain_class_id": {
+     "$ref": "#/$defs/SchemaDefId"
+    },
+    "range_class_id": {
+     "$ref": "#/$defs/SchemaDefId"
+    },
+    "cardinality": {
+     "enum": [
+      "ONE",
+      "MANY"
+     ]
+    },
+    "symmetric": {
+     "const": true
+    },
+    "deprecated": {
+     "const": true
+    },
+    "change": {
+     "$ref": "#/$defs/SchemaChangeInfo"
+    },
+    "marking": {
+     "$ref": "#/$defs/Marking"
+    }
+   }
+  },
+  "IdentifierDef": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "kind",
+    "schema_version",
+    "idef_id",
+    "tenant_id",
+    "version",
+    "scheme",
+    "name",
+    "applies_to_root_type",
+    "strength",
+    "priority",
+    "change",
+    "marking"
+   ],
+   "properties": {
+    "kind": {
+     "const": "IdentifierDef"
+    },
+    "schema_version": {
+     "const": "core-ontology/0.3"
+    },
+    "idef_id": {
+     "$ref": "#/$defs/SchemaDefId"
+    },
+    "tenant_id": {
+     "$ref": "#/$defs/TenantId"
+    },
+    "version": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 9999
+    },
+    "scheme": {
+     "type": "string",
+     "pattern": "^(ru\\.inn|ru\\.ogrn|ru\\.ogrnip|imo|x\\.[a-z][a-z0-9]{1,38})$"
+    },
+    "name": {
+     "$ref": "#/$defs/NonEmpty"
+    },
+    "applies_to_root_type": {
+     "$ref": "#/$defs/EntityType"
+    },
+    "strength": {
+     "enum": [
+      "STRONG",
+      "WEAK"
+     ]
+    },
+    "priority": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 999
+    },
+    "format": {
+     "$ref": "#/$defs/IdentifierFormat"
+    },
+    "deprecated": {
+     "const": true
+    },
+    "change": {
+     "$ref": "#/$defs/SchemaChangeInfo"
+    },
+    "marking": {
+     "$ref": "#/$defs/Marking"
+    }
+   },
+   "allOf": [
+    {
+     "if": {
+      "properties": {
+       "scheme": {
+        "$ref": "#/$defs/TenantScheme"
+       }
+      }
+     },
+     "then": {
+      "required": [
+       "format"
+      ]
+     },
+     "else": {
+      "not": {
+       "required": [
+        "format"
+       ]
+      },
+      "properties": {
+       "strength": {
+        "const": "STRONG"
+       }
+      }
+     }
+    }
+   ]
+  },
+  "TenantPredicateId": {
+   "type": "string",
+   "pattern": "^x\\.[a-z][a-z_]{1,40}$"
+  },
+  "TenantScheme": {
+   "type": "string",
+   "pattern": "^x\\.[a-z][a-z0-9]{1,38}$"
+  },
+  "SchemaChangeInfo": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "type",
+    "description",
+    "recorded_at",
+    "recorded_by"
+   ],
+   "properties": {
+    "type": {
+     "enum": [
+      "ADD_CLASS",
+      "RENAME_CLASS",
+      "DEPRECATE_CLASS",
+      "ADD_ATTRIBUTE",
+      "CHANGE_ATTRIBUTE",
+      "REMOVE_ATTRIBUTE",
+      "ADD_LINK",
+      "RENAME_LINK",
+      "DEPRECATE_LINK",
+      "ADD_IDENTIFIER",
+      "RENAME_IDENTIFIER",
+      "CHANGE_IDENTIFIER_STRENGTH",
+      "DEPRECATE_IDENTIFIER"
+     ]
+    },
+    "description": {
+     "$ref": "#/$defs/NonEmpty"
+    },
+    "migration_note": {
+     "$ref": "#/$defs/NonEmpty"
+    },
+    "recorded_at": {
+     "$ref": "#/$defs/Timestamp"
+    },
+    "recorded_by": {
+     "$ref": "#/$defs/ActorId"
+    }
+   }
+  },
+  "AttributeDef": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "predicate_id",
+    "name",
+    "value_type",
+    "cardinality",
+    "required"
+   ],
+   "properties": {
+    "predicate_id": {
+     "$ref": "#/$defs/TenantPredicateId"
+    },
+    "name": {
+     "$ref": "#/$defs/NonEmpty"
+    },
+    "value_type": {
+     "enum": [
+      "STRING",
+      "DATE",
+      "QUANTITY",
+      "MONEY",
+      "IDENTIFIER",
+      "BOOLEAN",
+      "INTEGER"
+     ]
+    },
+    "cardinality": {
+     "enum": [
+      "ONE",
+      "MANY"
+     ]
+    },
+    "required": {
+     "type": "boolean"
+    },
+    "unit": {
+     "type": "string",
+     "pattern": "^[A-Za-z%/0-9]{1,16}$"
+    },
+    "scheme": {
+     "type": "string",
+     "pattern": "^[a-z][a-z0-9.]{1,40}$"
+    }
+   },
+   "allOf": [
+    {
+     "if": {
+      "properties": {
+       "value_type": {
+        "const": "QUANTITY"
+       }
+      }
+     },
+     "then": {
+      "required": [
+       "unit"
+      ]
+     },
+     "else": {
+      "not": {
+       "required": [
+        "unit"
+       ]
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "value_type": {
+        "const": "IDENTIFIER"
+       }
+      }
+     },
+     "then": {
+      "required": [
+       "scheme"
+      ]
+     },
+     "else": {
+      "not": {
+       "required": [
+        "scheme"
+       ]
+      }
+     }
+    }
+   ]
+  },
+  "IdentifierFormat": {
+   "type": "array",
+   "minItems": 1,
+   "maxItems": 16,
+   "items": {
+    "oneOf": [
+     {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "chars",
+       "min",
+       "max"
+      ],
+      "properties": {
+       "chars": {
+        "enum": [
+         "DIGIT",
+         "UPPER",
+         "LOWER",
+         "ALNUM",
+         "ALNUM_UPPER"
+        ]
+       },
+       "min": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 64
+       },
+       "max": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 64
+       }
+      }
+     },
+     {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "lit"
+      ],
+      "properties": {
+       "lit": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_./-]$"
+       }
+      }
+     }
+    ]
    }
   }
  }

@@ -1,0 +1,105 @@
+== A. собственные векторы цикла 9 (контроль) ==
+P801 expected=[] got=[] OK
+N801 expected=['REF_UNRESOLVED'] got=['REF_UNRESOLVED'] OK
+N802 expected=['CROSS_SCOPE_REFERENCE'] got=['CROSS_SCOPE_REFERENCE'] OK
+N803 expected=['SCHEMA_INVALID'] got=['SCHEMA_INVALID'] OK
+N810 expected=['REF_UNRESOLVED'] got=['REF_UNRESOLVED'] OK
+N811 expected=['REF_UNRESOLVED'] got=['REF_UNRESOLVED'] OK
+N820 expected=['REF_UNRESOLVED'] got=['REF_UNRESOLVED'] OK
+P802 expected=[] got=[] OK
+N830 expected=['REF_UNRESOLVED'] got=['REF_UNRESOLVED'] OK
+N831 expected=['PREDICATE_RANGE_VIOLATION'] got=['PREDICATE_RANGE_VIOLATION'] OK
+N832 expected=['PREDICATE_DOMAIN_VIOLATION'] got=['PREDICATE_DOMAIN_VIOLATION'] OK
+
+== B. THING ==
+B1 сущность THING (валидатор)
+    -> codes=[]
+B2 is_a сущности THING на класс THING
+    -> codes=[]
+
+== C. иерархия ==
+C1 самоссылка parent=self
+    -> codes=['SCHEMA_INVALID']
+       SCHEMA_INVALID: циклическое наследование классов
+C2 цикл A->B->A
+    -> codes=['SCHEMA_INVALID']
+       SCHEMA_INVALID: циклическое наследование классов
+       SCHEMA_INVALID: циклическое наследование классов
+C3 цепочка 400 классов (валидна)
+    -> codes=[]
+    time=0.3s
+
+== D. tenant ==
+D1 is_a на класс чужого tenant (класс tnt_other, проект tnt_demo)
+    -> codes=['CROSS_SCOPE_REFERENCE']
+       CROSS_SCOPE_REFERENCE: schema.is_a: ClassDef из другого tenant
+D2 CLASS_REF.tenant_id = tnt_someone_else, класс и проект в tnt_demo
+    -> codes=[]
+D3 SchemaChange tenant=tnt_other на ClassDef tenant=tnt_demo
+    -> codes=[]
+D4 LinkDef tenant=tnt_other, domain/range в tnt_demo (правило CROSS_SCOPE у LinkDef)
+    -> codes=['CROSS_SCOPE_REFERENCE']
+       CROSS_SCOPE_REFERENCE: domain_class_id из другого tenant
+       CROSS_SCOPE_REFERENCE: range_class_id из другого tenant
+D5 два tenant хотят один class_id sdf_org_sub
+    -> codes=['DUPLICATE_ID']
+       DUPLICATE_ID: ClassDef sdf_org_sub повторяется
+D6 одинаковый id sdf_same у ClassDef и LinkDef (разные виды)
+    -> codes=[]
+
+== E. время и версии ==
+E1 ClassDef created_at=2099, is_a recorded_at=2026-10-02 (класс «создан» позже утверждения)
+    -> codes=[]
+E2 ClassDef created_at=1970
+    -> codes=[]
+E3 SchemaChange recorded_at раньше created_at цели (2001 г.)
+    -> codes=[]
+E4 вторая версия класса: тот же class_id, version=2
+    -> codes=['DUPLICATE_ID']
+       DUPLICATE_ID: ClassDef sdf_org_sub повторяется
+E5 первая и единственная запись класса сразу version=7
+    -> codes=[]
+
+== F. декоративные поля ==
+F1 ClassDef без SchemaChange
+    -> codes=[]
+F2 SchemaChange ADD_LINK с target_kind=ClassDef
+    -> codes=[]
+F3 SchemaChange CHANGE_IDENTIFIER_STRENGTH на LinkDef
+    -> codes=[]
+F4 is_a на абстрактный класс
+    -> codes=[]
+F5 attributes: predicate_id не существует + дубль attr_id
+    -> codes=[]
+F6 attributes: предикат вне домена root_type (person.birth_date у ORGANIZATION)
+    -> codes=[]
+F7 наследник объявляет inherited=true для атрибута, которого у родителя нет
+    -> codes=[]
+F8 required-атрибут класса, is_a есть, утверждения по атрибуту нет
+    -> codes=[]
+F9 LinkDef: predicate_id не зарегистрирован (no.such_thing)
+    -> codes=[]
+F10 LinkDef: inverse_predicate_id не зарегистрирован
+    -> codes=['PREDICATE_UNKNOWN']
+       PREDICATE_UNKNOWN: inverse_predicate_id no.such_inverse не зарегистрирован
+F11 LinkDef: symmetric=true при domain!=range и с inverse
+    -> codes=[]
+F12 LinkDef corp.director_of domain=org_sub(ORGANIZATION) — в реестре предикатов домен PERSON; и два LinkDef на один предикат с ONE/MANY
+    -> codes=[]
+F13 IdentifierDef: два определения одной (tenant, scheme, root_type), STRONG и WEAK
+    -> codes=[]
+F14 IdentifierDef: переопределение встроенной ru.inn как WEAK c validation_regex '.*'
+    -> codes=[]
+F15 IdentifierDef: невалидное регулярное выражение '([' и катастрофическое '(a+)+$'
+    -> codes=[]
+F16 IdentifierDef applies_to_root_type='PLANET' (какое правило отвергает?)
+    -> codes=['SCHEMA_INVALID']
+       SCHEMA_INVALID: 'PLANET' is not one of ['PERSON', 'ORGANIZATION', 'REAL_ESTATE', 'MOVABLE_PROPERTY', 'EVENT', 'CONFLICT', 'EQUIPMENT', 'EQUIPMENT_MODE
+
+== G. маркировки ==
+G1 PUBLIC-утверждение is_a на RESTRICTED-класс (с label класса в литерале)
+    -> codes=[]
+G2 наследник PUBLIC у родителя RESTRICTED
+    -> codes=[]
+
+total 5s

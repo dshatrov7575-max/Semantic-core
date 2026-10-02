@@ -1,0 +1,183 @@
+=== 0. применение DDL ===
+  review09d: load_s1 OK; psql -v ON_ERROR_STOP=1 -f ddl_s9.sql -> rc=3 psql:/home/claude/as/review/rereview_s9/snapshot/slice/ddl_s9.sql:123: ERROR:  syntax error at or near "symmetric"
+LINE 9:   symmetric         boolean,
+          ^
+  review09e: load_s1 OK; psql -v ON_ERROR_STOP=1 -f ddl_s9_patch1.sql -> rc=0 
+  review09f: load_s1 OK; psql -v ON_ERROR_STOP=1 -f ddl_s9_patch2.sql -> rc=0 
+  [review09d] что осталось в базе после сданного DDL
+      => class_closure,class_defs
+триггеров claims_isa_guard: 0
+
+=== 1. база КАК СДАНО (review09d): schema.is_a без стража ===
+  валидатор: ['REF_UNRESOLVED']
+  [review09d/ac_loader] ac_loader: is_a на несуществующий класс
+      => OK (принято)
+  валидатор: ['PREDICATE_DOMAIN_VIOLATION']
+  [review09d] postgres: ClassDef sdf_org_sub (ORGANIZATION)
+      => OK (принято)
+  [review09d/ac_loader] ac_loader: is_a PERSON -> класс ORGANIZATION
+      => OK (принято)
+  [review09d] сколько is_a-утверждений база приняла
+      => 2
+
+=== 2. patch1 (review09e): права ===
+  [review09e/ac_loader] ac_loader: INSERT ClassDef
+      => ERROR:  permission denied for table class_defs
+  [review09e/ac_migrator] ac_migrator: INSERT ClassDef
+      => ERROR:  permission denied for table class_defs
+  [review09e/ac_loader] SELECT count(*) FROM ac.class_defs;
+      => ERROR:  permission denied for table class_defs
+  [review09e/ac_projector] SELECT count(*) FROM ac.class_closure;
+      => ERROR:  permission denied for table class_closure
+  [review09e] гранты на 5 новых таблиц, кроме владельца (пустой ответ = грантов нет)
+      => OK (принято)
+  [review09e] postgres: ClassDef sdf_org_sub
+      => OK (принято)
+  валидатор (валидный is_a, аналог P802): []
+  [review09e/ac_loader] ac_loader: валидный is_a
+      => ERROR:  record "new" has no field "object" CONTEXT:  PL/pgSQL assignment "obj := NEW.object -> 'literal'"
+  [review09e] postgres: тот же валидный is_a
+      => ERROR:  record "new" has no field "object" CONTEXT:  PL/pgSQL assignment "obj := NEW.object -> 'literal'"
+
+=== 3. THING ===
+  валидатор (сущность THING): []
+  [review09f/ac_loader] ac_loader: INSERT сущности THING
+      => ERROR:  new row for relation "entities" violates check constraint "entities_entity_type_check" DETAIL:  Failing row contains (ent_zz_thing, prj_wiki_whales, THING, {"lang": "ru", "label": "Акулы"}, ACTIVE, null, null, 2026-10-02 13:08:28.333847+03, {"level": "PUBLIC", "categories": []}, ent_zz_thing).
+  [review09f] ac.identity_keys для THING (ключи идентичности)
+      => OK (принято)
+
+=== 4. маркировка, время, версии, неизменяемость (review09e, владелец) ===
+  [review09e] ClassDef с marking={level:TOP_SECRET,zzz:1}
+      => OK (принято)
+  [review09e] ClassDef с marking='"строка"'::jsonb
+      => OK (принято)
+  [review09e] SELECT class_id, marking, ac.marking_ok(marking) FROM ac.class_defs WHERE class_id LIKE 'sdf_mark%';
+      => sdf_mark_junk|{"zzz": 1, "level": "TOP_SECRET"}|f
+sdf_mark_str2|"строка"|f
+  [review09e] ClassDef created_at=2099-01-01
+      => OK (принято)
+  [review09e] ClassDef created_at=1970-01-01 (после печати истории)
+      => OK (принято)
+  [review09e] SchemaChange recorded_at=1999, marking={}
+      => OK (принято)
+  [review09e] SELECT change_id, recorded_at, marking FROM ac.schema_changes; SELECT 'печать истории: ' || ac.sealed_at();
+      => scx_backdated|1999-12-31 03:00:00+03|{}
+печать истории: 2026-10-02 13:08:20.999805+03
+  [review09e] версия 2 класса sdf_org_sub
+      => ERROR:  duplicate key value violates unique constraint "class_defs_pkey" DETAIL:  Key (class_id)=(sdf_org_sub) already exists.
+  [review09e] первая запись класса сразу version=7
+      => OK (принято)
+  [review09e] UPDATE class_defs (контроль)
+      => ERROR:  APPEND_ONLY: UPDATE на ac.class_defs запрещён CONTEXT:  PL/pgSQL function ac.forbid() line 3 at RAISE
+  [review09e] DELETE schema_changes (контроль)
+      => ERROR:  APPEND_ONLY: DELETE на ac.schema_changes запрещён CONTEXT:  PL/pgSQL function ac.forbid() line 3 at RAISE
+  [review09e] колонки ac.class_defs (есть ли attributes / body?)
+      => class_id|text||not null|
+tenant_id|text||not null|
+root_type|text||not null|
+name|text||not null|
+label_ru|text|||
+parent_class_id|text|||
+is_abstract|boolean|||
+version|integer||not null|
+created_at|timestamp with time zone||not null|
+created_by|text||not null|
+marking|jsonb||not null|
+
+=== 5. closure: прямое изменение (review09e, владелец; у прежних производных таблиц стоит ac.forbid) ===
+  [review09e] SELECT count(*) FROM ac.class_closure;
+      => 6
+  [review09e] INSERT ложной строки: sdf_past — предок sdf_org_sub
+      => OK (принято)
+  [review09e] UPDATE closure
+      => OK (принято)
+  [review09e] DELETE из closure
+      => OK (принято)
+  [review09e] классы / строки depth=0 / прочие
+      => 6|4|2
+  [review09e] для сравнения: DELETE из производной ac.claim_evidence
+      => ERROR:  APPEND_ONLY: DELETE на ac.claim_evidence запрещён CONTEXT:  PL/pgSQL function ac.forbid() line 3 at RAISE
+
+=== 6. tenant (review09e, владелец; поведение стражей) ===
+  [review09e] tenant tnt_other создаёт класс с id, занятым в tnt_demo
+      => ERROR:  duplicate key value violates unique constraint "class_defs_pkey" DETAIL:  Key (class_id)=(sdf_org_sub) already exists.
+  [review09e] tnt_other: наследник чужого sdf_org_sub (контроль)
+      => ERROR:  REF_UNRESOLVED: parent_class_id sdf_org_sub не найден в tenant tnt_other CONTEXT:  PL/pgSQL function ac.fail(text,text) line 2 at RAISE
+  [review09e] SchemaChange tnt_other на класс tnt_demo (валидатор: принято, см. val D3)
+      => ERROR:  REF_UNRESOLVED: target_id sdf_org_sub не найден в ClassDef для tenant tnt_other CONTEXT:  PL/pgSQL function ac.fail(text,text) line 2 at RAISE
+  [review09e] LinkDef: predicate и inverse не зарегистрированы (валидатор: PREDICATE_UNKNOWN, см. val F10)
+      => OK (принято)
+  [review09e] IdentifierDef: два определения ru.inn (WEAK и STRONG), regex '([' и '(a+)+$'
+      => sdf_id_a|ru.inn|WEAK|([|
+sdf_id_b|ru.inn|STRONG||(a+)+$
+  [review09e] SchemaChange CHANGE_IDENTIFIER_STRENGTH на LinkDef
+      => OK (принято)
+
+=== 7. patch2 (review09f): живой загрузчик ac_loader ===
+  [review09f/ac_loader] ac_loader: INSERT ClassDef (INSERT на class_defs выдан)
+      => ERROR:  permission denied for table class_closure CONTEXT:  SQL function "rebuild_class_closure" statement 1
+  [review09f] рецензент: добавляю INSERT, DELETE на class_closure загрузчику (иначе класс создать нельзя)
+      => OK (принято)
+  [review09f/ac_loader] ac_loader: INSERT ClassDef
+      => OK (принято)
+  [review09f/ac_loader] ac_loader: DELETE FROM ac.class_closure (теперь обязанное право)
+      => 0
+  [review09f] владелец: пересчёт
+      => 1
+  валидатор (валидный is_a): []
+  [review09f/ac_loader] ac_loader: валидный is_a (контроль)
+      => OK (принято)
+  валидатор (CLASS_REF.tenant_id=tnt_someone_else): []
+  [review09f/ac_loader] ac_loader: is_a с CLASS_REF.tenant_id = tnt_someone_else
+      => OK (принято)
+  [review09f] SELECT tenant_id AS claim_tenant, body->'object'->'literal' FROM ac.claims WHERE predicate='schema.is_a' ORDER BY ingested_at;
+      => tnt_demo|{"type": "CLASS_REF", "class_id": "sdf_org_sub", "tenant_id": "tnt_demo"}
+tnt_demo|{"type": "CLASS_REF", "class_id": "sdf_org_sub", "tenant_id": "tnt_someone_else"}
+  [review09f/ac_loader] ac_loader: ClassDef created_at=2099
+      => OK (принято)
+  валидатор (is_a на класс, «созданный» в 2099): []
+  [review09f/ac_loader] ac_loader: is_a на класс из 2099
+      => OK (принято)
+  [review09f/ac_loader] ClassDef is_abstract=true
+      => OK (принято)
+  валидатор (is_a на абстрактный класс): []
+  [review09f/ac_loader] ac_loader: is_a на абстрактный класс
+      => OK (принято)
+  [review09f] класс чужого tenant tnt_other
+      => OK (принято)
+  валидатор (is_a на чужой класс): ['CROSS_SCOPE_REFERENCE']
+  [review09f/ac_loader] ac_loader(tnt_demo): is_a на СУЩЕСТВУЮЩИЙ класс чужого tenant
+      => ERROR:  CROSS_SCOPE_REFERENCE: schema.is_a: ClassDef из tenant tnt_other, проект в tenant tnt_demo CONTEXT:  PL/pgSQL function ac.fail(text,text) line 2 at RAISE
+  [review09f/ac_loader] ac_loader(tnt_demo): is_a на НЕсуществующий класс
+      => ERROR:  REF_UNRESOLVED: schema.is_a: class_id sdf_no_such_cls не найден CONTEXT:  PL/pgSQL function ac.fail(text,text) line 2 at RAISE
+  [review09f] ClassDef RESTRICTED+COMMERCIAL_SECRET
+      => OK (принято)
+  валидатор (PUBLIC is_a на RESTRICTED-класс, имя класса в label литерала): []
+  [review09f/ac_loader] ac_loader: PUBLIC is_a на RESTRICTED-класс
+      => OK (принято)
+  [review09f/ac_rd_public] ac.dossier('prj_wiki_whales','ent_wk_blue') — строки про is_a/класс:
+      => "text": "Синий кит: schema.is_a — .",
+
+=== 8. гонка: два одновременных INSERT наследников одного родителя (review09f, ac_loader, READ COMMITTED) ===
+  сессия 1: rc=0 COMMIT
+  сессия 2: rc=3 ERROR: duplicate key value violates unique constraint "class_closure_pkey" DETAIL: Key (ancestor_id, descendant_id)=(sdf_secret_cls, sdf_secret_cls) already exists. CONTEXT: SQL function "rebuild_class_closure" statement 2 SQL statement "SELECT ac.rebuild_class_closure(NEW.tenant_id)" PL/pgSQL funct
+  [review09f] какие классы остались
+      => sdf_race_1
+
+=== 9. цена полного пересчёта closure (review09f, владелец) ===
+  250 плоских классов одним INSERT ... SELECT: 3.6 c  rc=0 
+  500 плоских классов одним INSERT ... SELECT: 23.9 c  rc=0 
+  1000 плоских классов одним INSERT ... SELECT: 187.0 c  rc=0 
+  цепочка глубиной 100: 6.1 c  rc=0 строк closure: 5050 
+  цепочка глубиной 200: 52.3 c  rc=0 строк closure: 20100 
+  цепочка глубиной 400: 300.1 c  rc=3  ERROR:  canceling statement due to statement timeout
+CONTEXT:  SQL function "rebuild_class_closure" statement 2
+SQL stat
+  [review09f] контроль корректности closure после всех вставок
+      => closure == рекурсивный расчёт: true
+
+=== 10. используется ли closure / LinkDef / IdentifierDef хоть одной функцией базы ===
+  [review09f] функции ac.*, читающие class_closure (кроме самого пересчёта)
+      => (нет)
+  [review09f] функции ac.*, читающие link_defs / identifier_defs / schema_changes (кроме их собственных стражей)
+      => (нет)

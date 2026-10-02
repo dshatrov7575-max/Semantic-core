@@ -1,0 +1,110 @@
+LOAD: OK artifact_nodes=10 artifacts=1 checks=4 claims=37 class_closure=7 class_defs=5 decisions=2 entities=28 entity_keys=45 evidence=40 identifier_defs=1 link_defs=1 projects=6 receipts=1 reviews=8 schema_predicates=4 seals=1 sources=16
+KEYS PARITY (DB-derived == validator): OK rows=45
+=== 1. прежние находки на живой базе ===
+  S9R-04 гранты на таблицы схемы
+      => ac_loader:class_defs:SELECT ac_migrator:class_defs:INSERT ac_migrator:class_defs:SELECT ac_modeler:class_defs:INSERT ac_modeler:class_defs:SELECT ac_projector:class_defs:SELECT ac_loader:class_closure:SELECT ac_migrator:class_closure:SELECT ac_modeler:class_closure:SELECT ac_projector:class_closure:SELECT ac_loader:schema_predicates:SELECT ac_migrator:schema_predicates:SELECT ac_modeler:schema_predicates:SELECT ac_projector:schema_predicates:SELECT
+  S9R-04 ac_loader пишет класс
+      => ERROR:  permission denied for table class_defs
+  ac_modeler пишет класс sdf_r2_a (recorded_at подан 1999-01-01)
+      => (принято)
+  S9R-08 время версии поставила база
+      => t
+  S9R-08 ac_modeler с ac.historical_import=on и временем 2099
+      => t
+  S9R-08 ac_migrator, исторический импорт, время до печати истории (1999)
+      => ERROR:  TEMPORAL_ORDER_INVALID: история до 2026-10-02 14:21:21.503123+03 запечатана
+  S9R-08 ac_migrator, исторический импорт, время из будущего (2099)
+      => ERROR:  TEMPORAL_ORDER_INVALID: историческое время из будущего
+  S9R-05 ac_modeler: INSERT в class_closure
+      => ERROR:  permission denied for table class_closure
+  S9R-05 ac_modeler: INSERT в schema_predicates
+      => ERROR:  permission denied for table schema_predicates
+  S9R-05 ac_loader: INSERT в class_closure
+      => ERROR:  permission denied for table class_closure
+  S9R-05 ac_loader: INSERT в schema_predicates
+      => ERROR:  permission denied for table schema_predicates
+  S9R-05 ac_migrator: INSERT в class_closure
+      => ERROR:  permission denied for table class_closure
+  S9R-05 ac_migrator: INSERT в schema_predicates
+      => ERROR:  permission denied for table schema_predicates
+  S9R-05 владелец: DELETE из class_closure
+      => ERROR:  APPEND_ONLY: DELETE на ac.class_closure запрещён
+  S9R-05 владелец: UPDATE schema_predicates
+      => ERROR:  APPEND_ONLY: UPDATE на ac.schema_predicates запрещён
+  S9R-05 ac_modeler: TRUNCATE class_defs
+      => ERROR:  permission denied for table class_defs
+  S9R-07 маркировка-мусор
+      => ERROR:  new row for relation "class_defs" violates check constraint "class_defs_marking_shape"
+  S9R-07 имя из пробелов
+      => ERROR:  new row for relation "class_defs" violates check constraint "class_defs_name_check"
+  S9R-13 версия 2 (RENAME_CLASS) класса sdf_r2_a
+      => (принято)
+  S9R-13 первая запись сразу version=7
+      => ERROR:  SCHEMA_DEF_INVALID: версии определения идут подряд с 1: ожидается 1
+  S9R-10 tnt_other создаёт класс с тем же id sdf_r2_a
+      => (принято)
+  класс только в tnt_other: sdf_r2_foreign
+      => (принято)
+  S9R-10 is_a из проекта tnt_demo на класс, существующий только в tnt_other
+      => ERROR:  REF_UNRESOLVED: schema.is_a: класса sdf_r2_foreign нет в схеме tenant
+  S9R-10 is_a на несуществующий класс
+      => ERROR:  REF_UNRESOLVED: schema.is_a: класса sdf_r2_nonexistent нет в схеме tenant
+      сообщения отличаются только идентификатором: True
+  S9R-09 CLASS_REF с лишним tenant_id
+      => ERROR:  SCHEMA_INVALID: CLASS_REF — ровно {type, class_id}: класс ищется в tenant проекта
+  абстрактный класс sdf_r2_abs
+      => (принято)
+  RESTRICTED-класс sdf_r2_secret
+      => (принято)
+  S9R-24 PUBLIC-наследник RESTRICTED-родителя
+      => ERROR:  MARKING_BROADER_THAN_INPUT: родитель: маркировка определения шире маркировки класса sdf_r2_secret
+  S9R-18 is_a на абстрактный класс
+      => ERROR:  CLASS_NOT_INSTANTIABLE: класс sdf_r2_abs абстрактный или выведен из употребления
+  S9R-24 PUBLIC is_a на RESTRICTED-класс
+      => ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки класса
+  S9R-06 сущность THING
+      => (принято)
+  S9R-03 валидный is_a (ent_wk_baleen -> sdf_r2_a)
+      => (принято)
+  S9R-25 досье, предложения про класс: ['Усатые киты: класс — «Переименован».', 'Усатые киты: класс — «Таксон».']
+
+=== 2. одна секунда: класс создан, is_a пишется сразу ===
+  ac_modeler: класс sdf_r2_fast
+      => (принято)
+  ac_loader: is_a на sdf_r2_fast сразу же (recorded_at = текущая секунда)
+      => ERROR:  TEMPORAL_ORDER_INVALID: schema.is_a: класс записан позже утверждения
+  то же через 1,2 с
+      => (принято)
+
+=== 3. исторический импорт (ac_migrator) задним числом под живые утверждения ===
+  ac_modeler: класс sdf_r2_hist с атрибутом x.rv_note
+      => (принято)
+  ac_loader: живой is_a на sdf_r2_hist
+      => (принято)
+  ac_loader: живое x.rv_note
+      => (принято)
+  ac_migrator: DEPRECATE_CLASS sdf_r2_hist с recorded_at=2026-10-02T11:21:30Z (раньше обоих утверждений)
+      => (принято)
+  итог в базе: is_a записан ПОСЛЕ вывода класса из употребления
+      => schema.is_a|t|t
+
+=== 4. воспроизводимость ac.model на прошлый момент при незафиксированной записи is_a ===
+  писатель: (принято)
+  as_of=2026-10-02 14:21:36.790971+03
+  до фиксации:    digest=sha256:eac3951fb237f9b3… экземпляров sdf_r2_fast=1
+  после фиксации: digest=sha256:7d59d9c5e5022771… экземпляров sdf_r2_fast=2
+      => НЕ ВОСПРОИЗВОДИМ: тот же as_of, другой ответ
+
+=== 5. гонка: изменение схемы против записи утверждения ===
+  класс sdf_r2_race
+      => (принято)
+  ac_modeler: DEPRECATE_CLASS sdf_r2_race во время незафиксированного is_a
+      => (принято)
+  изменение схемы ждало 2.2 c; писатель утверждения: (принято)
+  is_a записан раньше вывода из употребления
+      => t
+  S9R-27 три одновременных наследника одного родителя: ['(принято)', '(принято)', '(принято)']
+
+=== 6. S9R-26 цена замыкания ===
+  1000 плоских классов одним INSERT: 0.4 c (принято)
+  цепочка глубиной 400: 1.8 c строк closure=80200 (принято)

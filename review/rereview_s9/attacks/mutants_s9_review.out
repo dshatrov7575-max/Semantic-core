@@ -1,0 +1,11 @@
+векторов: 377; построены за 3s
+SURVIVED R1 цикл наследования не проверяется
+SURVIVED R2 LinkDef: tenant domain/range не проверяется (CROSS_SCOPE)
+SURVIVED R3 LinkDef: inverse_predicate_id не проверяется (PREDICATE_UNKNOWN)
+SURVIVED R4 IdentifierDef: applies_to_root_type не проверяется
+SURVIVED R5 schema.is_a: tenant класса не сверяется с tenant проекта (CROSS_SCOPE)
+KILLED   R6 LinkDef: range_class_id не проверяется (только domain)  (векторы: ['N811'])
+SURVIVED R7 SchemaChange: цели LinkDef и IdentifierDef не проверяются (только ClassDef)
+SURVIVED R8 THING: ключи идентичности не строятся
+KILLED   R9 (контроль, мутант автора M830) class_id не проверяется на существование  (векторы: ['N830'])
+total 298s

@@ -1,0 +1,7 @@
+валидатор, ClassDef marking={level:TOP_SECRET,zzz:1}: ['SCHEMA_INVALID']
+валидатор, ClassDef marking='строка': ['SCHEMA_INVALID']
+валидатор, ClassDef marking={}: ['SCHEMA_INVALID']
+валидатор, ClassDef name='   ': ['SCHEMA_INVALID']
+валидатор, ClassDef label_ru='': ['SCHEMA_INVALID']
+[review09f/ac_loader] TRUNCATE ac.class_defs; => ERROR:  permission denied for table class_defs
+[review09f/ac_loader] TRUNCATE ac.class_closure; => ERROR:  permission denied for table class_closure

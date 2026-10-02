@@ -1,4 +1,4 @@
-"""Acceptance suite for core-ontology/0.2 (fast; the mutation run is separate: mutants.py).
+"""Acceptance suite for core-ontology/0.3 (fast; the mutation run is separate: mutants.py).
 
 T1 valid world: 0 errors, exactly the expected warning.
 T2 every vector through the real validator yields EXACTLY its expected error-code set (positives: none).
@@ -10,6 +10,7 @@ T6 JCS parity Python == Node on every record of every schema-valid dataset + tri
 T8 the validator refuses to run on a Unicode version other than the one the database tables were generated for.
 T7 CLI: world + trust + content-dir -> exit 0; float input, 100 000-deep nesting -> exit 1 without traceback;
    a sub-directory inside --content-dir is ignored.
+T9 Model Constructor CLI (D27.1): each command adds one version through the validator; refusals leave the file intact.
 """
 import copy
 import json
@@ -158,6 +159,62 @@ _r8 = validate(base, trust, content)
 _V.UNICODE_VERSION = _saved
 check(_r8.codes() == ["VALIDATOR_INTERNAL_ERROR"], f"T8 unicode pin: {_r8.codes()}")
 
+# T9 Model Constructor CLI (D27.1): every command = one new version through the validator; a refusal leaves the file intact
+with tempfile.TemporaryDirectory() as tmp:
+    f9 = str(Path(tmp) / "schema.json")
+    mc = lambda *a: subprocess.run([sys.executable, str(HERE / "model_constructor.py"), *a], capture_output=True, text=True)  # noqa: E731
+    by = ["--tenant", "tnt_demo", "--by", "usr_modeler1", "--description", "тест T9"]
+    ok_steps = [
+        ("init", f9),
+        ("add-class", f9, "sdf_animal", *by, "--root-type", "THING", "--name", "Животное", "--abstract", "--at", "2026-10-01T10:00:00Z"),
+        ("add-class", f9, "sdf_shark", *by, "--root-type", "THING", "--name", "Акула", "--parent", "sdf_animal", "--at", "2026-10-01T10:01:00Z"),
+        ("add-attribute", f9, "sdf_animal", *by, "--predicate", "x.max_depth", "--name", "глубина погружения", "--type", "QUANTITY",
+         "--unit", "m", "--required", "--at", "2026-10-01T10:02:00Z"),
+        ("add-identifier", f9, "sdf_tag", *by, "--scheme", "x.tag", "--root-type", "THING", "--name", "Метка", "--strength", "WEAK",
+         "--priority", "1", "--format", "UPPER:2,lit:-,DIGIT:4", "--at", "2026-10-01T10:03:00Z"),
+        ("add-attribute", f9, "sdf_shark", *by, "--predicate", "x.tag_no", "--name", "номер метки", "--type", "IDENTIFIER",
+         "--scheme", "x.tag", "--at", "2026-10-01T10:04:00Z"),
+        ("add-link", f9, "sdf_eats", *by, "--predicate", "x.eats", "--name", "питается", "--domain", "sdf_shark", "--range", "sdf_animal",
+         "--at", "2026-10-01T10:05:00Z"),
+        ("change-attribute", f9, "sdf_animal", *by, "--predicate", "x.max_depth", "--optional", "--at", "2026-10-01T10:06:00Z"),
+        ("rename", f9, "sdf_shark", *by, "--name", "Акулы"),                      # no --at: the clock (and the wait for the next second)
+        ("add-class", f9, "sdf_secret", *by, "--root-type", "THING", "--name", "Закрытый класс", "--marking", "RESTRICTED:COMMERCIAL_SECRET"),
+        ("validate", f9)]
+    for st in ok_steps:
+        r9 = mc(*st)
+        check(r9.returncode == 0, f"T9 {st[0]} {st[2] if len(st) > 2 else ''}: exit {r9.returncode}: {r9.stderr[-200:]}")
+    before9 = Path(f9).read_bytes()
+    bad_steps = [
+        ("add-class", f9, "sdf_x1", *by, "--root-type", "THING", "--name", "Класс", "--parent", "sdf_no_such_parent"),
+        ("add-class", f9, "sdf_x2", *by, "--root-type", "THING", "--name", "   "),
+        ("add-class", f9, "sdf_x3", *by, "--root-type", "CONCEPT", "--name", "Класс", "--parent", "sdf_animal"),
+        ("add-attribute", f9, "sdf_shark", *by, "--predicate", "x.max_depth", "--name", "повтор", "--type", "STRING"),
+        ("add-attribute", f9, "sdf_shark", *by, "--predicate", "x.other", "--name", "без единицы", "--type", "QUANTITY"),
+        ("change-attribute", f9, "sdf_shark", *by, "--predicate", "x.max_depth", "--many"),
+        ("add-identifier", f9, "sdf_re", *by, "--scheme", "x.re", "--root-type", "THING", "--name", "Регулярка", "--strength", "WEAK",
+         "--priority", "2", "--format", "(a+)+$"),
+        ("add-identifier", f9, "sdf_inn", *by, "--scheme", "ru.inn", "--root-type", "ORGANIZATION", "--name", "ИНН", "--strength", "WEAK",
+         "--priority", "1"),
+        ("rename", f9, "sdf_animal", *by, "--name", "Животные", "--marking", "PUBLIC"),
+        ("rename", f9, "sdf_animal", *by, "--name", "Животные", "--at", "2026-09-01T00:00:00Z"),
+        ("rename", f9, "sdf_animal", *by, "--name", "Животные", "--at", "2099-01-01T00:00:00Z"),
+        ("add-link", f9, "sdf_l2", *by, "--predicate", "x.eats", "--name", "повтор", "--domain", "sdf_shark", "--range", "sdf_shark")]
+    for st in bad_steps:
+        r9 = mc(*st)
+        check(r9.returncode == 1 and "Traceback" not in r9.stderr and Path(f9).read_bytes() == before9,
+              f"T9 refusal {st[0]} {st[2]}: exit {r9.returncode}, file changed={Path(f9).read_bytes() != before9}: {r9.stderr[-200:]}")
+    sh9 = mc("show", f9, "--tenant", "tnt_demo")
+    check(sh9.returncode == 0 and "x.max_depth «глубина погружения»: QUANTITY m, ONE (от sdf_animal)" in sh9.stdout
+          and "sdf_shark v3 «Акулы»" in sh9.stdout and "x.eats" in sh9.stdout and "RESTRICTED" in sh9.stdout,
+          f"T9 show: {sh9.stdout[-400:]} {sh9.stderr[-200:]}")
+    sh9b = mc("show", f9, "--tenant", "tnt_demo", "--at", "2026-10-01T10:01:30Z")
+    check(sh9b.returncode == 0 and "x.max_depth" not in sh9b.stdout and "классов 2" in sh9b.stdout, f"T9 show --at: {sh9b.stdout[-300:]}")
+    jr9 = mc("journal", f9, "--tenant", "tnt_demo")
+    check(jr9.returncode == 0 and len(jr9.stdout.strip().splitlines()) == 9 and "CHANGE_ATTRIBUTE ClassDef sdf_animal v3" in jr9.stdout,
+          f"T9 journal: {jr9.stdout[-300:]}")
+    ds9 = json.loads(Path(f9).read_text(encoding="utf-8"))
+    schema_valid.append(ds9)
+
 neg = sum(1 for v in VECTORS if v["expected"])
 print(f"T1 valid world: records={len(base['records'])} errors={len(R.errors)} warnings={len(R.warnings)}")
 print(f"T2 vectors: {len(VECTORS)} ({neg} negative, {len(VECTORS) - neg} positive)")
@@ -165,5 +222,6 @@ print(f"T3 error codes covered: {len(covered & need)}/{len(need)}")
 print(f"T4 fuzz: 3000 cases, crashes={crashes}, internal={internal}")
 print(f"T6 JCS parity py/node: {len(py)} values")
 print(f"T8 Unicode pinned to {_saved}: another version -> {_r8.codes()}")
+print(f"T9 Model Constructor CLI: {len(ok_steps)} commands accepted, {len(bad_steps)} refused with the file intact, show/journal checked")
 print("FAILURES:" if fails else "ALL PASS", *fails, sep="\n  ")
 sys.exit(1 if fails else 0)

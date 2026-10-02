@@ -1,0 +1,79 @@
+== 1. add-class + набор из одной записи -> validate-schema ==
+Записано: /tmp/tmp.tnlDdHT6qs/c1.json
+
+$ python3 ../snapshot/core/model_constructor.py validate-schema /tmp/tmp.tnlDdHT6qs/ds.json
+  File "/home/claude/as/review/rereview_s9/attacks/../snapshot/core/model_constructor.py", line 434, in main
+    args.func(args)
+  File "/home/claude/as/review/rereview_s9/attacks/../snapshot/core/model_constructor.py", line 326, in cmd_validate_schema
+    for code, rec_id, msg in r._errors:
+                             ^^^^^^^^^
+AttributeError: 'Report' object has no attribute '_errors'. Did you mean: 'errors'?
+(exit 1)
+
+$ python3 ../snapshot/core/model_constructor.py validate-schema /tmp/tmp.tnlDdHT6qs/list.json
+  File "/home/claude/as/review/rereview_s9/attacks/../snapshot/core/model_constructor.py", line 434, in main
+    args.func(args)
+  File "/home/claude/as/review/rereview_s9/attacks/../snapshot/core/model_constructor.py", line 326, in cmd_validate_schema
+    for code, rec_id, msg in r._errors:
+                             ^^^^^^^^^
+AttributeError: 'Report' object has no attribute '_errors'. Did you mean: 'errors'?
+(exit 1)
+
+== 2. тот же набор через нормативный валидатор (контроль: запись сама по себе валидна?) ==
+
+$ python3 ../snapshot/core/validator.py /tmp/tmp.tnlDdHT6qs/ds.json
+ERROR SCHEMA_INVALID / 'dataset_format' is a required property
+ERROR SCHEMA_INVALID / 'ontology_version' is a required property
+errors=2 warnings=0
+(exit 1)
+
+== 3. add-* заявлено «проверяет созданную запись через validator»: наследник несуществующего родителя, version=0, пустое имя ==
+
+$ python3 ../snapshot/core/model_constructor.py add-class sdf_child --root-type PERSON --name  --parent sdf_no_such_parent --version 0 --tenant-id tnt_demo --out /tmp/tmp.tnlDdHT6qs/c2.json
+Записано: /tmp/tmp.tnlDdHT6qs/c2.json
+(exit 0)
+
+$ python3 ../snapshot/core/validator.py /tmp/tmp.tnlDdHT6qs/ds2.json
+ERROR SCHEMA_INVALID / 'dataset_format' is a required property
+ERROR SCHEMA_INVALID / 'ontology_version' is a required property
+ERROR SCHEMA_INVALID /records/0/name '' should be non-empty
+ERROR SCHEMA_INVALID /records/0/name '' does not match '\\S'
+ERROR SCHEMA_INVALID /records/0/version 0 is less than the minimum of 1
+errors=5 warnings=0
+(exit 1)
+
+== 4. маркировка: RESTRICTED и категории задать нельзя ==
+
+$ python3 ../snapshot/core/model_constructor.py add-class sdf_secret --root-type PERSON --name S --tenant-id tnt_demo --marking-level RESTRICTED
+                                      [--created-by usr_…|svc_…]
+                                      [--created-at ISO8601] [--version N]
+                                      [--marking-level LEVEL]
+                                      [--out FILE.json]
+                                      sdf_…
+model_constructor.py add-class: error: argument --marking-level: invalid choice: 'RESTRICTED' (choose from 'PUBLIC', 'INTERNAL', 'CONFIDENTIAL')
+(exit 2)
+
+== 5. атрибуты класса: есть ли параметр? ==
+0
+
+== 6. add-iddef: невалидное регулярное выражение принимается ==
+
+$ python3 ../snapshot/core/model_constructor.py add-iddef sdf_id_bad --scheme ru.inn --applies-to ORGANIZATION --strength WEAK --val-regex ([ --tenant-id tnt_demo
+  "marking": {
+    "level": "INTERNAL",
+    "categories": []
+  },
+  "validation_regex": "(["
+}
+(exit 0)
+
+== 7. add-link: незарегистрированный предикат; created-at из будущего ==
+
+$ python3 ../snapshot/core/model_constructor.py add-link sdf_lnk_x --predicate-id no.such_thing --domain-class-id sdf_a1 --range-class-id sdf_b1 --cardinality ONE --tenant-id tnt_demo --created-at 2099-01-01T00:00:00Z
+  "created_by": "usr_test_admin",
+  "marking": {
+    "level": "INTERNAL",
+    "categories": []
+  }
+}
+(exit 0)

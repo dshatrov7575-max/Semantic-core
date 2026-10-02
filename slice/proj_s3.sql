@@ -226,16 +226,20 @@ END $$;
 -- ---------------------------------------------------------------- фрагменты фактов
 -- facts of a set of visible claims (already filtered), evaluated at time t: one fact per sentence; a predicate of
 -- cardinality ONE seen from its subject gives ONE fact: the best-supported value and an explanation of the others
+-- cardinality of a predicate OUTSIDE the registry of the core (a tenant predicate «x.…», D27.1): the hook is replaced
+-- by ddl_s9.sql with the reading of the tenant's schema at time t; without that slice no such claim can exist
+CREATE FUNCTION ac.tenant_cardinality(c ac.claims, t timestamptz) RETURNS text LANGUAGE sql STABLE AS $$ SELECT 'MANY'::text $$;
+
 CREATE FUNCTION ac.facts_json(cids text[], t timestamptz, focus text) RETURNS jsonb LANGUAGE plpgsql STABLE AS $$
 DECLARE r jsonb := '[]'; g record; alt text;
 BEGIN
   FOR g IN
     WITH cl AS (
-      SELECT c.*, ac.status_at(c.claim_id, t) AS st, ac.fact_text(c, t) AS txt, pr.cardinality,
+      SELECT c.*, ac.status_at(c.claim_id, t) AS st, ac.fact_text(c, t) AS txt, coalesce(pr.cardinality, ac.tenant_cardinality(c, t)) AS cardinality,
              -- support key: the publication of the cited source (S5: three fetches of one article are one), else the source
              (SELECT min(ac.support_key(e.tenant_id, e.source_id, t)) FROM ac.claim_evidence e WHERE e.claim_id = c.claim_id) AS src,
              (ac.resolve_at(c.subject, t) = focus) AS outgoing
-      FROM ac.claims c JOIN ac.predicates pr ON pr.predicate_id = c.predicate WHERE c.claim_id = ANY (cids)),
+      FROM ac.claims c LEFT JOIN ac.predicates pr ON pr.predicate_id = c.predicate WHERE c.claim_id = ANY (cids)),
     grp AS (
       SELECT CASE WHEN cardinality = 'ONE' AND outgoing THEN 'ONE:' || predicate ELSE 'TXT:' || txt END AS gkey, *
       FROM cl),
@@ -293,12 +297,12 @@ BEGIN
   FOR s IN
     SELECT st.section, st.title, st.ord FROM ac.section_texts st
     WHERE (e.entity_type IN ('PERSON', 'ORGANIZATION') AND st.section <> 'OTHER' AND (st.section <> 'IDENTITY' OR e.entity_type = 'PERSON'))
-       OR EXISTS (SELECT 1 FROM ac.claims c JOIN ac.predicates pr ON pr.predicate_id = c.predicate
+       OR EXISTS (SELECT 1 FROM ac.claims c LEFT JOIN ac.predicates pr ON pr.predicate_id = c.predicate
                   WHERE c.claim_id = ANY (cids)
                     AND coalesce(pr.dimensions[1], CASE WHEN c.predicate = 'person.birth_date' THEN 'IDENTITY' ELSE 'OTHER' END) = st.section)
     ORDER BY st.ord
   LOOP
-    f := ac.facts_json(ARRAY(SELECT c.claim_id FROM ac.claims c JOIN ac.predicates pr ON pr.predicate_id = c.predicate
+    f := ac.facts_json(ARRAY(SELECT c.claim_id FROM ac.claims c LEFT JOIN ac.predicates pr ON pr.predicate_id = c.predicate
                              WHERE c.claim_id = ANY (cids)
                                AND coalesce(pr.dimensions[1], CASE WHEN c.predicate = 'person.birth_date' THEN 'IDENTITY' ELSE 'OTHER' END) = s.section),
                        as_of, focus);

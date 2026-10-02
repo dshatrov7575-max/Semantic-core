@@ -21,10 +21,12 @@ import validator as VAL  # noqa: E402
 from vectors import build  # noqa: E402
 from object_store import ObjectStore, FsBackend  # noqa: E402
 import gateway as GW  # noqa: E402
+from schema_s9 import schema_sql  # noqa: E402
 
 TAG = "$ac_q$"
 DDL_ALL = "\n".join((HERE / f).read_text(encoding="utf-8") for f in ("ddl_s1.sql", "unicode_s1.sql", "keys_s1.sql", "proj_s3.sql",
-                                                                          "ddl_s4.sql", "proj_s4.sql", "ddl_s5.sql", "proj_s5.sql", "ddl_s5b.sql"))
+                                                                          "ddl_s4.sql", "proj_s4.sql", "ddl_s5.sql", "proj_s5.sql", "ddl_s5b.sql",
+                                                                          "ddl_s9.sql"))
 
 
 def q(v):
@@ -151,12 +153,26 @@ def load_sql(ds, trust, content):
             out.append(f"INSERT INTO ac.identity_decisions VALUES ({q(r['decision_id'])},{q(r['project_id'])},{q(r['decision'])},"
                        f"{q(ids[0])},{q(ids[1])},{q(field)},{q(r.get(field) if field else None)},{q(r['decided_by'])},"
                        f"{q(r['decided_at'])},{q(r)});")
+    # S9 (D27.1): the tenant's schema — before the claims checked against it; membership claims (schema.is_a) first
+    out.append(schema_sql(R))
     # identity keys are derived by the database itself (RS-01); parity with the validator is checked after load
-    for c in by("Claim"):
+    # membership claims (schema.is_a) and THEIR reviews first: whether an entity is of a class at the time of a later claim
+    # depends on the membership claim standing at that time
+    isa_ids = {c["claim_id"] for c in by("Claim") if c["predicate"] == "schema.is_a"}
+
+    def claim_sql(c):
         tenant = P[c["project_id"]]["tenant_id"]
-        out.append(f"INSERT INTO ac.claims (claim_id, project_id, tenant_id, subject, predicate, object_entity, produced_kind, recorded_at, marking, body) VALUES "
-                   f"({q(c['claim_id'])},{q(c['project_id'])},{q(tenant)},{q(c['subject'])},{q(c['predicate'])},{q(c['object'].get('entity'))},"
-                   f"{q(c['produced_by']['kind'])},{q(c['recorded_at'])},{q(c['marking'])},{q(c)});")
+        return (f"INSERT INTO ac.claims (claim_id, project_id, tenant_id, subject, predicate, object_entity, produced_kind, recorded_at, marking, body) VALUES "
+                f"({q(c['claim_id'])},{q(c['project_id'])},{q(tenant)},{q(c['subject'])},{q(c['predicate'])},{q(c['object'].get('entity'))},"
+                f"{q(c['produced_by']['kind'])},{q(c['recorded_at'])},{q(c['marking'])},{q(c)});")
+
+    def review_sql(v):
+        return (f"INSERT INTO ac.claim_reviews VALUES ({q(v['review_id'])},{q(v['claim_id'])},{q(v['status'])},{q(v['reviewer'])},"
+                f"{q(v['reviewed_at'])},{q(v['recorded_at'])});")
+
+    out += [claim_sql(c) for c in by("Claim") if c["claim_id"] in isa_ids]
+    out += [review_sql(v) for v in by("ClaimReview") if v["claim_id"] in isa_ids]
+    out += [claim_sql(c) for c in by("Claim") if c["claim_id"] not in isa_ids]
     for r in by("ArtifactReceipt"):
         tenant = P[r["project_id"]]["tenant_id"]
         out.append(f"INSERT INTO ac.artifact_receipts VALUES ({q(r['receipt_id'])},{q(r['project_id'])},{q(tenant)},{q(r['key_id'])},"
@@ -165,9 +181,7 @@ def load_sql(ds, trust, content):
             out.append(f"INSERT INTO ac.receipt_inputs VALUES ({q(r['receipt_id'])},{q(tenant)},{q(sid)});")
         for cid in r["emitted_claim_ids"]:
             out.append(f"INSERT INTO ac.receipt_claims VALUES ({q(r['receipt_id'])},{q(cid)});")
-    for v in by("ClaimReview"):
-        out.append(f"INSERT INTO ac.claim_reviews VALUES ({q(v['review_id'])},{q(v['claim_id'])},{q(v['status'])},{q(v['reviewer'])},"
-                   f"{q(v['reviewed_at'])},{q(v['recorded_at'])});")
+    out += [review_sql(v) for v in by("ClaimReview") if v["claim_id"] not in isa_ids]
     for k in sorted(by("Check"), key=lambda k: k["as_of"]):
         tenant = P[k["project_id"]]["tenant_id"]
         out.append(f"INSERT INTO ac.checks VALUES ({q(k['check_id'])},{q(k['project_id'])},{q(k['subject_entity_id'])},{q(k['profile'])},"
@@ -232,7 +246,10 @@ def main():
                   "('reviews',(SELECT count(*) FROM ac.claim_reviews)),('checks',(SELECT count(*) FROM ac.checks)),"
                   "('decisions',(SELECT count(*) FROM ac.identity_decisions)),('seals',(SELECT count(*) FROM ac.history_seals)),"
                   "('receipts',(SELECT count(*) FROM ac.artifact_receipts)),('artifacts',(SELECT count(*) FROM ac.artifacts)),"
-                  "('artifact_nodes',(SELECT count(*) FROM ac.artifact_nodes))) v(t, n);").stdout.strip()
+                  "('artifact_nodes',(SELECT count(*) FROM ac.artifact_nodes)),"
+                  "('class_defs',(SELECT count(*) FROM ac.class_defs)),('link_defs',(SELECT count(*) FROM ac.link_defs)),"
+                  "('identifier_defs',(SELECT count(*) FROM ac.identifier_defs)),('class_closure',(SELECT count(*) FROM ac.class_closure)),"
+                  "('schema_predicates',(SELECT count(*) FROM ac.schema_predicates))) v(t, n);").stdout.strip()
     print("LOAD: OK", counts)
     db = psql("SELECT project_id, entity_type, scheme, value, owner_entity_id, strength, coalesce(qual, '<null>') FROM ac.entity_keys;")
     db_rows = {tuple(ln.split(" | ")) for ln in db.stdout.strip().splitlines()}

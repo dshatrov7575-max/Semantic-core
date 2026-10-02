@@ -1,12 +1,12 @@
-LOAD: OK artifact_nodes=10 artifacts=1 checks=4 claims=30 decisions=2 entities=27 entity_keys=43 evidence=33 projects=6 receipts=1 reviews=8 seals=1 sources=15
-KEYS PARITY (DB-derived == validator): OK rows=43
+LOAD: OK artifact_nodes=10 artifacts=1 checks=4 claims=37 class_closure=7 class_defs=5 decisions=2 entities=28 entity_keys=45 evidence=40 identifier_defs=1 link_defs=1 projects=6 receipts=1 reviews=8 schema_predicates=4 seals=1 sources=16
+KEYS PARITY (DB-derived == validator): OK rows=45
 S4-01  PASS | мир загружен с артефактом: узлы разобраны базой, 4 утверждения НС-2 на узлах n10..n13 | nodes=10 evidence_nodes=n10,n11,n12,n13
 S4-02  PASS | живой прогон адаптера по инструкции задвижки: валидатор чист, база приняла источник, артефакт, модель, 4 утверждения, receipt; Т-3 не заведён | validator=[] db=OK claims/entities/T-3=4/6/0
 S4-03  PASS | карточка задвижки: модель, состав, параметр, действие; путь receipt → артефакт → узел у каждого утверждения | ['Задвижка К-1/12: номинальное давление — 1,6 МПа.'] path_ok=True
 S4-04  PASS | карточка станции НС-2: состав — насос и задвижка | ['Задвижка К-1/12: входит в состав «Насосная станция НС-2».', 'Насос Н-101: входит в состав «Насосная станция НС-2».']
 S4-05  PASS | карточка модели: экземпляры; параметр модели (аналитик) виден у насоса отдельным разделом | db=OK inst=['Насос Н-101: экземпляр модели «Насос НМ 16-100».'] model_params=['Насос НМ 16-100: максимальное рабочее давление — 16 бар.']
 S4-06  PASS | без допуска, неизвестная сущность, не оборудование, чужой проект — один и тот же отказ | [True, True, True, True]
-S4-07  PASS | одинаковый as_of — одинаковый digest; до прогона у задвижки сведений нет | sha256:a36f501329464… before=[]
+S4-07  PASS | одинаковый as_of — одинаковый digest; до прогона у задвижки сведений нет | sha256:1192223af9e8b… before=[]
 S4-08  PASS | опровергнутое утверждение уходит из карточки; на момент до опровержения — видно
 S4-09  PASS | повтор того же прогона отвергнут (адреса уникальны, ничего не удваивается) | ERROR:  duplicate key value violates unique constraint "artifacts_pkey"
 DETAIL:  Key (tenant_id, artifact_dige
