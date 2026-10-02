@@ -263,7 +263,7 @@ M = [  # (id, description, old, new)
     ("M412", "любая граница в теге значима (Н101 != Н-101)", 'if out and j < len(s) and (out[-1] in "0123456789") == (s[j] in "0123456789"):', "if out and j < len(s):"),
     ("M413", "мягкий ключ тега с границами групп", 'tag_compact(norm(i["tag"]))', 'tag_norm(norm(i["tag"]))'),
     ("M414", "NFKC в ключе модели (10² = 102)", 'norm(i["manufacturer"], nfkc=False) + "|" + norm(i["model"], nfkc=False)', 'norm(i["manufacturer"], nfkc=False) + "|" + norm(i["model"])'),
-    ("M421", "уточнять можно любой тип", 'fits = (t in ("EVENT", "CONFLICT", "CONCEPT") or (t == "PERSON" and "birth_date" in idn)) and field in d', "fits = field in d"),
+    ("M421", "уточнять можно любой тип", 'fits = (t in ("EVENT", "CONFLICT", "CONCEPT", "THING") or (t == "PERSON" and "birth_date" in idn)) and field in d', "fits = field in d"),
     ("M422", "уточнение поверх имеющегося поля", "if not fits or field in idn or ", "if not fits or "),
     ("M423", "уточнение слитой сущности", ' or merged_before', ""),
     ("M423b", "уточнение слитой позже сущности отвергается", ' and e["status_changed_at"] <= d["decided_at"]', ""),

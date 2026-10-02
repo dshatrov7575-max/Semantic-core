@@ -370,6 +370,10 @@ VECTORS = [
     V("N172", ["MARKING_BROADER_THAN_INPUT"], "PUBLIC-утверждение о CONFIDENTIAL-сущности (субъект)",
       pre=seq(setk("ent_wk_baleen", "marking", CONF_CS), setk("c24", "marking", PUB), setk("ent_wk_blue", "marking", PUB))),
     V("N173", ["MARKING_BROADER_THAN_INPUT"], "утверждение шире сущности-объекта", pre=setk("ent_wk_baleen", "marking", CONF_CS)),
+    V("N173b", ["MARKING_BROADER_THAN_INPUT"], "утверждение шире сущности, которая в мире бывает ТОЛЬКО объектом "
+      "(с цикла 9 «Усатые киты» — ещё и субъект schema.is_a, поэтому N172/N173 больше не отличали проверку объекта от проверки субъекта)",
+      pre=seq(add_entity("ent_wk_cetacea", "prj_wiki_whales", "CONCEPT", {"label": "Китообразные", "lang": "ru", "namespace": "whales"}, CONF_CS),
+              add_claim("c_obj_only", "prj_wiki_whales", "ent_wk_blue", "wiki.is_a", {"entity": "ent_wk_cetacea"}, ("s10", "Синий кит"), PUB))),
     V("N174", ["MARKING_BROADER_THAN_INPUT"], "Проверка шире утверждения", pre=seq(setk("chk_full_1", "marking", CONF_CS), pop("chk_full_1", "previous_check_id"))),
     V("N175", ["MARKING_BROADER_THAN_INPUT"], "Проверка по физлицу без PERSONAL_DATA", pre=setk("chk_social_lomov", "marking", CONF_CS)),
     V("N176", ["MARKING_PD_MISSING"], "физлицо без PERSONAL_DATA", pre=lambda W: (W["ent_c_grachyova"].__setitem__("marking", INT))),

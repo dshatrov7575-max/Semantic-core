@@ -123,6 +123,7 @@ N170 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPU
 N171 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки сущности
 N172 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки сущности
 N173 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки сущности
+N173b | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки сущности
 N174 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: Проверка шире маркировки утверждения
 N175 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: Проверка шире маркировки субъекта
 N176 | MARKING_PD_MISSING | REJECTED | ERROR:  new row for relation "entities" violates check constraint "person_has_pd"
@@ -427,7 +428,7 @@ GRAPH_NODE_INVALID | 27 | 0 | 0
 IDENTIFIER_CHECKSUM_INVALID | 10 | 0 | 0
 IDENTIFIER_SCHEME_INVALID | 6 | 0 | 0
 IDENTITY_DECISION_INVALID | 7 | 0 | 0
-MARKING_BROADER_THAN_INPUT | 16 | 0 | 0
+MARKING_BROADER_THAN_INPUT | 17 | 0 | 0
 MARKING_PD_MISSING | 1 | 0 | 0
 ORIGINAL_INVALID | 6 | 0 | 0
 PREDICATE_DOMAIN_VIOLATION | 6 | 0 | 0
@@ -448,4 +449,4 @@ SOURCE_DIGEST_MISMATCH | 4 | 1 | 0
 TEMPORAL_ORDER_INVALID | 15 | 0 | 0
 TRUST_CONFIG_INVALID | 5 | 1 | 0
 
-negative_vectors=403 rejected_by_db=379 accepted_by_db=17 not_representable=7
+negative_vectors=404 rejected_by_db=380 accepted_by_db=17 not_representable=7

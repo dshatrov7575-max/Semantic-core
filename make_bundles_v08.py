@@ -14,7 +14,7 @@ BUNDLES = [
     ("ЯДРО_v0.8_1_онтология.md", "онтология core-ontology/0.3 (цикл 9, D27.1): валидатор, схема, реестр, эталонный мир со схемой tenant, Конструктор модели",
      ["core/README.md", "core/validator.py", "core/core.schema.json", "core/predicates.json", "core/jcs.py", "core/jcs.mjs", "core/fixtures.py",
       "core/model_constructor.py"]),
-    ("ЯДРО_v0.8_2_тесты.md", "вектора (495, из них 129 цикла 9), приёмка T1–T9, мутанты (418, из них 98 цикла 9)",
+    ("ЯДРО_v0.8_2_тесты.md", "вектора (496, из них 129 цикла 9), приёмка T1–T9, мутанты (418, из них 98 цикла 9)",
      ["core/vectors.py", "core/tests.py", "core/mutants.py"]),
     ("ЯДРО_v0.8_3_срез_и_проекции.md", "срез PostgreSQL S1-S3 и проекции S3 (THING в типах и ключах; досье включает утверждения предикатов tenant), тесты и регрессии",
      [S + f for f in ("ddl_s1.sql", "unicode_s1.sql", "gen_unicode_s1.py", "keys_s1.sql", "proj_s3.sql", "attacks_s1.py",
