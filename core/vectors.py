@@ -1388,3 +1388,496 @@ VECTORS += [
       pre=thing("ent_wk_skeleton2", {"label": "Cкелет синего кита", "lang": "ru", "namespace": "museum"}),
       warn=["POSSIBLE_DUPLICATE"] + WARN0),
 ]
+
+
+# ---- Cycle 10: datasets (D27.2, D27.4) — a version of a dataset is a Source whose bytes are the manifest; evidence ROW ----
+# The valid world holds one version (s30: a registry of five legal entities, two files) and one claim that rests on a
+# row of it (c50: the registered address of the developer; the key and the address are quoted, the rest are leaves).
+import json as _json
+
+from dataset import DatasetVersion
+from fixtures import REGISTRY_COLUMNS, REGISTRY_ROWS, SV4, demo_registry
+from jcs import canon as _canon
+from validator import cell_leaf as _cell_leaf, merkle_root as _merkle_root, row_leaf as _row_leaf
+
+ROW0 = REGISTRY_ROWS[0]
+ADDR_TRUB = REGISTRY_ROWS[1]["address"]
+CASE_COL = {"name": "case_no", "type": "STRING", "marking": PUB, "identifier_scheme": "ru.arbitr", "predicate": "court.party_to_case"}
+RIVAL_COL = {"name": "rival_ogrn", "type": "STRING", "marking": PUB, "identifier_scheme": "ru.ogrn", "predicate": "competitor.competes_with"}
+
+
+def _sid(W, name):
+    return "src:sha256:" + hashlib.sha256(W[name]["content_inline"].encode("utf-8")).hexdigest()
+
+
+def mset(fn, src="s30"):
+    """edit the manifest of the dataset version (its bytes stay canonical; the address of the source follows)"""
+    def f(W):
+        m = _json.loads(W[src]["content_inline"])
+        fn(m)
+        W[src]["content_inline"] = _canon(m)
+    return f
+
+
+def mraw(fn):
+    return lambda W: W["s30"].__setitem__("content_inline", fn(W["s30"]["content_inline"]))
+
+
+def regds(make=None, nofiles=False, **kw):
+    """replace the dataset version s30: demo_registry(**kw) or make(W); nofiles: its row files are not in the store"""
+    def f(W):
+        dv = make(W) if make else demo_registry(**kw)
+        if nofiles:
+            dv.files = []
+        W["__datasets__"]["s30"] = dv
+        W["s30"]["content_inline"] = dv.manifest_bytes.decode("utf-8")
+    return f
+
+
+def add_ds(name, dv, tenant=T, observed="2026-09-04T08:00:00Z"):
+    def f(W):
+        W["__datasets__"][name] = dv
+        W[name] = {"kind": "Source", "schema_version": SV4, "tenant_id": tenant, "source_kind": "DATASET_VERSION",
+                   "media_type": "application/vnd.ac.dataset-manifest+json", "language": "ru", "title": name,
+                   "content_inline": dv.manifest_bytes.decode("utf-8"), "marking": PUB,
+                   "observations": [{"observed_at": observed, "origin_uri": f"urn:demo:{name}", "observed_by": "svc_dataset_loader"}]}
+    return f
+
+
+def rowev(key, quote):
+    """c50 rests on the row with this key (a callable gets the dataset version), quoting these columns"""
+    def f(W):
+        k = key(W["__datasets__"]["s30"]) if callable(key) else key
+        W["c50"]["evidence"] = [{"$row": ["s30", k, list(quote)]}]
+    return f
+
+
+def obj50(**kw):
+    return setk("c50", "object", {"literal": kw})
+
+
+def ev0(fn):
+    """tamper with the finished ROW evidence of c50 (before the claim is addressed)"""
+    return evp("c50", lambda evs: fn(evs[0]))
+
+
+def _cell(ev, name):
+    return next(x for x in ev["cells"] if x["name"] == name)
+
+
+def _flip(h):
+    return ("0" if h[0] != "0" else "1") + h[1:]
+
+
+def _hide(ev, name):
+    c = _cell(ev, name)
+    leaf = _cell_leaf(bytes.fromhex(c["salt"]), name, c["value"]).hex()
+    c.clear()
+    c.update(name=name, leaf=leaf)
+
+
+def rows_with(i=0, **changes):
+    rows = copy.deepcopy(REGISTRY_ROWS)
+    rows[i].update(changes)
+    return rows
+
+
+def cols_with(*extra, **patch):
+    """registry columns: patch = {column: {field: value | None}}, extra columns appended"""
+    cols = copy.deepcopy(REGISTRY_COLUMNS)
+    for c in cols:
+        for k, v in patch.get(c["name"], {}).items():
+            if v is None:
+                c.pop(k, None)
+            else:
+                c[k] = v
+    return cols + [copy.deepcopy(x) for x in extra]
+
+
+def _foreign_row(ev):
+    """a row that is NOT in the version: consistent cells and row hash (a hidden cell differs), the proof of the real row"""
+    other = demo_registry(rows=rows_with(director="Подставной Иван Иванович")).evidence([OGRN_DEV], ["address"])
+    ev.update(row_sha256=other["row_sha256"], cells=other["cells"])
+
+
+_DV_PREV = demo_registry(rows=REGISTRY_ROWS[:3])
+_DV_OTHER = DatasetVersion("dst_other_registry", T, "2026-08-01", REGISTRY_COLUMNS, ["ogrn"], REGISTRY_ROWS[:2], chunk_rows=4)
+_CASE = dict(type="IDENTIFIER", scheme="ru.arbitr", value="А41-12345/2026")
+
+
+def _case_claim(W):
+    """the registry also lists a court case of each company; c50 states the case of the developer from its row"""
+    regds(columns=cols_with(CASE_COL), rows=[dict(r, case_no="А41-12345/2026" if n == 0 else None) for n, r in enumerate(REGISTRY_ROWS)])(W)
+    W["c50"].update(predicate="court.party_to_case", object={"literal": dict(_CASE)}, qualifiers=copy.deepcopy(W["c19"]["qualifiers"]))
+    rowev([OGRN_DEV], ["case_no"])(W)
+
+
+def _rival_claim(rival=OGRN_TRUB, col=RIVAL_COL):
+    """the registry names a competitor of each company by OGRN; c50 states «developer competes with Трубопроводстрой»"""
+    def f(W):
+        add_entity("ent_k_trub", "prj_compliance", "ORGANIZATION", {"name": "АО «Трубопроводстрой»", "jurisdiction": "RU",
+                                                                    "ogrn": OGRN_TRUB, "inn": INN_TRUB}, CONF_CS)(W)
+        regds(columns=cols_with(col), rows=[dict(r, **{col["name"]: rival if n == 0 else None}) for n, r in enumerate(REGISTRY_ROWS)])(W)
+        W["c50"].update(predicate="competitor.competes_with", object={"entity": "ent_k_trub"})
+        rowev([OGRN_DEV], [col["name"]])(W)
+    return f
+
+
+_ROWS13 = [{"ogrn": "10%011d" % n, "inn": None, "name": "Запись %d" % n, "address": None, "director": None, "registered_on": None,
+            "active": None, "employees": n} for n in range(4)] + REGISTRY_ROWS + [
+           {"ogrn": "90%011d" % n, "inn": None, "name": "Запись %d" % n, "address": None, "director": None, "registered_on": None,
+            "active": None, "employees": n} for n in range(4)]
+
+MI, RI = ["DATASET_MANIFEST_INVALID"], ["EVIDENCE_ROW_INVALID"]
+
+
+def refile(fn, n=0, fix_root=False, **kw):
+    """the row file n of the version is rewritten by fn(list of row dicts {h,k,s,v}) -> list of lines (dicts or bytes);
+    the manifest takes the new address and length (and, with fix_root, the root of the new rows) — everything else stays"""
+    def make(W):
+        dv = demo_registry(**kw)
+        addr, data = dv.files[n]
+        rows = [_json.loads(x) for x in data.decode("utf-8").splitlines()]
+        out = fn(rows)
+        lines = out if isinstance(out, bytes) else b"".join((x if isinstance(x, bytes) else _canon(x).encode("utf-8")) + b"\n" for x in out)
+        f = dv.manifest["files"][n]
+        f["object"], f["byte_length"] = "sha256:" + hashlib.sha256(lines).hexdigest(), len(lines)
+        if fix_root:
+            f["rows_root"] = _merkle_root([_row_leaf(bytes.fromhex(x["h"])) for x in out]).hex()
+        dv.files[n] = (f["object"], lines)
+        dv.manifest_bytes = _canon(dv.manifest).encode("utf-8")
+        dv.source_id = "src:sha256:" + hashlib.sha256(dv.manifest_bytes).hexdigest()
+        return dv
+    return regds(make)
+
+
+def _set(row, **kw):
+    row.update(kw)
+    return row
+
+
+def _rehash(row):
+    """the hash of a file row recomputed from ITS values and ITS secret (a producer that is consistent with itself)"""
+    from validator import cell_salt as _cs
+    names = [c["name"] for c in REGISTRY_COLUMNS]
+    secret = bytes.fromhex(row["s"] + ("0" if len(row["s"]) % 2 else ""))
+    row["h"] = _merkle_root([_cell_leaf(_cs(secret, n), n, v) for n, v in zip(names, row["v"])]).hex()
+    return row
+
+
+def _lie_rows(dv):
+    """the rows of file 0 are said to be 3 (they are 4, and the root is the root of 4); row_count follows"""
+    dv.manifest["files"][0]["rows"], dv.manifest["row_count"] = 3, 4
+    dv.manifest_bytes = _canon(dv.manifest).encode("utf-8")
+    dv.source_id = "src:sha256:" + hashlib.sha256(dv.manifest_bytes).hexdigest()
+    return dv
+
+
+def _key_in_two_files():
+    """the version of five rows plus a second file that repeats the key of «Бета» with another address"""
+    a = demo_registry(chunk_rows=5)
+    b = demo_registry(rows=[dict(REGISTRY_ROWS[3], address="г. Москва, ул. Другая, д. 2")], chunk_rows=5)
+    a.manifest["files"] += b.manifest["files"]
+    a.manifest["row_count"] = 6
+    a.files += b.files
+    a.manifest_bytes = _canon(a.manifest).encode("utf-8")
+    a.source_id = "src:sha256:" + hashlib.sha256(a.manifest_bytes).hexdigest()
+    return a
+
+
+def _producer_order(W):
+    """a producer hashed the cells in an order other than the manifest's and gives the cells in ITS order"""
+    c = REGISTRY_COLUMNS
+    dv = demo_registry(columns=c[:2] + [c[3], c[2]] + c[4:])        # «address» before «name»: two columns of one type
+    dv.manifest["columns"] = copy.deepcopy(REGISTRY_COLUMNS)
+    dv.files = []
+    dv.manifest_bytes = _canon(dv.manifest).encode("utf-8")
+    dv.source_id = "src:sha256:" + hashlib.sha256(dv.manifest_bytes).hexdigest()
+    return dv
+
+
+def _two_rows_as_one(W):
+    """the manifest says the file has ONE row, its root is the root of TWO; the developer is the right leaf"""
+    dv = demo_registry(rows=[REGISTRY_ROWS[2], REGISTRY_ROWS[0]], chunk_rows=2)
+    assert dv.rows[1][1] == [OGRN_DEV]
+    dv.manifest["row_count"] = 1
+    dv.manifest["files"][0]["rows"] = 1
+    dv.files = []
+    dv.manifest_bytes = _canon(dv.manifest).encode("utf-8")
+    dv.source_id = "src:sha256:" + hashlib.sha256(dv.manifest_bytes).hexdigest()
+    return dv
+
+
+def _rival_merged(at):
+    """the row names the competitor by the OGRN of «Альфа-Сервис», which was merged into the object of the claim at «at»"""
+    og2, in2 = REGISTRY_ROWS[2]["ogrn"], REGISTRY_ROWS[2]["inn"]
+    return seq(_rival_claim(rival=og2),
+               add_entity("ent_k_alfa", "prj_compliance", "ORGANIZATION", {"name": "ООО «Альфа-Сервис»", "jurisdiction": "RU", "ogrn": og2,
+                                                                         "inn": in2}, CONF_CS, "MERGED", "ent_k_trub", at))
+
+
+def _birth_claim(W):
+    """a dataset of persons: the column of dates is declared for person.birth_date; c50 states the date as a DATE literal"""
+    inn = W["ent_k_lomov"]["identity"]["inn"]
+    pd = {"level": "CONFIDENTIAL", "categories": ["PERSONAL_DATA"]}
+    cols = [{"name": "inn", "type": "STRING", "marking": pd, "identifier_scheme": "ru.inn"},
+            {"name": "born", "type": "DATE", "marking": pd, "predicate": "person.birth_date"}]
+    regds(lambda W_: DatasetVersion("dst_persons_demo", T, "2026-09-01", cols, ["inn"], [{"inn": inn, "born": "1971-03-14"}],
+                                    subject=("inn",), dataset_key=b"k" * 32))(W)
+    W["c50"].update(subject="ent_k_lomov", predicate="person.birth_date", object={"literal": {"type": "DATE", "value": "1971-03-14"}},
+                    marking=CONF_CS_PD)
+    rowev([inn], ["born"])(W)
+
+VECTORS += [
+    # ---------------- the manifest ----------------
+    V("NR01", MI, "манифест не в канонической форме (пробелы)", pre=mraw(lambda t: _json.dumps(_json.loads(t), ensure_ascii=False))),
+    V("NR02", MI, "повторяющийся ключ в манифесте", pre=mraw(lambda t: t.replace('"row_count":5', '"row_count":5,"row_count":5'))),
+    V("NR03", MI, "байты версии набора — не JSON", pre=mraw(lambda t: "реестр юридических лиц")),
+    V("NR04", MI, "манифест с неизвестным полем", pre=mset(lambda m: m.__setitem__("owner", "ФНС"))),
+    V("NR05", MI, "манифест другого формата", pre=mset(lambda m: m.__setitem__("manifest_format", "ac-dataset-manifest/9.9"))),
+    V("NR06", MI, "имя колонки повторяется", pre=mset(lambda m: m["columns"][2].__setitem__("name", "inn"))),
+    V("NR07", MI, "ключ набора называет колонку, которой нет", pre=mset(lambda m: m.__setitem__("key", ["ogrn", "kpp"]))),
+    V("NR08", MI, "row_count не равен сумме строк файлов", pre=mset(lambda m: m.__setitem__("row_count", 6))),
+    V("NR09", MI, "схема идентификатора у нестроковой колонки", pre=mset(lambda m: m["columns"][7].__setitem__("identifier_scheme", "ru.inn"))),
+    V("NR10", MI, "манифест другого tenant, чем источник", pre=mset(lambda m: m.__setitem__("tenant_id", "tnt_other"))),
+    V("NR11", MI, "дробное число в манифесте", pre=mraw(lambda t: t.replace('"row_count":5', '"row_count":5.5'))),
+    V("NR12", MI, "previous — источник, который не версия набора", pre=lambda W: regds(previous=_sid(W, "s7"))(W)),
+    V("NR13", MI, "previous — версия другого набора данных", pre=seq(add_ds("s29", _DV_OTHER), regds(previous=_DV_OTHER.source_id))),
+    V("PR22", [], "previous называет источник другого tenant — для этого tenant он неизвестен",
+      pre=seq(add_source("s99", "Чужой tenant.", tenant="tnt_other"), lambda W: regds(previous=_sid(W, "s99"))(W))),
+    V("PR23", [], "словарь 0.3 (предикат tenant) в записи, помеченной core-ontology/0.4", pre=setk("c42", "schema_version", SV4)),
+    V("NR15", MI, "subject называет колонку без схемы идентификатора", pre=mset(lambda m: m.__setitem__("subject", ["ogrn", "name"]))),
+    V("NR16", MI, "subject называет колонку, которой нет", pre=mset(lambda m: m.__setitem__("subject", ["kpp"]))),
+    V("NR17", MI, "имя колонки не по шаблону", pre=mset(lambda m: m["columns"][2].__setitem__("name", "Наименование"))),
+    V("NR18", MI, "файл без строк в манифесте", pre=mset(lambda m: (m["files"][1].__setitem__("rows", 0), m.__setitem__("row_count", 4)))),
+    V("NR19", MI, "манифест в UTF-8 с BOM", pre=mraw(lambda t: "﻿" + t)),
+    V("NR1E", MI, "целое вне 2^53 в манифесте", pre=mraw(lambda t: t.replace('"row_count":5', '"row_count":1152921504606846976'))),
+    V("NR1A", ["SCHEMA_INVALID"], "версия набора данных с типом содержимого text/plain", pre=setk("s30", "media_type", "text/plain; charset=utf-8")),
+    V("NR1B", ["SCHEMA_INVALID"], "версия набора данных в записи, помеченной core-ontology/0.3", pre=setk("s30", "schema_version", SV3)),
+    V("NR1C", ["SCHEMA_INVALID"], "доказательство-строка в утверждении, помеченном core-ontology/0.3", pre=setk("c50", "schema_version", SV3)),
+    V("NR1F", ["SCHEMA_INVALID"], "набор записей объявлен core-ontology/0.3, а несёт записи 0.4",
+      post=lambda d, ix, e: d.__setitem__("ontology_version", SV3)),
+    V("PR25", [], "набор без записей 0.4 может быть объявлен core-ontology/0.3",
+      post=lambda d, ix, e: (d.__setitem__("records", [r for r in d["records"] if r["schema_version"] != SV4]),
+                             d.__setitem__("ontology_version", SV3))),
+    V("NR1D", ["SOURCE_CONTENT_UNAVAILABLE"], "манифеста версии набора нет — строку проверить нечем", post=_drop_bytes("s30")),
+    V("PR01", [], "версия набора со ссылкой на предыдущую версию того же набора", pre=seq(add_ds("s29", _DV_PREV), regds(previous=_DV_PREV.source_id))),
+    V("PR02", [], "предыдущая версия не входит в этот набор записей — ссылка допустима", pre=regds(previous=_DV_PREV.source_id)),
+    V("PR03", [], "версия набора, на строки которой никто не ссылается", pre=add_ds("s29", _DV_OTHER)),
+
+    # ---------------- the row: cells, hash of the row, proof of inclusion ----------------
+    V("NR20", RI, "доказательство-строка ссылается на источник, который не версия набора данных",
+      pre=seq(setk("s30", "source_kind", "DOCUMENT"), setk("s30", "media_type", "text/plain; charset=utf-8"))),
+    V("NR21", RI, "ячейки не в порядке колонок манифеста", pre=ev0(lambda ev: ev["cells"].reverse())),
+    V("NR22", RI, "одной ячейки нет", pre=ev0(lambda ev: ev["cells"].pop())),
+    V("NR23", RI, "лишняя ячейка", pre=ev0(lambda ev: ev["cells"].append(copy.deepcopy(ev["cells"][-1])))),
+    V("NR24", RI, "значение процитированной ячейки подменено (и утверждение повторяет подмену)",
+      pre=seq(obj50(type="STRING", value="г. Москва, ул. Выдуманная, д. 1"),
+              ev0(lambda ev: _cell(ev, "address").__setitem__("value", "г. Москва, ул. Выдуманная, д. 1")))),
+    V("NR25", RI, "соль ячейки подменена", pre=ev0(lambda ev: _cell(ev, "address").__setitem__("salt", _flip(_cell(ev, "address")["salt"])))),
+    V("NR26", RI, "лист скрытой ячейки подменён", pre=ev0(lambda ev: _cell(ev, "director").__setitem__("leaf", _flip(_cell(ev, "director")["leaf"])))),
+    V("NR27", RI, "хэш строки подменён", pre=ev0(lambda ev: ev.__setitem__("row_sha256", _flip(ev["row_sha256"])))),
+    V("NR28", RI, "строки нет в версии набора: ячейки и хэш строки согласованы, но доказательство включения — от другой строки",
+      pre=ev0(_foreign_row)),
+    V("NR29", RI, "хэш в доказательстве включения подменён", pre=seq(regds(chunk_rows=4096), ev0(lambda ev: ev["proof"]["hashes"].__setitem__(0, _flip(ev["proof"]["hashes"][0]))))),
+    V("NR30", RI, "номер строки в файле не тот", pre=seq(regds(chunk_rows=4096), ev0(lambda ev: ev["proof"].__setitem__("index", ev["proof"]["index"] - 1)))),
+    V("NR31", RI, "номер строки за пределами файла", pre=seq(regds(chunk_rows=4096), ev0(lambda ev: ev["proof"].__setitem__("index", 5)))),
+    V("NR32", RI, "файла с таким номером в манифесте нет", pre=ev0(lambda ev: ev["proof"].__setitem__("file", 2))),
+    V("NR33", RI, "строка заявлена в другом файле версии", pre=seq(regds(chunk_rows=2), ev0(lambda ev: ev["proof"].__setitem__("file", 0)))),
+    V("NR34", RI, "доказательство включения с лишним хэшем", pre=seq(regds(chunk_rows=4096), ev0(lambda ev: ev["proof"]["hashes"].append("0" * 64)))),
+    V("NR35", RI, "доказательство включения укорочено", pre=seq(regds(chunk_rows=4096), ev0(lambda ev: ev["proof"]["hashes"].pop()))),
+    V("NR36", RI, "строка единственного в файле места заявлена с непустым путём",
+      pre=seq(regds(chunk_rows=1), ev0(lambda ev: ev["proof"]["hashes"].append(ev["row_sha256"])))),
+    V("PR19", [], "дерево из 13 строк: путь из нескольких хэшей", pre=regds(chunk_rows=4096, rows=_ROWS13)),
+    V("NR37", RI, "дерево из 13 строк: подменён последний хэш пути",
+      pre=seq(regds(chunk_rows=4096, rows=_ROWS13), ev0(lambda ev: ev["proof"]["hashes"].__setitem__(-1, _flip(ev["proof"]["hashes"][-1]))))),
+    V("NR38", RI, "дерево из 13 строк: хэши пути переставлены",
+      pre=seq(regds(chunk_rows=4096, rows=_ROWS13), ev0(lambda ev: ev["proof"]["hashes"].reverse()))),
+    V("NR39", RI, "дерево из 13 строк: путь верен, но номер строки соседний",
+      pre=seq(regds(chunk_rows=4096, rows=_ROWS13), ev0(lambda ev: ev["proof"].__setitem__("index", ev["proof"]["index"] ^ 1)))),
+    V("NR3A", RI, "файл из одной строки, номер строки вне файла, путь пуст",
+      pre=seq(regds(chunk_rows=1), ev0(lambda ev: ev["proof"].__setitem__("index", 3)))),
+    V("PR04", [], "файл из одной строки: путь доказательства пуст", pre=regds(chunk_rows=1)),
+    V("PR05", [], "все строки в одном файле (дерево из пяти листьев)", pre=regds(chunk_rows=4096)),
+    V("PR06", [], "файлы по две строки", pre=regds(chunk_rows=2)),
+    V("PR07", [], "строка из первого файла версии (файлы по три строки)", pre=regds(chunk_rows=3, rows=REGISTRY_ROWS[:1] + [dict(r, ogrn=r["ogrn"]) for r in REGISTRY_ROWS[1:]] + [
+        {"ogrn": "9" * 13, "inn": None, "name": "Запись-заполнитель", "address": None, "director": None, "registered_on": None, "active": None, "employees": None}])),
+
+    # ---------------- the key of the row ----------------
+    V("NR40", RI, "колонка ключа скрыта", pre=ev0(lambda ev: _hide(ev, "ogrn"))),
+    V("NR41", RI, "row_key не равен значениям колонок ключа", pre=ev0(lambda ev: ev.__setitem__("row_key", [OGRN_TRUB]))),
+    V("NR42", RI, "row_key не указан у набора с ключом", pre=ev0(lambda ev: ev.pop("row_key"))),
+    V("NR43", RI, "row_key указан у набора без ключа",
+      pre=seq(regds(key=()), rowev(lambda dv: next(k for k, kv, s, h, vals in dv.rows if vals[0] == OGRN_DEV), ["ogrn", "address"]),
+              ev0(lambda ev: ev.__setitem__("row_key", [OGRN_DEV])))),
+    V("NR44", RI, "составной ключ: процитирована только одна его колонка",
+      pre=seq(regds(key=("ogrn", "inn")), rowev([OGRN_DEV, INN_DEV], ["address"]), ev0(lambda ev: _hide(ev, "inn")))),
+    V("NR45", RI, "составной ключ: одна колонка скрыта, row_key укорочен до процитированных",
+      pre=seq(regds(key=("ogrn", "inn")), rowev([OGRN_DEV, INN_DEV], ["address"]),
+              ev0(lambda ev: (_hide(ev, "inn"), ev.__setitem__("row_key", [OGRN_DEV]))))),
+    V("PR08", [], "набор без ключа: строка называется своим хэшем",
+      pre=seq(regds(key=()), rowev(lambda dv: next(k for k, kv, s, h, vals in dv.rows if vals[0] == OGRN_DEV), ["ogrn", "address"]))),
+    V("PR24", [], "ключ строки с табуляцией: ключ — те же данные, что и ячейки",
+      pre=seq(regds(key=("name",), subject=("ogrn",), rows=rows_with(name="ООО\t«Заречье»")), rowev(["ООО\t«Заречье»"], ["address", "ogrn"]))),
+    V("PR09", [], "составной ключ", pre=seq(regds(key=("ogrn", "inn")), rowev([OGRN_DEV, INN_DEV], ["address"]))),
+
+    # ---------------- values of the cells fit the types of the columns ----------------
+    V("NR50", RI, "строка в целочисленной колонке", pre=seq(regds(rows=rows_with(employees="48"), check=False, nofiles=True), rowev([OGRN_DEV], ["address", "employees"]))),
+    V("NR51", RI, "число в булевой колонке", pre=seq(regds(rows=rows_with(active=1), check=False, nofiles=True), rowev([OGRN_DEV], ["address", "active"]))),
+    V("NR52", RI, "true в целочисленной колонке", pre=seq(regds(rows=rows_with(employees=True), check=False, nofiles=True), rowev([OGRN_DEV], ["address", "employees"]))),
+    V("NR53", RI, "несуществующая дата в колонке дат", pre=seq(regds(rows=rows_with(registered_on="2021-02-30"), check=False, nofiles=True),
+                                                              rowev([OGRN_DEV], ["address", "registered_on"]))),
+    V("NR54", RI, "дата не в виде ГГГГ-ММ-ДД", pre=seq(regds(rows=rows_with(registered_on="20210212"), check=False, nofiles=True),
+                                                       rowev([OGRN_DEV], ["address", "registered_on"]))),
+    V("NR55", RI, "символ NUL в строковой ячейке", pre=seq(regds(rows=rows_with(name="ООО\u0000«Заречье»"), check=False, nofiles=True), rowev([OGRN_DEV], ["address", "name"]))),
+    V("NR56", RI, "число в строковой колонке", pre=seq(regds(rows=rows_with(name=7), check=False, nofiles=True), rowev([OGRN_DEV], ["address", "name"]))),
+    V("PR10", [], "процитированы ячейки всех типов (строка, дата, булево, целое)",
+      pre=rowev([OGRN_DEV], ["address", "name", "registered_on", "active", "employees"])),
+    V("PR11", [], "пустые ячейки процитированы", pre=seq(regds(rows=rows_with(employees=None, registered_on=None, active=None)),
+                                                         rowev([OGRN_DEV], ["address", "registered_on", "active", "employees"]))),
+    V("PR12", [], "перевод строки и табуляция в строковой ячейке — свободный текст",
+      pre=seq(regds(rows=rows_with(address="г. Заречный,\n\tул. Заречная, д. 1")), obj50(type="STRING", value="г. Заречный,\n\tул. Заречная, д. 1"))),
+
+    # ---------------- the row is about the subject of the claim ----------------
+    V("NR60", RI, "строка другой организации: адрес «Трубопроводстроя» приписан девелоперу",
+      pre=seq(rowev([OGRN_TRUB], ["address"]), obj50(type="STRING", value=ADDR_TRUB))),
+    V("NR61", RI, "ОГРН строки чужой, ИНН совпал с субъектом — идентификаторы расходятся",
+      pre=seq(regds(rows=rows_with(1, inn=INN_DEV, address=ROW0["address"])[1:]), rowev([OGRN_TRUB], ["address", "inn"]))),
+    V("NR62", RI, "ни один идентификатор субъекта строки не процитирован",
+      pre=seq(regds(key=("name",), subject=("ogrn",)), rowev([ROW0["name"]], ["address"]))),
+    V("NR63", RI, "идентификатор субъекта строки пуст",
+      pre=seq(regds(key=("name",), subject=("inn",), rows=rows_with(inn=None)), rowev([ROW0["name"]], ["address", "inn"]))),
+    V("PR13", [], "субъект строки назван ИНН (ключ набора — название)",
+      pre=seq(regds(key=("name",), subject=("inn",)), rowev([ROW0["name"]], ["address", "inn"]))),
+    V("PR20", [], "у субъекта нет идентификатора одной из схем строки (ИНН) — совпадения по ОГРН достаточно",
+      pre=seq(lambda W: W["ent_k_developer"]["identity"].pop("inn"), rowev([OGRN_DEV], ["address", "inn"]))),
+    V("NR65", RI, "набор не объявляет субъект строки: его строка не подтверждает утверждение о сущности",
+      pre=regds(subject=())),
+    V("PR15", [], "субъект после слияния несёт идентификаторы влившейся сущности",
+      pre=seq(add_entity("ent_k_trub", "prj_compliance", "ORGANIZATION", {"name": "АО «Трубопроводстрой»", "jurisdiction": "RU",
+                                                                         "ogrn": OGRN_TRUB, "inn": INN_TRUB}, CONF_CS, "MERGED",
+                         "ent_k_developer", "2026-09-20T10:00:00Z"),
+              rowev([OGRN_TRUB], ["address"]), obj50(type="STRING", value=ADDR_TRUB))),
+    V("NR64", RI, "слияние позже утверждения не делает чужую строку своей",
+      pre=seq(add_entity("ent_k_trub", "prj_compliance", "ORGANIZATION", {"name": "АО «Трубопроводстрой»", "jurisdiction": "RU",
+                                                                         "ogrn": OGRN_TRUB, "inn": INN_TRUB}, CONF_CS, "MERGED",
+                         "ent_k_developer", "2026-09-27T10:00:00Z"),
+              rowev([OGRN_TRUB], ["address"]), obj50(type="STRING", value=ADDR_TRUB))),
+
+    # ---------------- the claim says what the row says ----------------
+    V("NR70", RI, "утверждение говорит не то, что в ячейке", pre=obj50(type="STRING", value="г. Москва, ул. Лесная, д. 3")),
+    V("NR71", RI, "процитирована колонка, не объявленная для предиката", pre=rowev([OGRN_DEV], ["name"])),
+    V("NR72", RI, "колонка предиката скрыта, процитирована другая с тем же значением",
+      pre=seq(regds(rows=rows_with(name=ROW0["address"])), rowev([OGRN_DEV], ["name"]))),
+    V("NR73", RI, "тип литерала не равен типу колонки (дата как строка)",
+      pre=seq(regds(columns=cols_with(address={"predicate": None}, registered_on={"predicate": "entity.registered_address"})),
+              rowev([OGRN_DEV], ["registered_on"]), obj50(type="STRING", value=ROW0["registered_on"]))),
+    V("NR74", RI, "ячейка предиката пуста",
+      pre=seq(regds(rows=rows_with(address=None)), rowev([OGRN_DEV], ["address"]))),
+    V("NR75", RI, "колонка-идентификатор: строковый литерал вместо идентификатора",
+      pre=seq(regds(columns=cols_with(address={"identifier_scheme": "x.addr"})))),
+    V("PR16", [], "колонка-идентификатор: номер дела из строки", pre=_case_claim),
+    V("NR76", RI, "колонка-идентификатор: в утверждении другой номер дела",
+      pre=seq(_case_claim, obj50(type="IDENTIFIER", scheme="ru.arbitr", value="А41-99999/2026"))),
+    V("NR77", RI, "колонка-идентификатор: в утверждении другая схема идентификатора",
+      pre=seq(_case_claim, obj50(type="IDENTIFIER", scheme="ru.sudrf", value="А41-12345/2026"))),
+    V("PR17", [], "объект-сущность: ячейка называет её идентификатором", pre=_rival_claim()),
+    V("NR78", RI, "объект-сущность: в ячейке идентификатор другой организации", pre=_rival_claim(rival=REGISTRY_ROWS[2]["ogrn"])),
+    V("NR79", RI, "объект-сущность: колонка предиката не идентификатор",
+      pre=_rival_claim(rival="АО «Трубопроводстрой»", col={"name": "rival", "type": "STRING", "marking": PUB, "predicate": "competitor.competes_with"})),
+    V("NR7A", RI, "объект-сущность: идентификатор той же строки по другой схеме (ИНН как ОГРН)",
+      pre=_rival_claim(rival=INN_TRUB, col=dict(RIVAL_COL, identifier_scheme="ru.inn2"))),
+
+    # ---------------- after the independent review (S10R-03, -05, -07, -08, -09, -17) ----------------
+    V("NR46", RI, "ключ — целая колонка со значением 1, row_key = [true]: true — не 1 (S10R-03)",
+      pre=seq(regds(key=("employees",), rows=[dict(r, employees=n + 1) for n, r in enumerate(REGISTRY_ROWS)]), rowev([1], ["address", "ogrn"]),
+              ev0(lambda ev: ev.__setitem__("row_key", [True])))),
+    V("PR30", [], "ключ — целая колонка", pre=seq(regds(key=("employees",), rows=[dict(r, employees=n + 1) for n, r in enumerate(REGISTRY_ROWS)]),
+                                                   rowev([1], ["address", "ogrn"]))),
+    V("PR31", [], "ключ — булева и строковая колонки", pre=seq(regds(key=("active", "ogrn")), rowev([True, OGRN_DEV], ["address"]))),
+    V("NR47", RI, "производитель посчитал хэш строки по ячейкам в своём порядке и привёл их в нём же — не порядок манифеста (S10R-08)",
+      pre=regds(_producer_order)),
+    V("NR3B", RI, "манифест объявляет в файле одну строку, а корень — двух; «единственная» строка предъявлена с путём из одного хэша (S10R-08)",
+      pre=seq(regds(_two_rows_as_one), ev0(lambda ev: ev["proof"].__setitem__("index", 0)))),
+    V("PR26", [], "объект-сущность: ячейка называет идентификатор сущности, влитой в объект ДО утверждения (S10R-09)",
+      pre=_rival_merged("2026-09-20T10:00:00Z")),
+    V("NR7B", RI, "объект-сущность: слияние ПОЗЖЕ утверждения — на момент утверждения ячейка называла другую организацию (S10R-09)",
+      pre=_rival_merged("2026-09-27T10:00:00Z")),
+    V("PR27", [], "колонка дат подтверждает литерал-дату (S10R-09)", pre=_birth_claim),
+    V("NR7C", RI, "колонка дат: в утверждении другая дата", pre=seq(_birth_claim, obj50(type="DATE", value="1971-03-15"))),
+    V("NR66", ["REF_UNRESOLVED"], "утверждение на строке о неизвестном субъекте: одна ошибка — неизвестный субъект (S10R-09)",
+      pre=setk("c50", "subject", "ent_no_such_entity")),
+    V("NR7D", ["REF_UNRESOLVED"], "утверждение на строке с неизвестной сущностью-объектом: одна ошибка (S10R-09)",
+      pre=seq(_rival_claim(), setk("c50", "object", {"entity": "ent_no_such_entity"}))),
+    V("PR28", [], "субъект утверждения сам влит в девелопера до утверждения: строка девелопера — о нём (правило «после слияния "
+      "пишут о выжившем» — только у базы) (S10R-09)",
+      pre=seq(add_entity("ent_k_dup", "prj_compliance", "ORGANIZATION", {"name": "ООО «Заречье-Девелопмент» (дубль)", "jurisdiction": "RU",
+                                                                        "ogrn": REGISTRY_ROWS[3]["ogrn"], "inn": REGISTRY_ROWS[3]["inn"]}, CONF_CS,
+                         "MERGED", "ent_k_developer", "2026-09-20T10:00:00Z"), setk("c50", "subject", "ent_k_dup"))),
+    V("NR48", RI, "процитированная ячейка с именем, которого нет среди колонок манифеста: одна ошибка (S10R-09)",
+      pre=ev0(lambda ev: ev["cells"].__setitem__(-1, {"name": "zzz", "value": 1, "salt": "0" * 64}))),
+    V("NR1G", MI, "колонка объявлена для предиката, которого нет ни в реестре, ни в схеме tenant (S10R-17)",
+      pre=mset(lambda m: m["columns"][2].__setitem__("predicate", "entity.no_such"))),
+    V("NR1H", MI, "колонка объявлена для предиката схемы другого tenant… которого в этом tenant нет",
+      pre=mset(lambda m: m["columns"][2].__setitem__("predicate", "x.no_such"))),
+    V("NR1I", MI, "колонка объявлена для предиката схемы tenant, определённого ПОЗЖЕ получения версии",
+      pre=seq(cls("sd_late", "sdf_late", root="THING", at="2026-09-06T00:00:00Z", attributes=[ATTR_NOTE]),
+              mset(lambda m: m["columns"][2].__setitem__("predicate", "x.note")))),
+    V("NR1J", MI, "колонка объявлена для предиката схемы ДРУГОГО tenant",
+      pre=seq(cls("sd_alien", "sdf_alien", root="THING", tenant="tnt_other", attributes=[ATTR_NOTE]),
+              mset(lambda m: m["columns"][2].__setitem__("predicate", "x.note")))),
+    V("PR29", [], "колонка объявлена для предиката схемы tenant", pre=mset(lambda m: m["columns"][2].__setitem__("predicate", "x.max_length"))),
+
+    # ---------------- the row files of a version, when the object store holds them (S10R-07) ----------------
+    V("PRF1", [], "файлов версии в хранилище нет — версия регистрируется по манифесту",
+      post=lambda d, ix, e: [e["content"].pop(k) for k in list(e["content"]) if k.startswith("sha256:") and e["content"][k][:5] == b'{"h":']),
+    V("NRF1", MI, "байты файла строк подменены (адрес не сходится)",
+      post=lambda d, ix, e: [e["content"].__setitem__(k, e["content"][k].replace("Заречн".encode(), "Заречм".encode()))
+                             for k in list(e["content"]) if e["content"][k][:5] == b'{"h":']),
+    V("NRF2", MI, "длина файла строк не та, что в манифесте", pre=mset(lambda m: m["files"][0].__setitem__("byte_length", m["files"][0]["byte_length"] + 1))),
+    V("NRF3", MI, "в файле строк меньше, чем объявлено", pre=refile(lambda rows: rows[:-1])),
+    V("NRF4", MI, "в файле лишняя строка", pre=refile(lambda rows: rows + [rows[-1]])),
+    V("NRF5", MI, "строка файла не в канонической форме", pre=refile(lambda rows: [_json.dumps(rows[0], ensure_ascii=False).encode("utf-8")] + rows[1:])),
+    V("NRF6", MI, "строка файла с лишним полем", pre=refile(lambda rows: [_set(rows[0], x=1)] + rows[1:])),
+    V("NRF7", MI, "значение в файле не типа колонки", pre=refile(lambda rows: [_set(rows[0], v=rows[0]["v"][:7] + ["48"])] + rows[1:])),
+    V("NRF8", MI, "в строке файла не столько значений, сколько колонок", pre=refile(lambda rows: [_set(rows[0], v=rows[0]["v"][:7])] + rows[1:])),
+    V("NRF9", MI, "секрет строки короче 16 байт", pre=refile(lambda rows: [_set(rows[0], s=rows[0]["s"][:30])] + rows[1:])),
+    V("NRFA", MI, "ключ строки в файле не равен значениям колонок ключа", pre=refile(lambda rows: [_set(rows[0], k=["1027700000000"])] + rows[1:])),
+    V("NRFB", MI, "значение в файле изменено — хэш строки не сходится",
+      pre=refile(lambda rows: [_set(rows[0], v=rows[0]["v"][:3] + ["г. Москва, ул. Выдуманная, д. 1"] + rows[0]["v"][4:])] + rows[1:])),
+    V("PRF2", [], "строки файла не в порядке ключа: порядок не правило, правило — единственность ключа (S10R-28)",
+      pre=refile(lambda rows: [rows[1], rows[0]] + rows[2:], fix_root=True)),
+    V("NRFD", MI, "корень строк в манифесте не тот", pre=mset(lambda m: m["files"][0].__setitem__("rows_root", _flip(m["files"][0]["rows_root"])))),
+    V("NRFE", MI, "файл строк не окончен переводом строки",
+      pre=refile(lambda rows: b"".join(_canon(x).encode("utf-8") + b"\n" for x in rows)[:-1])),
+    V("NRFF", MI, "пустое значение в колонке ключа (хэши согласованы)",
+      pre=regds(rows=rows_with(2, ogrn=None), check=False)),
+    V("NRFG", MI, "ключ повторяется в файле", pre=refile(lambda rows: [rows[0], rows[0]] + rows[2:], fix_root=True)),
+
+    V("NRFL", MI, "поле хэша строки в файле неверно при верных значениях", pre=refile(lambda rows: [_set(rows[0], h=_flip(rows[0]["h"]))] + rows[1:])),
+    V("NRFM", MI, "манифест объявляет в файле не столько строк, сколько в нём есть; корень — верный (S10R-21)",
+      pre=regds(lambda W: _lie_rows(demo_registry()))),
+    V("NRFN", MI, "манифест называет файл чужим адресом, а в хранилище под этим адресом лежат его байты (S10R-21)",
+      pre=mset(lambda m: m["files"][0].__setitem__("object", "sha256:" + "0" * 64)),
+      post=lambda d, ix, e: e["content"].__setitem__("sha256:" + "0" * 64, next(v for v in e["content"].values() if v[:5] == b'{"h":' and v.count(b"\n") == 4))),
+    V("NRFO", MI, "один ключ в двух файлах версии с разным содержимым (S10R-22)",
+      pre=regds(lambda W: _key_in_two_files())),
+    V("NRFH", MI, "после последней строки файла — посторонние байты", pre=refile(lambda rows: b"".join(_canon(x).encode("utf-8") + b"\n" for x in rows) + b"tail")),
+    V("NRFI", MI, "значение в файле не типа колонки, хэши согласованы", pre=regds(rows=rows_with(1, employees="1200"), check=False)),
+    V("NRFJ", MI, "в строке файла меньше значений, чем колонок, хэши согласованы",
+      pre=refile(lambda rows: [_rehash(_set(rows[0], v=rows[0]["v"][:7]))] + rows[1:], fix_root=True)),
+    V("NRFK", MI, "секрет строки — 15 байт, хэши согласованы",
+      pre=refile(lambda rows: [_rehash(_set(rows[0], s=rows[0]["s"][:30]))] + rows[1:], fix_root=True)),
+
+    # ---------------- marking, time, tenant ----------------
+    V("NR80", ["MARKING_BROADER_THAN_INPUT"], "процитирована колонка с персональными данными, а утверждение без этой категории",
+      pre=rowev([OGRN_DEV], ["address", "director"])),
+    V("PR18", [], "колонка с персональными данными процитирована в утверждении с этой категорией",
+      pre=seq(rowev([OGRN_DEV], ["address", "director"]), setk("c50", "marking", CONF_CS_PD))),
+    V("NR81", ["MARKING_BROADER_THAN_INPUT"], "процитирована колонка «для служебного пользования» в открытом утверждении",
+      pre=seq(rowev([OGRN_DEV], ["address", "employees"]), setk("c50", "marking", PUB), setk("ent_k_developer", "marking", PUB))),
+    V("NR82", ["MARKING_BROADER_THAN_INPUT"], "маркировка утверждения шире маркировки версии набора", pre=setk("s30", "marking", CONF_CS_PD)),
+    V("NR83", ["TEMPORAL_ORDER_INVALID"], "утверждение записано раньше, чем получена версия набора", pre=setk("c50", "recorded_at", "2026-09-05T07:00:00Z")),
+    V("NR84", ["CROSS_SCOPE_REFERENCE"], "строка версии набора другого tenant",
+      pre=seq(setk("s30", "tenant_id", "tnt_other"), mset(lambda m: m.__setitem__("tenant_id", "tnt_other")))),
+]

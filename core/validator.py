@@ -1,8 +1,10 @@
-"""Reference validator for core-ontology/0.3 (Архитектура семантики).
+"""Reference validator for core-ontology/0.4 (Архитектура семантики).
 
 Inputs (all three are separate on purpose):
   dataset  - records (Project, Source, Entity, Claim, ClaimReview, Check, ArtifactReceipt, IdentityDecision, Publication,
-             and the tenant's schema-as-data: ClassDef, LinkDef, IdentifierDef — D27.1);
+             and the tenant's schema-as-data: ClassDef, LinkDef, IdentifierDef — D27.1); a Source of kind
+             DATASET_VERSION is a version of a tabular dataset: its bytes are the manifest (D27.2), and a claim may
+             rest on a ROW of it — evidence that carries its own proof (D27.4);
   trust    - trust anchors (service keys per tenant), configuration OUTSIDE the data they authenticate;
   content  - object store: source bytes by source_id (Source.content_inline is accepted as well) and the bytes of
              producer artifacts by artifact_digest ("sha256:<hex>"); a receipt is checked against its artifact (RR-07).
@@ -64,6 +66,7 @@ def _is_ts(s):
 DATASET_V = Draft202012Validator(SCHEMA, format_checker=FORMATS)
 TRUST_V = Draft202012Validator({**SCHEMA["$defs"]["TrustAnchors"], "$defs": SCHEMA["$defs"]}, format_checker=FORMATS)
 ARTIFACT_V = Draft202012Validator({**SCHEMA["$defs"]["UmrArtifact"], "$defs": SCHEMA["$defs"]}, format_checker=FORMATS)
+MANIFEST_V = Draft202012Validator({**SCHEMA["$defs"]["DatasetManifest"], "$defs": SCHEMA["$defs"]}, format_checker=FORMATS)
 ARTIFACT_FORMATS = PREDICATES["artifact_formats"]
 
 
@@ -106,6 +109,7 @@ ERROR_CODES = [
     "RECEIPT_KEY_INVALID", "RECEIPT_SIGNATURE_INVALID", "RECEIPT_CLAIM_BINDING_INVALID",
     "IDENTITY_DECISION_INVALID", "ARTIFACT_INVALID", "GRAPH_NODE_INVALID", "PUBLICATION_INVALID", "ORIGINAL_INVALID",
     "SCHEMA_DEF_INVALID", "SCHEMA_CHANGE_INVALID", "CLASS_NOT_INSTANTIABLE", "IDENTIFIER_SCHEME_INVALID",
+    "DATASET_MANIFEST_INVALID", "EVIDENCE_ROW_INVALID",
     "VALIDATOR_INTERNAL_ERROR",
 ]
 WARNING_CODES = ["CONTRADICTION_SINGLE_VALUED", "POSSIBLE_DUPLICATE", "REQUIRED_ATTRIBUTE_MISSING"]
@@ -148,7 +152,9 @@ def _free_text(parent, key):
     """Free text is decided by place in the schema (RR-10): content_inline, quote, note, the value of a STRING literal
     and the text of an ACTION node of an artifact (it becomes a STRING literal)."""
     return key in FREE_TEXT_KEYS or (isinstance(parent, dict) and ((key == "value" and parent.get("type") == "STRING")
-                                                                   or (key == "text" and parent.get("type") == "ACTION")))
+                                                                   or (key == "text" and parent.get("type") == "ACTION")
+                                                                   or (key == "value" and "salt" in parent)   # a cell of a row
+                                                                   or (key == "row_key" and parent.get("kind") == "ROW")))  # = its key cells
 
 
 def prescan(root, path, out, key=None):
@@ -496,6 +502,223 @@ CHECKSUMS = {"ru.inn": lambda v: inn_any_ok(v), "ru.ogrn": lambda v: ogrn_ok(v),
              "ru.ogrnip": lambda v: ogrnip_ok(v), "imo": lambda v: imo_ok(v)}
 
 
+# ---------- datasets (D27.2, D27.4): manifest of a version, hash of a row, proof that the row is in the version ----------
+# Row hash = Merkle tree over the cells of the row in the column order of the manifest. A cell leaf is
+# sha256(0x00 || salt || JCS([name, value])): the salt (derived from a per-row secret and the column name, kept with the
+# row) makes a hidden cell unguessable from its leaf, so a claim quotes only the columns it rests on. Inner nodes are
+# sha256(0x01 || left || right) (RFC 6962 shape: the left subtree is the largest power of two). The rows of a file form
+# the same tree over sha256(0x02 || row hash); the manifest lists the root of every file, and the manifest is the
+# content-addressed Source — so (cells, proof) + the manifest prove «this row is in this version» with no file at hand.
+def _h(b: bytes) -> bytes:
+    return hashlib.sha256(b).digest()
+
+
+def cell_leaf(salt: bytes, name: str, value) -> bytes:
+    return _h(b"\x00" + salt + canon([name, value]).encode("utf-8"))
+
+
+def cell_salt(secret: bytes, name: str) -> bytes:
+    """the salt of a cell from the secret of its row (16 bytes, kept in the row file) and the name of its column"""
+    return _h(b"\x03" + secret + name.encode("utf-8"))
+
+
+def row_leaf(row_hash: bytes) -> bytes:
+    return _h(b"\x02" + row_hash)
+
+
+def merkle_root(leaves):
+    """RFC 6962 tree shape over ready leaf hashes (at least one)"""
+    n = len(leaves)
+    if n == 1:
+        return leaves[0]
+    k = 1
+    while k * 2 < n:
+        k *= 2
+    return _h(b"\x01" + merkle_root(leaves[:k]) + merkle_root(leaves[k:]))
+
+
+def inclusion_root(leaf: bytes, index: int, size: int, path):
+    """the root implied by an audit path (RFC 9162 2.1.3.2); None if the path does not fit (index, size)"""
+    if not 0 <= index < size:
+        return None
+    fn, sn, r = index, size - 1, leaf
+    for p in path:
+        if sn == 0:
+            return None
+        if fn & 1 or fn == sn:
+            r = _h(b"\x01" + p + r)
+            if not fn & 1:
+                while fn and not fn & 1:
+                    fn >>= 1
+                    sn >>= 1
+        else:
+            r = _h(b"\x01" + r + p)
+        fn >>= 1
+        sn >>= 1
+    return r if sn == 0 else None
+
+
+COLUMN_PY = {"STRING": str, "INTEGER": int, "BOOLEAN": bool, "DATE": str}
+
+
+def cell_value_ok(ctype, v):
+    """the value of a quoted cell fits the type of its column (None = an empty cell)"""
+    if v is None:
+        return True
+    if ctype == "BOOLEAN":
+        return isinstance(v, bool)
+    if isinstance(v, bool) or not isinstance(v, COLUMN_PY[ctype]):
+        return False
+    if ctype == "STRING":
+        return "\x00" not in v            # a database text cannot hold NUL
+    if ctype == "DATE":
+        try:
+            return date.fromisoformat(v).isoformat() == v
+        except ValueError:
+            return False
+    return True
+
+
+def parse_manifest(b):
+    """bytes of a DATASET_VERSION source -> (manifest, None) or (None, reason): UTF-8 JSON without duplicate keys, the
+    integer profile, the manifest schema, canonical RFC 8785 bytes; column names unique, the key made of columns,
+    row_count = the rows of the files, an identifier scheme only on a STRING column, the subject columns are
+    identifier columns"""
+    try:
+        m = json.loads(b.decode("utf-8"), object_pairs_hook=_no_dup)
+    except (UnicodeDecodeError, ValueError, RecursionError):
+        return None, "манифест не JSON в UTF-8 или с повторяющимися ключами"
+    raw = []
+    prescan(m, "", raw)
+    if raw:
+        return None, "манифест: " + raw[0][1]
+    errs = list(MANIFEST_V.iter_errors(m))
+    if errs:
+        return None, "манифест не по схеме ac-dataset-manifest/0.1: " + errs[0].message[:120]
+    if canon(m).encode("utf-8") != b:
+        return None, "манифест не в канонической форме RFC 8785"
+    names = [c["name"] for c in m["columns"]]
+    if len(set(names)) != len(names):
+        return None, "имя колонки повторяется"
+    if not set(m["key"]) <= set(names):
+        return None, "ключ набора называет колонку, которой нет"
+    if m["row_count"] != sum(f["rows"] for f in m["files"]):
+        return None, "row_count не равен сумме строк файлов"
+    if any("identifier_scheme" in c and c["type"] != "STRING" for c in m["columns"]):
+        return None, "схема идентификатора — только у строковой колонки"
+    ident = {c["name"] for c in m["columns"] if "identifier_scheme" in c}
+    if not set(m.get("subject", ())) <= ident:
+        return None, "subject называет колонку, которой нет или которая не идентификатор"
+    return m, None
+
+
+_SECRET_RE = re.compile(r"[0-9a-f]{32}")
+
+
+def dataset_file_error(m, f, b, seen):
+    """None if the bytes b are the row file f of the version with manifest m: the address and the length, one canonical
+    JSON line {"h","k","s","v"} per row, values of the column types, the key, the hash of every row recomputed from its
+    cells and its secret, the root of the file; a key (without a key — a row hash) occurs once in the whole version:
+    `seen` collects the keys of the files of the version checked so far"""
+    if "sha256:" + hashlib.sha256(b).hexdigest() != f["object"] or len(b) != f["byte_length"]:
+        return "байты не совпадают с адресом или длиной"
+    names = [c["name"] for c in m["columns"]]
+    types = [c["type"] for c in m["columns"]]
+    kpos = [names.index(k) for k in m["key"]]
+    lines = b.split(b"\n")
+    if lines.pop() != b"":
+        return "последняя строка не окончена"
+    if len(lines) != f["rows"]:
+        return "строк не столько, сколько объявлено в манифесте"
+    leaves = []
+    for ln in lines:
+        try:
+            r = json.loads(ln.decode("utf-8"), object_pairs_hook=_no_dup)
+            if not (isinstance(r, dict) and r.keys() == {"h", "k", "s", "v"} and isinstance(r["v"], list)
+                    and isinstance(r["s"], str) and isinstance(r["h"], str)) or canon(r).encode("utf-8") != ln:
+                return "строка не в канонической форме {h, k, s, v}"
+        except Exception:  # noqa: BLE001 - not JSON, duplicate keys, a float, a huge integer
+            return "строка не в канонической форме {h, k, s, v}"
+        v = r["v"]
+        if len(v) != len(names) or not all(cell_value_ok(t, x) for t, x in zip(types, v)):
+            return "значения строки не соответствуют колонкам манифеста"
+        if not _SECRET_RE.fullmatch(r["s"]):
+            return "секрет строки — не 16 байт"
+        if canon(r["k"]) != canon([v[p] for p in kpos]) or any(v[p] is None for p in kpos):
+            return "ключ строки не равен значениям колонок ключа или пуст"
+        secret = bytes.fromhex(r["s"])
+        h = merkle_root([cell_leaf(cell_salt(secret, n), n, x) for n, x in zip(names, v)])
+        if h.hex() != r["h"]:
+            return "хэш строки не равен хэшу её ячеек"
+        name = canon(r["k"]) if kpos else r["h"]
+        if name in seen:
+            return "ключ строки повторяется в версии набора"
+        seen.add(name)
+        leaves.append(row_leaf(h))
+    if merkle_root(leaves).hex() != f["rows_root"]:
+        return "корень строк не равен корню в манифесте"
+    return None
+
+
+def row_evidence_error(ev, m, c, lit, subj_keys, obj_keys):
+    """None if the ROW evidence proves a row of the version with manifest m and the claim says what the row says.
+    subj_keys / obj_keys: the strong identifiers (scheme, value) of the claim's subject / entity-object at the time of
+    the claim (None = the entity is unknown, reported elsewhere)"""
+    cols = m["columns"]
+    cells = ev["cells"]
+    if [x["name"] for x in cells] != [x["name"] for x in cols]:
+        return "ячейки не совпадают с колонками манифеста (состав или порядок)"
+    leaves = []
+    for cell, col in zip(cells, cols):
+        if "salt" in cell:
+            if not cell_value_ok(col["type"], cell["value"]):
+                return f"значение колонки {col['name']} не типа {col['type']}"
+            leaves.append(cell_leaf(bytes.fromhex(cell["salt"]), cell["name"], cell["value"]))
+        else:
+            leaves.append(bytes.fromhex(cell["leaf"]))
+    if merkle_root(leaves).hex() != ev["row_sha256"]:
+        return "хэш строки не равен корню дерева её ячеек"
+    pr = ev["proof"]
+    if pr["file"] >= len(m["files"]):
+        return "в манифесте нет файла с таким номером"
+    f = m["files"][pr["file"]]
+    root = inclusion_root(row_leaf(bytes.fromhex(ev["row_sha256"])), pr["index"], f["rows"], [bytes.fromhex(x) for x in pr["hashes"]])
+    if root is None or root.hex() != f["rows_root"]:
+        return "строка не входит в файл версии набора (доказательство включения не сходится)"
+    quoted = {x["name"]: x["value"] for x in cells if "salt" in x}
+    if m["key"]:
+        if any(k not in quoted for k in m["key"]) or "row_key" not in ev or canon(ev["row_key"]) != canon([quoted[k] for k in m["key"]]):
+            return "ключ строки: колонки ключа должны быть процитированы, а row_key — равен их значениям"
+    elif "row_key" in ev:
+        return "у набора без ключа строка называется своим хэшем, row_key не указывается"
+    scheme = {col["name"]: col.get("identifier_scheme") for col in cols}
+    # the row is about the subject of the claim: the manifest names the identifier columns of the row's subject;
+    # a dataset that does not say whom its rows are about cannot support a claim about anybody
+    if "subject" not in m:
+        return "набор не объявляет субъект строки (subject) — его строка не может подтверждать утверждение о сущности"
+    if subj_keys is not None:
+        ids = {(scheme[n], quoted[n]) for n in m["subject"] if quoted.get(n) is not None}
+        if not ids & subj_keys:
+            return "строка не о субъекте утверждения: ни один процитированный идентификатор субъекта строки не принадлежит ему"
+        mine = {sch for sch, _ in subj_keys}
+        if any(sch in mine for sch, _ in ids - subj_keys):
+            return "строка не о субъекте утверждения: идентификатор субъекта строки расходится с идентификатором субъекта"
+    # the claim says what the row says: a quoted column is declared for the predicate and holds the stated value
+    for col in cols:
+        if col.get("predicate") != c["predicate"] or col["name"] not in quoted:
+            continue
+        v = quoted[col["name"]]
+        if "entity" in c["object"]:
+            if obj_keys is None or (scheme[col["name"]], v) in obj_keys:
+                return None
+        elif "identifier_scheme" in col:
+            if lit["type"] == "IDENTIFIER" and lit["scheme"] == col["identifier_scheme"] and lit["value"] == v:
+                return None
+        elif lit["type"] == col["type"] and lit["value"] == v:
+            return None
+    return "ни одна процитированная колонка не объявлена для предиката утверждения с этим значением"
+
+
 # ---------- schema as data (D27.1) ----------
 assert not any(p["id"].startswith("x.") for p in PREDICATES["predicates"])   # «x.» is the tenants' namespace
 _FIRST_CHANGE = {"ClassDef": "ADD_CLASS", "LinkDef": "ADD_LINK", "IdentifierDef": "ADD_IDENTIFIER"}
@@ -805,6 +1028,33 @@ def _semantic(ds, keys, content, R):
         source_bytes[sid] = b
     unavailable_reported = set()
 
+    # ---- dataset versions (D27.2): the bytes of such a source are its manifest
+    manifests = {}
+    for sid, s in S.items():
+        if s["source_kind"] != "DATASET_VERSION" or sid not in source_bytes:
+            continue
+        m, why = parse_manifest(source_bytes[sid])
+        if m is None:
+            R.err("DATASET_MANIFEST_INVALID", sid, why)
+        elif m["tenant_id"] != s["tenant_id"]:
+            R.err("DATASET_MANIFEST_INVALID", sid, "tenant манифеста не равен tenant источника")
+        else:
+            manifests[sid] = m
+            # the files of the version: a file that the object store holds is checked against the manifest (a version
+            # of terabytes is registered without its files at hand — then the rows are checked where they are loaded)
+            seen = set()
+            for n, f in enumerate(m["files"]):
+                fb = content.get(f["object"])
+                why = dataset_file_error(m, f, fb, seen) if fb is not None else None
+                if why:
+                    R.err("DATASET_MANIFEST_INVALID", sid, f"файл {n} версии набора: {why}")
+    for sid, m in manifests.items():
+        prev = m.get("previous")
+        # a source of another tenant is unknown to this one (tenants do not see each other's sources)
+        if prev in S and S[prev]["tenant_id"] == m["tenant_id"] and (prev not in manifests
+                                                                     or manifests[prev]["dataset_id"] != m["dataset_id"]):
+            R.err("DATASET_MANIFEST_INVALID", sid, "previous — не версия того же набора данных того же tenant")
+
     # ---- originals (S5 part 2, D26): an observation may name the raw capture (page, PDF, scan) kept in the object
     # store; the claim of custody is checked: the object is there, has this address and this length
     for sid, s in S.items():
@@ -975,6 +1225,32 @@ def _semantic(ds, keys, content, R):
 
     xpred_of = {}   # claim_id -> the tenant predicate definition it was checked against
 
+    # a column is declared for a predicate that existed when the version was received: of the registry, or of the schema
+    # of the tenant, declared not later than the first observation of the version
+    for sid, m in manifests.items():
+        seen = min(o["observed_at"] for o in S[sid]["observations"])
+        for col in m["columns"]:
+            pid = col.get("predicate")
+            if pid is not None and pid not in preds and not any(t <= seen for t in declared.get((m["tenant_id"], pid), {}).values()):
+                R.err("DATASET_MANIFEST_INVALID", sid, f"колонка {col['name']} объявлена для предиката {pid}, которого нет ни в "
+                                                       "реестре, ни в схеме tenant к моменту получения версии")
+
+    def ent_keys(etype, identity):
+        return set(entity_identifiers({"entity_type": etype, "identity": identity}, Report(), "-")[0])
+
+    def merged_by(x, t):
+        return x["status"] == "MERGED" and x["status_changed_at"] <= t
+
+    def group_keys(e, t):
+        """the strong identifiers of the entity e at time t: of the entity it was resolved to by t and of every entity
+        merged into that one by t (S4R-02; S4R-11: merges after t do not count)"""
+        owner = e["merged_into"] if merged_by(e, t) else e["entity_id"]
+        group = set()
+        for x in E.values():
+            if x["entity_id"] == owner or (merged_by(x, t) and x["merged_into"] == owner):
+                group |= ent_keys(x["entity_type"], x["identity"])
+        return group
+
     # ---- claims
     for cid, c in C.items():
         if claim_digest_id(c) != cid:
@@ -1095,6 +1371,22 @@ def _semantic(ds, keys, content, R):
                 if sid not in unavailable_reported and sid not in bad_sources:
                     unavailable_reported.add(sid)
                     R.err("SOURCE_CONTENT_UNAVAILABLE", sid, "нет проверенных байтов источника — фрагмент не проверяем")
+                continue
+            if ev.get("kind") == "ROW":
+                m = manifests.get(sid)
+                if m is None:
+                    if s["source_kind"] != "DATASET_VERSION":
+                        R.err("EVIDENCE_ROW_INVALID", cid, "доказательство-строка ссылается на источник, который не версия набора данных")
+                    continue                            # a broken manifest is reported at the source
+                why = row_evidence_error(ev, m, c, c["object"].get("literal"),
+                                         group_keys(subj, t_rec) if subj is not None else None,
+                                         group_keys(obj_ent, t_rec) if obj_ent is not None else None)
+                if why:
+                    R.err("EVIDENCE_ROW_INVALID", cid, why)
+                cols = {x["name"]: x for x in m["columns"]}
+                for cell in ev["cells"]:
+                    if "salt" in cell and cell["name"] in cols and not dominates(c["marking"], cols[cell["name"]]["marking"]):
+                        R.err("MARKING_BROADER_THAN_INPUT", cid, f"маркировка утверждения шире маркировки колонки {cell['name']}")
                 continue
             st, en = ev["span"]["start"], ev["span"]["end"]
             span_ok = st < en <= len(b)
@@ -1383,22 +1675,12 @@ def _semantic(ds, keys, content, R):
                 or set(art["inputs"]) != set(r["input_source_ids"])):
             R.err("ARTIFACT_INVALID", rid, "артефакт не совпадает с receipt: формат, профиль, служба, запуск или входы")
 
-    def ent_keys(etype, identity):
-        return set(entity_identifiers({"entity_type": etype, "identity": identity}, Report(), "-")[0])
-
-    def merged_by(x, t):
-        return x["status"] == "MERGED" and x["status_changed_at"] <= t
-
     def same_entity(e, node, t):
         """the node names the entity e at time t (the claim's recorded_at): its strong keys are keys of e's group at t —
         the entity e resolved to at t and every entity merged into it by t (S4R-02; S4R-11: merges after t do not count)"""
         if e is None or node["type"] != "ENTITY" or e["entity_type"] != node["entity_type"]:
             return False
-        owner = e["merged_into"] if merged_by(e, t) else e["entity_id"]
-        group = set()
-        for x in E.values():
-            if x["entity_id"] == owner or (merged_by(x, t) and x["merged_into"] == owner):
-                group |= ent_keys(x["entity_type"], x["identity"])
+        group = group_keys(e, t)
         nk = ent_keys(node["entity_type"], node["identity"])
         return bool(nk) and nk <= group
 

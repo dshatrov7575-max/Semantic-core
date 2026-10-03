@@ -1,0 +1,50 @@
+== L1. Таблица ≠ манифест: дата до н.э. хэшируется как дата н.э. (to_char без эры); ±infinity хэшируется как пустая ячейка
+   COPY с подменой дат: ок
+   seal: ОТКАЗ: ERROR:  DATASET_LOAD_INVALID: 2 строк: хэш строки не равен хэшу её ячеек или значение вне профиля (дата, целое)
+   в таблице: 1102900017440 -> infinity; 1215000007310 -> 0044-03-15 BC; 
+   в манифесте (по доказательству производителя): [('registered_on', '0044-03-15'), ('registered_on', None)]
+== L1b. То же при ключе-дате: строка манифеста с ключом 0044-03-15 в запечатанной таблице по ключу не находится
+   COPY: ок
+   seal: ОТКАЗ: ERROR:  DATASET_LOAD_INVALID: 1 строк: хэш строки не равен хэшу её ячеек или значение вне профиля (дата, целое)
+   ac.dataset_row по ключу манифеста ["0044-03-15"]: ERROR:  SOURCE_CONTENT_UNAVAILABLE: строки версии набора не загружены или не запечатаны
+   ac.dataset_evidence по тому же ключу: ERROR:  SOURCE_CONTENT_UNAVAILABLE: строки версии набора не загружены или не запечатаны
+   а утверждение на эту строку (доказательство производителя) база принимает: ПРИНЯТО
+== L2. Неудачная загрузка необратима: файл строк загружен дважды -> seal отказывает, исправить нельзя никому, кроме суперпользователя
+   COPY №1: 0  COPY №2 (повтор): 0
+   seal: ОТКАЗ: ERROR:  DATASET_LOAD_INVALID: строк загружено 10, в манифесте 5
+   ac_loader: DELETE -> ОТКАЗ: ERROR:  permission denied for table v_10
+   ac_loader: TRUNCATE -> ОТКАЗ: ERROR:  permission denied for table v_10
+   ac_loader: повторное открытие -> ОТКАЗ: ERROR:  APPEND_ONLY: таблица строк этой версии уже открыта
+   ac_loader: удаление записи каталога -> ОТКАЗ: ERROR:  permission denied for table dataset_tables
+   ac_migrator: DELETE -> ОТКАЗ: ERROR:  permission denied for schema acd
+   ac_migrator: TRUNCATE -> ОТКАЗ: ERROR:  permission denied for schema acd
+   ac_migrator: повторное открытие -> ОТКАЗ: ERROR:  APPEND_ONLY: таблица строк этой версии уже открыта
+   ac_migrator: удаление записи каталога -> ОТКАЗ: ERROR:  permission denied for table dataset_tables
+   функций сброса/повторного открытия в схеме: dataset_reset
+== L3. Любой держатель роли ac_loader срывает чужую загрузку: одна строка в открытую секцию
+   ac_app (член ac_loader): мусорная строка -> ПРИНЯТО
+   честная загрузка: 0  seal: ОТКАЗ: ERROR:  DATASET_LOAD_INVALID: 1 строк: хэш строки не равен хэшу её ячеек или значение вне профиля (дата, целое)
+== L4. Что ещё может ac_loader над таблицей строк
+   SELECT строк (секреты) -> ОТКАЗ: ERROR:  permission denied for table v_12
+   INSERT ... RETURNING -> ОТКАЗ: ERROR:  permission denied for table v_12
+   COPY TO -> ОТКАЗ: ERROR:  permission denied for table v_12
+   UPDATE -> ОТКАЗ: ERROR:  permission denied for table v_12
+   CREATE TABLE в acd -> ОТКАЗ: ERROR:  permission denied for schema acd
+   запись каталога ac.datasets -> ОТКАЗ: ERROR:  permission denied for table datasets
+   UPDATE sealed_at -> ОТКАЗ: ERROR:  permission denied for table dataset_tables
+   INSERT в ac.dataset_tables -> ОТКАЗ: ERROR:  permission denied for table dataset_tables
+   seal: ПРИНЯТО
+   INSERT после печати -> ОТКАЗ: ERROR:  permission denied for table v_12
+   чтение читателем напрямую -> ОТКАЗ: ERROR:  permission denied for schema acd
+   суперпользователь: UPDATE через родителя -> ОТКАЗ: ERROR:  APPEND_ONLY: UPDATE на acd.v_12 запрещён 
+   суперпользователь: TRUNCATE родителя -> ОТКАЗ: ERROR:  APPEND_ONLY: TRUNCATE на acd.v_5 запрещён 
+   суперпользователь: DETACH секции (и тогда DML мимо родителя уже не нужен) -> ПРИНЯТО каталог всё ещё говорит sealed: true
+== L5. Доказательство, собранное базой, отвергает её же страж: ключ передан числом (колонка-строка)
+   row_key в выданном доказательстве: ['1215000007310'] | значение ячейки ключа: '1215000007310'
+   валидатор: ПРИНЯТО 
+   база: ПРИНЯТО
+== L6. Производитель вне профиля: целое > 2^53 и год 10000 в строке; seal принимает, чтение выдаёт значение вне профиля
+   производитель dataset.py отказался: CanonicalizationError integer outside IEEE-754 safe range
+   COPY: 0 
+   seal: ОТКАЗ: ERROR:  DATASET_LOAD_INVALID: 1 строк: хэш строки не равен хэшу её ячеек или значение вне профиля (дата, целое)
+   ac.dataset_row -> employees = ERROR:  SOURCE_CONTENT_UNAVAILABLE: строки версии набора не загружены или не запечатаны (2^53−1 = 9007199254740991 )

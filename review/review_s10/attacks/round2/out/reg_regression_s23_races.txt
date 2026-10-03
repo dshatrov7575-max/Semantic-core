@@ -1,0 +1,12 @@
+S23-10a.1  held    | рецензия REFUTED раньше закрытия | второй ждал: True; Проверка: IN_PROGRESS ASSERTED; отчёт после закрытия не менялся | CHECK_CLAIM_NOT_ACCEPTED_AT_COMPLETION', k.check_id)"
+PL/pgSQL function ac.check_complete() line 22 at PERFORM
+S23-10a.2  held    | слияние раньше закрытия | второй ждал: True; Проверка: COMPLETED ACCEPTED; отчёт после закрытия не менялся |  
+S23-10a.3  held    | строка поиска раньше закрытия | второй ждал: True; Проверка: COMPLETED ACCEPTED; отчёт после закрытия не менялся |  
+S23-10b.1  held    | закрытие раньше рецензии REFUTED | второй ждал: True; Проверка: COMPLETED ACCEPTED; отчёт после закрытия не менялся |  
+S23-10b.2  held    | закрытие раньше слияния | второй ждал: True; Проверка: COMPLETED ACCEPTED; отчёт после закрытия не менялся |  
+S23-10b.3  held    | закрытие раньше строки поиска | второй ждал: True; Проверка: COMPLETED ACCEPTED; отчёт после закрытия не менялся | рытую Проверку нельзя дописывать след поиска')"
+PL/pgSQL function ac.check_searches_guard() line 10 at PERFORM
+
+races=6 findings=0
+S23_RACES=PASS
+exit=0

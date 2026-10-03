@@ -1,0 +1,24 @@
+L1     held | законная: запись публикации отредактированной статьи | принято
+L2     held | законная: публикация строже своих рендерингов (CONFIDENTIAL над PUBLIC) | принято
+D501   held | подложный адрес публикации | ERROR:  new row for relation "publications" violates check constraint "publication_address"
+D502   held | канонический адрес с меткой utm | ERROR:  new row for relation "publications" violates check constraint "publication_url"
+D503   held | канонический адрес другого издания | ERROR:  new row for relation "publications" violates check constraint "publication_url"
+D504   held | у текста нет ни одного рендеринга | ERROR:  PUBLICATION_INVALID: нет ни одного источника этого издания с этим текстом, полученного к recorded_at
+D505   held | время записи из будущего | ERROR:  TEMPORAL_ORDER_INVALID: время записи 2099-01-01 03:00:00+03 вне окна системного времени
+D506   held | публичная публикация над конфиденциальным рендерингом | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка публикации шире маркировки её источника
+D507   held | дата выхода позже первого получения | ERROR:  TEMPORAL_ORDER_INVALID: публикация вышла позже, чем её получили
+D508   held | вторая запись той же публикации с другим адресом | ERROR:  duplicate key value violates unique constraint "publications_pkey"
+D509   held | изменение публикации | ERROR:  permission denied for table publications
+D509b  held | удаление публикации | ERROR:  permission denied for table publications
+D510   held | прямая запись текста источника | ERROR:  permission denied for table source_texts
+D511   held | колонки расходятся с телом публикации | ERROR:  new row for relation "publications" violates check constraint "publication_columns_match_body"
+D512   held | публикация в tenant, где нет её источников | ERROR:  PUBLICATION_INVALID: нет ни одного источника этого издания с этим текстом, полученного к recorded_at
+D513   held | время поступления задано пишущим | ERROR:  permission denied for table publications
+D514   held | запись другого вида под видом публикации | ERROR:  new row for relation "publications" violates check constraint "publication_columns_match_body"
+D515   held | маркировка неизвестного уровня (fail-closed: раньше формы срабатывает доминирование) | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка публикации шире маркировки её источника
+D516   held | законная: канонический адрес на www. — то же издание news.example | принято
+D517   held | хост с завершающей точкой | ERROR:  new row for relation "publications" violates check constraint "publication_url"
+
+attacks=20 findings=0
+S5_ATTACKS=PASS
+exit=0

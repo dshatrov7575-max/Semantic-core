@@ -1,0 +1,89 @@
+L1     held | законная: конструктор добавляет класс-наследник с атрибутом | принято
+L2     held | законная: конструктор переименовывает класс (версия 2) | принято
+L3     held | законная: тот же class_id в схеме другого tenant | принято
+F1     held | маркировка вне словаря | ERROR:  new row for relation "class_defs" violates check constraint "class_defs_marking_shape"
+F2     held | маркировка — строка | ERROR:  new row for relation "class_defs" violates check constraint "class_defs_marking_shape"
+F3     held | имя из пробелов | ERROR:  new row for relation "class_defs" violates check constraint "class_defs_name_check"
+F4     held | имя из неразрывных пробелов | ERROR:  new row for relation "class_defs" violates check constraint "class_defs_name_check"
+F5     held | пустое описание изменения | ERROR:  new row for relation "class_defs" violates check constraint "class_defs_description_check"
+F6     held | корневой тип вне десяти | ERROR:  new row for relation "class_defs" violates check constraint "class_defs_root_type_check"
+F7     held | атрибут с предикатом вне пространства «x.» | ERROR:  new row for relation "class_defs" violates check constraint "class_defs_attributes_check"
+F8     held | атрибут QUANTITY без единицы | ERROR:  new row for relation "class_defs" violates check constraint "class_defs_attributes_check"
+F9     held | атрибут с лишним полем | ERROR:  new row for relation "class_defs" violates check constraint "class_defs_attributes_check"
+F10    held | автор записи не usr_/svc_ | ERROR:  new row for relation "class_defs" violates check constraint "class_defs_recorded_by_check"
+F11    held | связь с предикатом реестра ядра (не «x.») | ERROR:  new row for relation "link_defs" violates check constraint "link_defs_predicate_id_check"
+V1     held | первая запись с версией 7 | ERROR:  SCHEMA_DEF_INVALID: версии определения идут подряд с 1: ожидается 1
+V2     held | версия 4 при последней 2 | ERROR:  SCHEMA_DEF_INVALID: версии определения идут подряд с 1: ожидается 3
+V3     held | повтор версии 2 | ERROR:  SCHEMA_DEF_INVALID: версии определения идут подряд с 1: ожидается 3
+V4     held | запись журнала не равна отличию (имя изменено, заявлено DEPRECATE_CLASS) | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «DEPRECATE_CLASS» не равна единственному допустимому отличию от предыдущей
+V5     held | первая версия класса с типом ADD_LINK | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «ADD_LINK» не равна единственному допустимому отличию от предыдущей версии
+V6     held | новая версия меняет родителя | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «RENAME_CLASS» не равна единственному допустимому отличию от предыдущей ве
+V7     held | новая версия меняет маркировку | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «RENAME_CLASS» не равна единственному допустимому отличию от предыдущей ве
+V8     held | новая версия меняет корневой тип | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «RENAME_CLASS» не равна единственному допустимому отличию от предыдущей ве
+V9     held | новая версия делает класс абстрактным | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «RENAME_CLASS» не равна единственному допустимому отличию от предыдущей ве
+V10    held | версия без единого отличия | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «RENAME_CLASS» не равна единственному допустимому отличию от предыдущей ве
+V11    held | два изменения в одной версии | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «RENAME_CLASS» не равна единственному допустимому отличию от предыдущей ве
+V12    held | CHANGE_ATTRIBUTE меняет тип значения | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «CHANGE_ATTRIBUTE» не равна единственному допустимому отличию от предыдуще
+V13    held | версия после вывода из употребления (возврат в употребление) | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «DEPRECATE_CLASS» не равна единственному допустимому отличию от предыдущей
+V13b   held | переименование после вывода из употребления | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «RENAME_CLASS» не равна единственному допустимому отличию от предыдущей ве
+V14    held | новая версия связи меняет класс-диапазон | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «RENAME_LINK» не равна единственному допустимому отличию от предыдущей вер
+V15    held | новая версия типа идентификатора меняет формат | ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «CHANGE_IDENTIFIER_STRENGTH» не равна единственному допустимому отличию от
+T1     held | исторический импорт версии до печати истории (мигратор) | ERROR:  TEMPORAL_ORDER_INVALID: история до 2026-10-02 21:45:58.478808+03 запечатана
+T2     held | исторический импорт версии из будущего (мигратор) | ERROR:  TEMPORAL_ORDER_INVALID: историческое время из будущего
+T3     held | законная: конструктор включает исторический режим сам (не член ac_migrator) — время всё равно системное | принято
+T4     held | мигратор дописывает версию определения задним числом под уже записанное живое утверждение (S9R2-02) | ERROR:  TEMPORAL_ORDER_INVALID: версия определения задним числом под уже записанные утверждения схемы tenant
+T5     held | законная: schema.is_a сразу после создания класса, в ту же секунду (S9R2-04) | принято
+X1     held | родитель из схемы другого tenant: ответ тот же, что «нет такого класса» | ERROR:  REF_UNRESOLVED: родитель: класса sdf_foreign нет в схеме tenant
+X2     held | связь на класс другого tenant | ERROR:  REF_UNRESOLVED: range_class_id: класса sdf_foreign нет в схеме tenant
+X3     held | schema.is_a на класс другого tenant неотличимо от несуществующего класса (сообщение то же, tenant не назван) | ERROR:  REF_UNRESOLVED: schema.is_a: класса * нет в схеме tenant
+X4     held | CLASS_REF с полем tenant_id | ERROR:  SCHEMA_INVALID: CLASS_REF — ровно {type, class_id}: класс ищется в tenant проекта
+X5     held | CLASS_REF с полем label (название класса в теле утверждения) | ERROR:  SCHEMA_INVALID: CLASS_REF — ровно {type, class_id}: класс ищется в tenant проекта
+H1     held | класс — родитель самому себе | ERROR:  REF_UNRESOLVED: родитель: класса sdf_self нет в схеме tenant
+H2     held | корневой тип наследника не равен родительскому | ERROR:  SCHEMA_DEF_INVALID: корневой тип наследника не равен корневому типу родителя
+H3     held | наследник PUBLIC у родителя INTERNAL | ERROR:  MARKING_BROADER_THAN_INPUT: родитель: маркировка определения шире маркировки класса sdf_int
+D1     held | ac_s9_modeler: INSERT INTO ac.class_closure VALUES ('tnt_demo', 'sdf_exhibit', 'sdf_t | ERROR:  permission denied for table class_closure
+D2     held | ac_app: INSERT INTO ac.class_closure VALUES ('tnt_demo', 'sdf_exhibit', 'sdf_t | ERROR:  permission denied for table class_closure
+D3     held | ac_s9_migrator: DELETE FROM ac.class_closure; | ERROR:  permission denied for table class_closure
+D4     held | ac_s9_modeler: UPDATE ac.class_closure SET depth = 99; | ERROR:  permission denied for table class_closure
+D5     held | ac_s9_modeler: INSERT INTO ac.schema_predicates VALUES ('tnt_demo', 'x.stolen', 'Clas | ERROR:  permission denied for table schema_predicates
+D6     held | ac_s9_modeler: DELETE FROM ac.class_defs; | ERROR:  permission denied for table class_defs
+D7     held | ac_s9_modeler: UPDATE ac.link_defs SET name = 'x'; | ERROR:  permission denied for table link_defs
+D8     held | ac_s9_modeler: TRUNCATE ac.identifier_defs; | ERROR:  permission denied for table identifier_defs
+D9     held | ac_app: INSERT INTO ac.class_defs (tenant_id, class_id, version, name, depreca | ERROR:  permission denied for table class_defs
+D10    held | владелец: DELETE FROM ac.class_closure | ERROR:  APPEND_ONLY: DELETE на ac.class_closure запрещён
+D11    held | владелец: UPDATE ac.schema_predicates | ERROR:  APPEND_ONLY: UPDATE на ac.schema_predicates запрещён
+P1     held | атрибут с предикатом, уже определённым в другом классе | ERROR:  SCHEMA_DEF_INVALID: предикат x.max_length уже определён в sdf_whale_species
+P2     held | связь с предикатом, уже определённым атрибутом | ERROR:  SCHEMA_DEF_INVALID: предикат x.max_length уже определён в sdf_whale_species
+P3     held | вторая связь на тот же предикат | ERROR:  SCHEMA_DEF_INVALID: предикат x.belongs_to уже определён в sdf_belongs_to
+P4     held | атрибут повторяется в классе | ERROR:  SCHEMA_DEF_INVALID: атрибут повторяется
+P5     held | симметричная связь разных классов | ERROR:  new row for relation "link_defs" violates check constraint "link_symmetric_one_class"
+P6     held | связь на несуществующий класс | ERROR:  REF_UNRESOLVED: domain_class_id: класса sdf_nowhere нет в схеме tenant
+P7     held | утверждение с предикатом вне реестра и вне схемы | ERROR:  PREDICATE_UNKNOWN: no.such_thing (claim_predicate_known)
+I1     held | вторая схема x.itis для CONCEPT | ERROR:  SCHEMA_DEF_INVALID: тип идентификатора x.itis для CONCEPT уже определён
+I2     held | приоритет 1 для CONCEPT занят | ERROR:  SCHEMA_DEF_INVALID: приоритет 1 для CONCEPT уже занят
+I3     held | встроенная ru.inn объявлена слабой | ERROR:  new row for relation "identifier_defs" violates check constraint "identifier_builtin_is_strong"
+I4     held | встроенной ru.inn задан формат (переопределение проверки ядра) | ERROR:  new row for relation "identifier_defs" violates check constraint "identifier_tenant_scheme_has_format"
+I5     held | формат — регулярное выражение (a+)+$ | ERROR:  new row for relation "identifier_defs" violates check constraint "identifier_format_shape"
+I6     held | формат: min > max | ERROR:  new row for relation "identifier_defs" violates check constraint "identifier_format_shape"
+I7     held | формат: класс знаков вне словаря | ERROR:  new row for relation "identifier_defs" violates check constraint "identifier_format_shape"
+I8     held | схема вне пространства tenant и не встроенная | ERROR:  new row for relation "identifier_defs" violates check constraint "identifier_builtin_is_strong"
+I9     held | значение идентификатора не в формате схемы | ERROR:  IDENTIFIER_SCHEME_INVALID: значение не в формате x.itis
+I10    held | значение идентификатора с переводом строки в конце | ERROR:  IDENTIFIER_SCHEME_INVALID: значение не в формате x.itis
+C1     held | schema.is_a на несуществующий класс | ERROR:  REF_UNRESOLVED: schema.is_a: класса sdf_nowhere нет в схеме tenant
+C2     held | schema.is_a на абстрактный класс | ERROR:  CLASS_NOT_INSTANTIABLE: класс sdf_organism абстрактный или выведен из употребления
+C3     held | schema.is_a: сущность CONCEPT, класс с корнем THING | ERROR:  PREDICATE_DOMAIN_VIOLATION: тип сущности CONCEPT не равен корневому типу класса THING
+C4     held | PUBLIC schema.is_a на класс INTERNAL | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки класса
+C5     held | законная: законная: INTERNAL schema.is_a на класс INTERNAL | принято
+C6     held | PUBLIC утверждение с атрибутом класса INTERNAL | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки определения в схеме
+C7     held | schema.is_a с объектом-строкой | ERROR:  PREDICATE_RANGE_VIOLATION: schema.is_a: тип объекта вне range
+C8     held | атрибут у сущности, не названной экземпляром класса | ERROR:  PREDICATE_DOMAIN_VIOLATION: субъект не является экземпляром класса sdf_whale_species
+C9     held | атрибут с квалификатором | ERROR:  QUALIFIER_INVALID: у предикатов схемы tenant нет квалификаторов
+C10    held | связь с объектом — не экземпляром класса-диапазона | ERROR:  PREDICATE_RANGE_VIOLATION: объект не является экземпляром класса sdf_taxon
+C11    held | связь с литералом вместо сущности | ERROR:  PREDICATE_RANGE_VIOLATION: объект не является экземпляром класса sdf_taxon
+R1     held | гонка: четыре сессии одновременно добавляют классы одного tenant — все приняты, замыкание полное | принято 4/4, строк замыкания 12 (ожидается 12)
+R2     held | гонка: класс выводится из употребления, пока пишется schema.is_a на него — утверждение ждёт и отвергнуто | ERROR:  CLASS_NOT_INSTANTIABLE: класс sdf_gone абстрактный или выведен из употребления
+R3     held | гонка: принадлежность классу отзывается, пока пишется утверждение с атрибутом этого класса — утверждение ждёт и отвергнуто | ERROR:  PREDICATE_DOMAIN_VIOLATION: субъект не является экземпляром класса sdf_secret
+G1     held | рост: 1000 плоских классов — 0.9 с; цепочка глубиной 400 — 1.0 с (глубина в замыкании 399)
+
+attacks=86 findings=0
+exit=0

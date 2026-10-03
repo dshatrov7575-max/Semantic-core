@@ -1,0 +1,28 @@
+L1     held | законная: шлюз регистрирует объект с проверкой | принято
+L2     held | законная: наблюдение называет зарегистрированный целый оригинал | принято
+D601   held | приложение объявляет объект сохранённым | ERROR:  permission denied for table objects
+D602   held | приложение пишет результат проверки | ERROR:  permission denied for table object_checks
+D603   held | шлюз регистрирует объект без успешной проверки чтением | ERROR:  ORIGINAL_INVALID: sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff: объект реги
+D603b  held | шлюз регистрирует объект с проверкой «повреждён» | ERROR:  ORIGINAL_INVALID: sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff: объект реги
+D604   held | шлюз задаёт время сохранения | ERROR:  permission denied for table objects
+D604b  held | шлюз задаёт время проверки | ERROR:  permission denied for table object_checks
+D605   held | шлюз меняет длину объекта | ERROR:  permission denied for table objects
+D605b  held | шлюз удаляет запись проверки | ERROR:  permission denied for table object_checks
+D605c  held | роль миграции стирает запись «повреждён» | ERROR:  permission denied for table object_checks
+D606   held | шлюз читает тексты источников | ERROR:  permission denied for table source_bytes
+D606b  held | шлюз читает утверждения | ERROR:  permission denied for table claims
+D606c  held | шлюз пишет наблюдение | ERROR:  permission denied for table source_observations
+D607   held | наблюдение называет незарегистрированный оригинал | ERROR:  ORIGINAL_INVALID: оригинал не зарегистрирован в хранилище объектов этого tenant
+D608   held | наблюдение называет объект другого tenant | ERROR:  ORIGINAL_INVALID: оригинал не зарегистрирован в хранилище объектов этого tenant
+D609   held | длина оригинала не та, что зарегистрирована | ERROR:  ORIGINAL_INVALID: длина оригинала не совпадает с зарегистрированной
+D610   held | оригинал без типа содержимого | ERROR:  new row for relation "source_observations" violates check constraint "observation_original_whole"
+D611   held | тип содержимого не по форме | ERROR:  new row for relation "source_observations" violates check constraint "source_observations_original_med
+D612   held | проверка незарегистрированного объекта | ERROR:  insert or update on table "object_checks" violates foreign key constraint "object_checks_tenant_id_obj
+D613   held | результат проверки вне списка | ERROR:  new row for relation "object_checks" violates check constraint "object_checks_result_check"
+D614   held | наблюдение называет оригинал, признанный повреждённым | ERROR:  ORIGINAL_INVALID: оригинал повреждён или утрачен по последней проверке
+D615   held | адрес объекта не sha256 | ERROR:  new row for relation "objects" violates check constraint "objects_object_address_check"
+D616   held | объект нулевой длины | ERROR:  new row for relation "objects" violates check constraint "objects_byte_length_check"
+
+attacks=24 findings=0
+S5B_ATTACKS=PASS
+exit=0

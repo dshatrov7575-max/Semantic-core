@@ -1,0 +1,44 @@
+== 1. Смешанные уровни: SERIALIZABLE сам по себе безопасен только против другой SERIALIZABLE
+M1: медленная (версия) — SERIALIZABLE; быстрая — READ COMMITTED; роль ac_loader
+     медленная: ОТКАЗ: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: версии наборов данных и источники, на которые они ссылаются, 
+     быстрая:   ПРИНЯТО
+     итог согласован
+M2: медленная (документ) — SERIALIZABLE; быстрая — READ COMMITTED; роль ac_loader
+     медленная: ОТКАЗ: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: версии наборов данных и источники, на которые они ссылаются, 
+     быстрая:   ПРИНЯТО
+     итог согласован
+M3: медленная (версия) — READ COMMITTED; быстрая — SERIALIZABLE; роль ac_loader
+     медленная: ПРИНЯТО
+     быстрая:   ОТКАЗ: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: версии наборов данных и источники, на которые они ссылаются, 
+     итог согласован
+M4: медленная (документ) — READ COMMITTED; быстрая — SERIALIZABLE; роль ac_loader
+     медленная: ПРИНЯТО
+     быстрая:   ОТКАЗ: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: версии наборов данных и источники, на которые они ссылаются, 
+     итог согласован
+== 2. REPEATABLE READ: попытки спрятать уровень
+R1: медленная (версия) — REPEATABLE READ + подтранзакция; быстрая — READ COMMITTED; роль ac_loader
+     медленная: ОТКАЗ: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: версии наборов данных и источники, на которые они ссылаются, 
+     быстрая:   ПРИНЯТО
+     итог согласован
+R2: медленная (версия) — REPEATABLE READ + SET CONSTRAINTS ALL IMMEDIATE; быстрая — READ COMMITTED; роль ac_loader
+     медленная: ОТКАЗ: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: версии наборов данных и источники, на которые они ссылаются, 
+     быстрая:   ПРИНЯТО
+     итог согласован
+R3: медленная (документ) — REPEATABLE READ + ac.historical_import; быстрая — READ COMMITTED; роль ac_loader
+     медленная: ОТКАЗ: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: версии наборов данных и источники, на которые они ссылаются, 
+     быстрая:   ПРИНЯТО
+     итог согласован
+   смена уровня после первого запроса: ОТКАЗ: ERROR:  SET TRANSACTION ISOLATION LEVEL must be called before any query
+   SET LOCAL transaction_isolation после первого запроса: ОТКАЗ: ERROR:  SET TRANSACTION ISOLATION LEVEL must be called before any query
+   REPEATABLE READ, READ ONLY, DEFERRABLE — запись: ОТКАЗ: ERROR:  cannot execute INSERT in a read-only transaction
+   обычный источник в REPEATABLE READ (без единой версии, которая на него ссылается): ОТКАЗ: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: версии наборов данных и источники, на которые они ссылаются, пишутся только 
+   несогласованных итогов: 0 из 7
+== 3. Подготовленная транзакция (2PC), DO-блок, SECURITY DEFINER
+   max_prepared_transactions = 0
+   PREPARE TRANSACTION с версией: ОТКАЗ: ERROR:  prepared transactions are disabled
+   документ в DO-блоке внутри SERIALIZABLE: ОТКАЗ: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: версии наборов данных и источники, на которые они ссылаются, пишут
+   SECURITY DEFINER-путь записи каталога (ac.dataset_register срабатывает от ac.source_bytes) в REPEATABLE READ: ОТКАЗ: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: версии наборов данных и источники, на которые они ссылаются, пишут
+== 4. Три транзакции: версия X (previous = P), документ P и версия Y того же набора с previous = P — все READ COMMITTED, одновременно
+   {'Y': 'ПРИНЯТО', 'P': 'ОТКАЗ: ERROR:  DATASET_MANIFEST_INVALID: previous — не верси', 'X': 'ПРИНЯТО'} | в базе: 0 документ, 2 версий на него
+== 5. Законные сценарии: обычная запись загрузчика в READ COMMITTED — контроль
+   документ: ПРИНЯТО

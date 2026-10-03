@@ -1,0 +1,16 @@
+MR8J   KILLED by NR1I               колонка: предикат, объявленный позже получения версии, признаётся
+MR8K   KILLED by NR1J               колонка: предикат схемы другого tenant признаётся
+MR87   KILLED by NRFM               файл: число строк
+MR88   KILLED by NRF5               файл: каноническая форма строки
+MR89   KILLED by NRF6               файл: состав полей строки
+MR8A   KILLED by NRFI               файл: типы значений
+MR8B   KILLED by NRFJ               файл: число значений
+MR8C   KILLED by NRFK               файл: длина секрета
+MR8D   KILLED by NRFA               файл: ключ строки
+MR8E   KILLED by NRFF               файл: пустой ключ
+MR8F   KILLED by NRFL               файл: хэш строки
+MR8G   KILLED by NRFG               файл: повтор ключа в версии допускается
+MR8H   KILLED by NRFO               файл: единственность ключа — только внутри файла
+MR8I   KILLED by NRFD               файл: корень строк
+
+mutants=507 killed=14 equivalent=0 survived/broken=0

@@ -46,7 +46,7 @@ DB-A45 REJECTED | предыдущая Проверка по другому су
 DB-A46 REJECTED | результат FOUND без утверждений (при COMMIT) | ERROR:  CHECK_FINDING_INCONSISTENT: chk_tenders_1/TENDERS: FOUND ⇔ есть утверждения
 DB-A47 REJECTED | NOT_FOUND с риском | ERROR:  new row for relation "check_findings" violates check constraint "not_found_no_risk"
 DB-A48 REJECTED | измерение вне профиля (при COMMIT) | ERROR:  CHECK_DIMENSION_OUTSIDE_PROFILE: chk_tenders_1
-DB-A49 REJECTED | утверждение не того измерения | ERROR:  CHECK_CLAIM_DIMENSION_MISMATCH: media.negative_mention не относится к TENDERS
+DB-A49 REJECTED | утверждение не того измерения | ERROR:  CHECK_CLAIM_DIMENSION_MISMATCH: entity.registered_address не относится к TENDERS
 DB-A50 REJECTED | утверждение не о субъекте Проверки | ERROR:  CHECK_CLAIM_NOT_ABOUT_SUBJECT: clm:sha256:1609b34ecc45f25295a29203bcd3bb46089402825d90a32559aa7fc551893e8d
 DB-A51 REJECTED | завершить Проверку без следа поиска (при COMMIT) | ERROR:  CHECK_SEARCH_MISSING: chk_n/TENDERS
 DB-A52 REJECTED | завершить Проверку без измерения профиля (при COMMIT) | ERROR:  CHECK_DIMENSION_MISSING: chk_n
@@ -55,7 +55,7 @@ DB-A54 REJECTED | RS-01 D01: удалить ключи идентичности,
 DB-A55 REJECTED | RS-01 D03: подменить значение ключа | ERROR:  permission denied for table entity_keys
 DB-A56 REJECTED | RS-01: ИНН с неверной контрольной цифрой в identity (база сама считает контрольные суммы) | ERROR:  IDENTIFIER_CHECKSUM_INVALID: ru.inn физлица
 DB-A57 REJECTED | RS-01: физлицо без идентичности (нет ИНН, ОГРНИП, даты и пометки) | ERROR:  ENTITY_IDENTITY_INSUFFICIENT: PERSON без ИНН, ОГРНИП, даты рождения и disambiguator
-DB-A58 REJECTED | RS-02 D05: временная таблица с триггером для подмешивания доказательства | ERROR:  permission denied to create temporary tables in database "ac_v08"
+DB-A58 REJECTED | RS-02 D05: временная таблица с триггером для подмешивания доказательства | ERROR:  permission denied to create temporary tables in database "ac_v09"
 DB-A59 REJECTED | RS-03 D09: завершить Проверку с утверждением, которое к моменту завершения опровергнуто | ERROR:  CHECK_CLAIM_NOT_ACCEPTED_AT_COMPLETION: chk_tenders_1
 DB-A60 REJECTED | RS-03 D10: понизить маркировку Проверки после привязки утверждения | ERROR:  permission denied for table checks
 DB-A61 REJECTED | RS-03 D10 (через тело): изменить маркировку в теле открытой Проверки | ERROR:  CHECK_IMMUTABLE: у Проверки меняются только статус и итог
@@ -78,13 +78,13 @@ DB-A77 REJECTED | D13: живая роль ставит печать истор�
 DB-A78 REJECTED | S21-01: тег «ｱ-9» (полуширинная катакана) после «ア-9» | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: equipment уже принадлежит другой сущности проекта
 DB-A79 REJECTED | RS-12: тёзка «Ломо́в» (U+0301) с той же датой, без ИНН | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: person.fio_dob совпадает у ent_d_lomov и ent_d_ns
 DB-A80 REJECTED | RS-14: «К 1.12» — та же задвижка, что «К-1/12» | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: equipment уже принадлежит другой сущности проекта
-DB-A81 REJECTED | D13: ac_migrator пишет рецензию «задним числом» до печати истории | ERROR:  TEMPORAL_ORDER_INVALID: история до 2026-10-02 14:33:50.692341+03 запечатана
+DB-A81 REJECTED | D13: ac_migrator пишет рецензию «задним числом» до печати истории | ERROR:  TEMPORAL_ORDER_INVALID: история до 2026-10-03 05:27:45.88907+03 запечатана
 DB-A82 REJECTED | D13: ac_migrator дописывает утверждение в Проверку, закрытую до печати | ERROR:  CHECK_CLOSED: в закрытую Проверку нельзя добавлять утверждения
 OK-01 OK | новое утверждение «сейчас»: доказательство проверено по байтам | 1
 OK-02 OK | рецензия с заявленным «задним» временем: база ставит системное время | true
 OK-03 OK | ещё одна Проверка того же субъекта (Compliance: многократность) | 4
 OK-04 OK | слияние нового дубля: ключи переходят к выжившей сущности, время ставит база | ent_d_developer true
-OK-05 OK | все цитаты всех утверждений подтверждаются байтами источников | 41/41
+OK-05 OK | все цитаты всех утверждений подтверждаются байтами источников | 42/42
 OK-06 OK | RS-15: уточнить оригинал «Усатые киты», затем завести омоним с другой пометкой | 2
 OK-07 OK | RS-13: насос «H-101» латиницей вместе с решением «различны» в одной транзакции | 2
 

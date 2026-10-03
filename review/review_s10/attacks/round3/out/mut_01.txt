@@ -1,0 +1,17 @@
+MR01   EQUIVALENT                   манифест: повтор ключей не проверяется — защита в глубину (как M503): байты с повторяющимся ключом не совпадают с канонической формой RFC 8785 и отвергаются следующей проверкой
+MR02   KILLED by NR1E               манифест: числовой профиль не проверяется
+MR03   KILLED by NR04               манифест: схема не проверяется
+MR04   KILLED by NR01               манифест: каноническая форма не проверяется
+MR05   KILLED by NR06               манифест: повтор имени колонки
+MR06   KILLED by NR07               манифест: ключ из несуществующей колонки
+MR07   KILLED by NR08               манифест: row_count
+MR08   KILLED by NR09               манифест: схема идентификатора у любой колонки
+MR09   KILLED by NR15               манифест: subject из любых колонок
+MR10   KILLED by NR15               манифест: subject не проверяется
+MR11   KILLED by NR10               манифест: tenant источника
+MR12   KILLED by PR22               previous: источник другого tenant считается известным
+MR13   KILLED by NR12               previous: не версия набора
+MR14   KILLED by NR13               previous: другой набор
+MR15   KILLED by PR22               previous: неизвестная версия — ошибка
+
+mutants=507 killed=14 equivalent=1 survived/broken=0

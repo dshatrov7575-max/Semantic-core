@@ -1,0 +1,148 @@
+    P900 | ACCEPTED | 
+    P901 | ACCEPTED | 
+    P902 | ACCEPTED | 
+    P903 | ACCEPTED | 
+    P904 | ACCEPTED | 
+    P905 | ACCEPTED | 
+    P906 | ACCEPTED | 
+    P907 | ACCEPTED | 
+    N900 | REFUSED | ~ ERROR:  SCHEMA_DEF_INVALID: версии определения идут подряд с 1: ожидается 2
+    N901 | REFUSED | = ERROR:  SCHEMA_DEF_INVALID: версии определения идут подряд с 1: ожидается 3
+    N902 | REFUSED | ~ ERROR:  SCHEMA_DEF_INVALID: версии определения идут подряд с 1: ожидается 1
+    N903 | REFUSED | = ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «DEPRECATE_CLASS» не равна единственному допустимому отличию от предыдущей
+    N904 | REFUSED | = ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «RENAME_CLASS» не равна единственному допустимому отличию от предыдущей ве
+    N905 | REFUSED | = ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «RENAME_CLASS» не равна единственному допустимому отличию от предыдущей ве
+    N906 | REFUSED | = ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «RENAME_CLASS» не равна единственному допустимому отличию от предыдущей ве
+    N907 | REFUSED | = ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «RENAME_CLASS» не равна единственному допустимому отличию от предыдущей ве
+    N915 | REFUSED | = ERROR:  TEMPORAL_ORDER_INVALID: версия записана не позже предыдущей
+    N916 | REFUSED | = ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «DEPRECATE_CLASS» не равна единственному допустимому отличию от предыдущей
+    N917 | REFUSED | = ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «DEPRECATE_CLASS» не равна единственному допустимому отличию от предыдущей
+    N918 | REFUSED | = ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «CHANGE_IDENTIFIER_STRENGTH» не равна единственному допустимому отличию от
+    N919 | REFUSED | = ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «CHANGE_ATTRIBUTE» не равна единственному допустимому отличию от предыдуще
+    N935 | REFUSED | = ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «ADD_ATTRIBUTE» не равна единственному допустимому отличию от предыдущей в
+    N936 | REFUSED | = ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «REMOVE_ATTRIBUTE» не равна единственному допустимому отличию от предыдуще
+    N937 | REFUSED | = ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «CHANGE_ATTRIBUTE» не равна единственному допустимому отличию от предыдуще
+    P924 | ACCEPTED | 
+    N908 | REFUSED | = ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «CHANGE_ATTRIBUTE» не равна единственному допустимому отличию от предыдуще
+    N939 | REFUSED | = ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «CHANGE_ATTRIBUTE» не равна единственному допустимому отличию от предыдуще
+    N947 | REFUSED | = ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «CHANGE_ATTRIBUTE» не равна единственному допустимому отличию от предыдуще
+    N948 | REFUSED | = ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «CHANGE_ATTRIBUTE» не равна единственному допустимому отличию от предыдуще
+    N909 | REFUSED | = ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «ADD_LINK» не равна единственному допустимому отличию от предыдущей версии
+    N910 | REFUSED | = ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «RENAME_CLASS» не равна единственному допустимому отличию от предыдущей ве
+    N911 | REFUSED | = ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «ADD_ATTRIBUTE» не равна единственному допустимому отличию от предыдущей в
+    N912 | REFUSED | = ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «REMOVE_ATTRIBUTE» не равна единственному допустимому отличию от предыдуще
+    N913 | REFUSED | = ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «CHANGE_IDENTIFIER_STRENGTH» не равна единственному допустимому отличию от
+    N914 | REFUSED | = ERROR:  SCHEMA_CHANGE_INVALID: запись журнала «RENAME_LINK» не равна единственному допустимому отличию от предыдущей вер
+    N920 | REFUSED | = ERROR:  REF_UNRESOLVED: родитель: класса sdf_nowhere нет в схеме tenant
+    N921 | REFUSED | = ERROR:  REF_UNRESOLVED: родитель: класса sdf_foreign нет в схеме tenant
+    N922 | REFUSED | = ERROR:  SCHEMA_DEF_INVALID: корневой тип наследника не равен корневому типу родителя
+    N923 | REFUSED | ~ ERROR:  REF_UNRESOLVED: родитель: класса sdf_cyc_b нет в схеме tenant
+    N924 | REFUSED | ~ ERROR:  REF_UNRESOLVED: родитель: класса sdf_self нет в схеме tenant
+    N925 | REFUSED | ~ ERROR:  REF_UNRESOLVED: родитель: класса sdf_par нет в схеме tenant
+    N926 | REFUSED | = ERROR:  SCHEMA_DEF_INVALID: родитель: класс sdf_par выведен из употребления
+    P908 | ACCEPTED | 
+    N927 | REFUSED | = ERROR:  MARKING_BROADER_THAN_INPUT: родитель: маркировка определения шире маркировки класса sdf_par
+    N928 | REFUSED | = ERROR:  SCHEMA_DEF_INVALID: атрибут повторяется
+    N929 | REFUSED | = ERROR:  SCHEMA_DEF_INVALID: предикат x.max_length уже определён в sdf_whale_species
+    N930 | REFUSED | = ERROR:  SCHEMA_DEF_INVALID: предикат x.max_length уже определён в sdf_whale_species
+    N931 | REFUSED | = ERROR:  REF_UNRESOLVED: атрибут x.other_id: тип идентификатора x.nowhere не определён в схеме tenant для этого корневого
+    N932 | REFUSED | = ERROR:  REF_UNRESOLVED: атрибут x.itis_tsn: тип идентификатора x.itis не определён в схеме tenant для этого корневого ти
+    N933 | REFUSED | = ERROR:  REF_UNRESOLVED: атрибут x.itis_tsn: тип идентификатора x.itis не определён в схеме tenant для этого корневого ти
+    N934 | REFUSED | = ERROR:  REF_UNRESOLVED: атрибут x.zb_id: тип идентификатора x.zoobank не определён в схеме tenant для этого корневого ти
+    N938 | REFUSED | = ERROR:  REF_UNRESOLVED: атрибут x.other_id: тип идентификатора x.foreign не определён в схеме tenant для этого корневого
+    P925 | ACCEPTED | 
+    P909 | ACCEPTED | 
+    N940 | REFUSED | = ERROR:  REF_UNRESOLVED: domain_class_id: класса sdf_nowhere нет в схеме tenant
+    N941 | REFUSED | = ERROR:  REF_UNRESOLVED: range_class_id: класса sdf_nowhere нет в схеме tenant
+    N942 | REFUSED | = ERROR:  REF_UNRESOLVED: range_class_id: класса sdf_foreign нет в схеме tenant
+    N943 | REFUSED | ~ ERROR:  REF_UNRESOLVED: domain_class_id: класса sdf_taxon нет в схеме tenant
+    N944 | REFUSED | = ERROR:  SCHEMA_DEF_INVALID: domain_class_id: класс sdf_old выведен из употребления
+    N945 | REFUSED | ~ ERROR:  new row for relation "link_defs" violates check constraint "link_symmetric_one_class"
+    N946 | REFUSED | = ERROR:  MARKING_BROADER_THAN_INPUT: range_class_id: маркировка определения шире маркировки класса sdf_int
+    N950 | REFUSED | = ERROR:  SCHEMA_DEF_INVALID: тип идентификатора x.itis для CONCEPT уже определён
+    P910 | ACCEPTED | 
+    P926 | ACCEPTED | 
+    N951 | REFUSED | = ERROR:  SCHEMA_DEF_INVALID: приоритет 1 для CONCEPT уже занят
+    N952 | REFUSED | ~ ERROR:  new row for relation "identifier_defs" violates check constraint "identifier_format_shape"
+    N953 | REFUSED | ~ ERROR:  new row for relation "identifier_defs" violates check constraint "identifier_format_shape"
+    N954 | REFUSED | ~ ERROR:  new row for relation "identifier_defs" violates check constraint "identifier_tenant_scheme_has_format"
+    N955 | REFUSED | ~ ERROR:  new row for relation "identifier_defs" violates check constraint "identifier_builtin_is_strong"
+    N956 | REFUSED | ~ ERROR:  new row for relation "identifier_defs" violates check constraint "identifier_tenant_scheme_has_format"
+    N957 | REFUSED | ~ ERROR:  invalid input syntax for type json
+    N958 | REFUSED | ~ ERROR:  new row for relation "identifier_defs" violates check constraint "identifier_builtin_is_strong"
+    N960 | REFUSED | = ERROR:  REF_UNRESOLVED: schema.is_a: класса sdf_nowhere нет в схеме tenant
+    N961 | REFUSED | = ERROR:  REF_UNRESOLVED: schema.is_a: класса sdf_foreign нет в схеме tenant
+    N962 | REFUSED | = ERROR:  TEMPORAL_ORDER_INVALID: schema.is_a: класс записан позже утверждения
+    N963 | REFUSED | = ERROR:  CLASS_NOT_INSTANTIABLE: класс sdf_organism абстрактный или выведен из употребления
+    N964 | REFUSED | = ERROR:  CLASS_NOT_INSTANTIABLE: класс sdf_new абстрактный или выведен из употребления
+    P927 | ACCEPTED | 
+    P911 | ACCEPTED | 
+    N965 | REFUSED | = ERROR:  PREDICATE_DOMAIN_VIOLATION: тип сущности THING не равен корневому типу класса CONCEPT
+    N966 | REFUSED | = ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки класса
+    N967 | REFUSED | = ERROR:  PREDICATE_RANGE_VIOLATION: schema.is_a: тип объекта вне range
+    N968 | REFUSED | = ERROR:  SCHEMA_INVALID: CLASS_REF — ровно {type, class_id}: класс ищется в tenant проекта
+    N970 | REFUSED | = ERROR:  PREDICATE_UNKNOWN: x.nowhere: в схеме tenant на момент записи такого предиката нет
+    N971 | REFUSED | = ERROR:  PREDICATE_UNKNOWN: x.itis_tsn: в схеме tenant на момент записи такого предиката нет
+    N972 | REFUSED | = ERROR:  PREDICATE_UNKNOWN: x.max_length: в схеме tenant на момент записи такого предиката нет
+    N973 | REFUSED | = ERROR:  PREDICATE_UNKNOWN: x.belongs_to: в схеме tenant на момент записи такого предиката нет
+    N974 | REFUSED | = ERROR:  PREDICATE_UNKNOWN: x.rank: в схеме tenant на момент записи такого предиката нет
+    N975 | REFUSED | = ERROR:  PREDICATE_DOMAIN_VIOLATION: субъект не является экземпляром класса sdf_whale_species
+    P912 | ACCEPTED | 
+    N976 | REFUSED | = ERROR:  PREDICATE_DOMAIN_VIOLATION: субъект не является экземпляром класса sdf_whale_species
+    N987 | REFUSED | = ERROR:  PREDICATE_DOMAIN_VIOLATION: субъект не является экземпляром класса sdf_whale_species
+    N988 | REFUSED | = ERROR:  PREDICATE_DOMAIN_VIOLATION: субъект не является экземпляром класса sdf_whale_species
+    N989 | REFUSED | = ERROR:  IDENTIFIER_CHECKSUM_INVALID: контрольные цифры литерала (S24-01)
+    P931 | ACCEPTED | 
+    P928 | ACCEPTED | 
+    P929 | ACCEPTED | 
+    N977 | REFUSED | = ERROR:  PREDICATE_RANGE_VIOLATION: значение не того типа, единицы или схемы, что объявлены у атрибута
+    N986 | REFUSED | = ERROR:  PREDICATE_RANGE_VIOLATION: значение не того типа, единицы или схемы, что объявлены у атрибута
+    N978 | REFUSED | = ERROR:  PREDICATE_RANGE_VIOLATION: значение не того типа, единицы или схемы, что объявлены у атрибута
+    N979 | REFUSED | = ERROR:  PREDICATE_RANGE_VIOLATION: значение не того типа, единицы или схемы, что объявлены у атрибута
+    N980 | REFUSED | = ERROR:  PREDICATE_RANGE_VIOLATION: значение не того типа, единицы или схемы, что объявлены у атрибута
+    N981 | REFUSED | = ERROR:  PREDICATE_RANGE_VIOLATION: объект не является экземпляром класса sdf_taxon
+    N982 | REFUSED | = ERROR:  PREDICATE_RANGE_VIOLATION: объект не является экземпляром класса sdf_taxon
+    N983 | REFUSED | = ERROR:  QUALIFIER_INVALID: у предикатов схемы tenant нет квалификаторов
+    N984 | REFUSED | = ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки определения в схеме
+    P913 | ACCEPTED | 
+    P914 | ACCEPTED | 
+    N985 | REFUSED | = ERROR:  CHECK_CLAIM_DIMENSION_MISMATCH: x.tender_note не относится к TENDERS
+    P915 | ACCEPTED | 
+    P916 | ACCEPTED | 
+    P917 | ACCEPTED | 
+    P918 | ACCEPTED | 
+    P919 | ACCEPTED | 
+    N990 | REFUSED | = ERROR:  IDENTIFIER_SCHEME_INVALID: значение не в формате x.itis
+    N991 | REFUSED | = ERROR:  IDENTIFIER_SCHEME_INVALID: значение не в формате x.itis
+    N992 | REFUSED | = ERROR:  IDENTIFIER_SCHEME_INVALID: значение не в формате x.itis
+    N993 | REFUSED | = ERROR:  IDENTIFIER_SCHEME_INVALID: тип идентификатора x.itis не определён для CONCEPT
+    P920 | ACCEPTED | 
+    N994 | REFUSED | = ERROR:  IDENTIFIER_SCHEME_INVALID: значение не в формате x.zoobank
+    P930 | ACCEPTED | 
+    N996 | N/A | пометка версии записи сущности в базе не хранится
+    N997 | REFUSED | = ERROR:  SCHEMA_INVALID: schema_version: словарь core-ontology/0.3 (schema.is_a, предикаты и схемы tenant) — только в зап
+    N998 | REFUSED | = ERROR:  SCHEMA_INVALID: schema_version: словарь core-ontology/0.3 (schema.is_a, предикаты и схемы tenant) — только в зап
+    N999 | N/A | пометка версии записи определения в базе не хранится
+    N995 | REFUSED | = ERROR:  ENTITY_DUPLICATE_IN_PROJECT: thing совпадает у ent_wk_skeleton и ent_wk_skeleton2
+    P921 | ACCEPTED | 
+    P922 | ACCEPTED | 
+    P923 | REFUSED | = ERROR:  POSSIBLE_DUPLICATE: skel:thing: ent_wk_skeleton и ent_wk_skeleton2 совпадают по скелету — нужно решение аналитик
+S9-08  PASS | паритет с валидатором на векторах цикла 9: отвергнутое валидатором база отвергает, принятое — принимает | векторов=129 отвергнуто=96 (тем же кодом 82) принято=31 не представимо в базе=2 расхождений=0 []
+LOAD: OK artifact_nodes=10 artifacts=1 checks=4 claims=38 class_closure=7 class_defs=5 decisions=2 entities=28 entity_keys=45 evidence=41 identifier_defs=1 link_defs=1 projects=6 receipts=1 reviews=8 schema_predicates=4 seals=1 sources=17
+KEYS PARITY (DB-derived == validator): OK rows=45
+S9-01  PASS | мир: 5 версий классов, 1 связь, 1 тип идентификатора; замыкание = рекурсивный расчёт; у каждого предиката tenant один владелец | 5 1 1 4; x.belongs_to=sdf_belongs_to x.exhibit_length=sdf_exhibit x.itis_tsn=sdf_whale_species x.max_length=sdf_whale_species
+S9-02a PASS | модель: атрибут, добавленный родителю, виден у наследника (declared_in = родитель); на момент до изменения его нет | сейчас [('x.rank', 'sdf_taxon'), ('x.itis_tsn', 'sdf_whale_species'), ('x.max_length', 'sdf_whale_species')]; до изменения ['x.itis_tsn', 'x.max_length']; 
+S9-02b PASS | модель: класс с маркировкой INTERNAL и его запись журнала видит только читатель с допуском INTERNAL | PUBLIC: 4 классов, INTERNAL: 5
+S9-02c PASS | модель на прошлый момент воспроизводима (тот же digest) | sha256:10a27791cb802c3d
+S9-02d PASS | время версии ставит база: поданное «1999-12-31» заменено системным временем | recorded_at свежее минуты: t
+S9-03  PASS | вживую: загрузчик заводит сущность, называет её класс (schema.is_a) и пишет утверждение с атрибутом родительского класса | (принято); (принято); (принято)
+S9-03n PASS | вживую отвергнуто: атрибут наследника у экземпляра родителя; значение не того типа; предиката нет в схеме | ERROR:  PREDICATE_DOMAIN_VIOLATION: субъект не является экзе / ERROR:  PREDICATE_RANGE_VIOLATION: значение не того типа, ед / ERROR:  PREDICATE_UNKNOWN: x.nowhere: в схеме tenant на моме
+S9-04  PASS | «задним числом» старую схему не выбрать: утверждение с временем до последнего изменения определения отвергнуто, с текущим — принято | ERROR:  TEMPORAL_ORDER_INVALID: определение предиката изменено после заявленного времени з / (принято)
+S9-05  PASS | обязательный атрибут: пробел показан; закрыт утверждением; снова показан после отзыва утверждения | [('ent_s9_fin', 'x.max_length')] -> [] -> [('ent_s9_fin', 'x.max_length')]
+S9-06  PASS | досье: предложения о классе, атрибуте, связи и идентификаторе — с названиями из схемы на запрошенный момент | (принято); сейчас: ['Синий кит: класс — «Вид китообразных».']; раньше: ['Синий кит: класс — «Вид китов».']
+S9-06w PASS | принадлежность классу отозвана рецензией: новое утверждение с атрибутом класса отвергнуто, обязательных атрибутов от сущности больше не требуется | ERROR:  PREDICATE_DOMAIN_VIOLATION: субъект не является экземпляром кл; пробелы []
+S9-06m PASS | маркировки в проекциях: пробел и название класса INTERNAL видит читатель с допуском INTERNAL, а читатель PUBLIC — ни в «пробелах схемы», ни в модели, ни в досье сущности | PUBLIC: []; INTERNAL: [('ent_wk_baleen', 'x.internal_note')]; (принято) (принято)
+S9-07  PASS | роли: загрузчик не меняет схему; конструктор не пишет утверждения и производные таблицы; UPDATE/DELETE/TRUNCATE запрещены; читатель без SELECT и без допуска не видит модель | отказов 14/14: 
+
+S9: ALL PASS
+exit=0

@@ -1,0 +1,35 @@
+== M1. Оракул существования версии набора (маркировка источника CONFIDENTIAL+PERSONAL_DATA)
+   образец проекта (досье): читатель без допуска, сущность есть / сущности нет:
+      ac.dossier(ent_k_developer) -> ERROR:  ACCESS_DENIED: нет допуска
+      ac.dossier(ent_no_such_entity) -> ERROR:  ACCESS_DENIED: нет допуска
+   ac_rd_none (нет допуска в проекте), dataset_row:
+      версия есть -> ERROR:  ACCESS_DENIED: нет допуска
+      версии нет  -> ERROR:  REF_UNRESOLVED: версия набора данных не найдена в tenant проекта
+      <<< ОРАКУЛ: ответы различимы
+   ac_rd_none (нет допуска в проекте), dataset_evidence:
+      версия есть -> ERROR:  ACCESS_DENIED: нет допуска
+      версии нет  -> ERROR:  REF_UNRESOLVED: версия набора данных не найдена в tenant проекта
+      <<< ОРАКУЛ: ответы различимы
+   ac_rd_cs (допуск CONFIDENTIAL/COMMERCIAL_SECRET, без PERSONAL_DATA), dataset_row:
+      версия есть -> ERROR:  ACCESS_DENIED: нет допуска
+      версии нет  -> ERROR:  REF_UNRESOLVED: версия набора данных не найдена в tenant проекта
+      <<< ОРАКУЛ: ответы различимы
+   ac_rd_cs (допуск CONFIDENTIAL/COMMERCIAL_SECRET, без PERSONAL_DATA), dataset_evidence:
+      версия есть -> ERROR:  ACCESS_DENIED: нет допуска
+      версии нет  -> ERROR:  REF_UNRESOLVED: версия набора данных не найдена в tenant проекта
+      <<< ОРАКУЛ: ответы различимы
+== M2. Оракул «загружена ли и запечатана ли версия» для читателя с допуском к источнику, но без допуска к ключу — нет: ключ проверяется раньше
+== M3. Поиск по идентификатору: читатель без PERSONAL_DATA и версия с маркировкой источника PD
+   попаданий в версии rev-a4 (должно быть 0): 0
+== M4. Прямой доступ читателя
+   ac_rd_full: ac.datasets -> ОТКАЗ: ERROR:  permission denied for table datasets
+   ac_rd_full: ac.dataset_tables -> ОТКАЗ: ERROR:  permission denied for table dataset_tables
+   ac_rd_full: ac.dataset_cells() -> ОТКАЗ: ERROR:  permission denied for function dataset_cells
+   ac_rd_full: ac.dataset_table() -> ОТКАЗ: ERROR:  permission denied for table dataset_tables
+   ac_rd_full: ac.claim_evidence (соли и листья в row_ev) -> ОТКАЗ: ERROR:  permission denied for table claim_evidence
+   ac_rd_full: ac.claims.body -> ОТКАЗ: ERROR:  permission denied for table claims
+   ac_rd_full: ac.dataset_open -> ОТКАЗ: ERROR:  permission denied for function dataset_open
+   ac_rd_full: ac.dataset_seal -> ОТКАЗ: ERROR:  permission denied for function dataset_seal
+== M5. Досье: что видит читатель без PERSONAL_DATA в доказательстве-строке c50 (директор — скрытый лист)
+   доказательств-строк в досье: 1 | поля: ['cells', 'first_observed_at', 'row_key', 'row_sha256', 'source_id', 'source_kind', 'source_title', 'verified'] | ячейки: {'ogrn': '1215000007310', 'address': 'Московская обл., г. Заречный, ул. Заречная, д. 1'}
+   «Ломов» (директор, ПД) встречается в ячейках доказательства-строки: False | слова salt/leaf в досье: False False

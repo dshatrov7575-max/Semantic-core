@@ -18,10 +18,12 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 from jcs import digest, canon_bytes
 from validator import inn_ok, ogrn_ok, ogrnip_ok, text_digest_of, publication_address
+from dataset import DatasetVersion
 
 HERE = Path(__file__).resolve().parent
 SV = "core-ontology/0.2"       # records of the nine kinds known since 0.2: their producers and content addresses do not change
 SV3 = "core-ontology/0.3"      # records that use the vocabulary of 0.3 (schema definitions, THING, schema.is_a, tenant predicates)
+SV4 = "core-ontology/0.4"      # records that use the vocabulary of 0.4 (a dataset version as a source, evidence by a row)
 T = "tnt_demo"
 
 
@@ -82,6 +84,40 @@ def srch(scope, query, at, src=None):
     if src:
         s["result_source_id"] = "@S:" + src
     return s
+
+
+REGISTRY_COLUMNS = [
+    {"name": "ogrn", "type": "STRING", "marking": PUB, "identifier_scheme": "ru.ogrn"},
+    {"name": "inn", "type": "STRING", "marking": PUB, "identifier_scheme": "ru.inn"},
+    {"name": "name", "type": "STRING", "marking": PUB},
+    {"name": "address", "type": "STRING", "marking": PUB, "predicate": "entity.registered_address"},
+    {"name": "director", "type": "STRING", "marking": CONF_PD},
+    {"name": "registered_on", "type": "DATE", "marking": PUB},
+    {"name": "active", "type": "BOOLEAN", "marking": PUB},
+    {"name": "employees", "type": "INTEGER", "marking": INT}]
+REGISTRY_ROWS = [
+    {"ogrn": OGRN_DEV, "inn": INN_DEV, "name": "ООО «Заречье-Девелопмент»", "address": "Московская обл., г. Заречный, ул. Заречная, д. 1",
+     "director": "Ломов Аркадий Семёнович", "registered_on": "2021-02-12", "active": True, "employees": 48},
+    {"ogrn": OGRN_TRUB, "inn": INN_TRUB, "name": "АО «Трубопроводстрой»", "address": "г. Архангельск, пр. Ломоносова, д. 7",
+     "director": "Седов Пётр Ильич", "registered_on": "2002-06-03", "active": True, "employees": 1200},
+    {"ogrn": ogrn("102770000001"), "inn": inn10("770700001"), "name": "ООО «Альфа-Сервис»", "address": "г. Москва, ул. Лесная, д. 3",
+     "director": "Крылова Анна Олеговна", "registered_on": "2002-11-18", "active": False, "employees": None},
+    {"ogrn": ogrn("115500000002"), "inn": inn10("500100002"), "name": "ООО «Бета»", "address": "Московская обл., г. Заречный, ул. Мира, д. 9",
+     "director": "Нечаев Олег Игоревич", "registered_on": "2015-04-01", "active": True, "employees": 3},
+    {"ogrn": ogrn("120500000003"), "inn": inn10("500100003"), "name": "ООО «Гамма»", "address": None,
+     "director": None, "registered_on": "2020-08-20", "active": True, "employees": 0}]
+
+
+# the key of the demonstration dataset. In production it is 32 random bytes kept by the loader; here it is a constant
+# of the test world (so that the world is reproducible) — whoever has this file can open the hidden cells of the DEMO rows
+DEMO_DATASET_KEY = hashlib.sha256(b"ac demo dataset key (test world only, never for real data)").digest()
+
+
+def demo_registry(rows=None, columns=None, key=("ogrn",), chunk_rows=4, subject=("ogrn", "inn"), **kw):
+    """the demonstration dataset version; the row secrets are derived from DEMO_DATASET_KEY and the key of the row"""
+    return DatasetVersion("dst_registry_demo", T, "2026-09-01", columns or REGISTRY_COLUMNS, list(key),
+                          rows if rows is not None else REGISTRY_ROWS, chunk_rows=chunk_rows, subject=subject,
+                          dataset_key=DEMO_DATASET_KEY, **kw)
 
 
 def world():
@@ -396,6 +432,21 @@ def world():
     for cn in ("c40", "c41", "c42", "c43", "c44", "c45", "c46"):
         W[cn]["schema_version"] = SV3
 
+    # ---- a dataset version (D27.2, cycle 10): a small registry of legal entities; the claim about the address rests on
+    # a ROW of it and quotes only the key and the address — the director (personal data) stays a salted leaf
+    W["__datasets__"] = {"s30": demo_registry()}
+    add("s30", {"kind": "Source", "schema_version": SV4, "tenant_id": T, "source_kind": "DATASET_VERSION",
+                "media_type": "application/vnd.ac.dataset-manifest+json", "language": "ru",
+                "title": "Реестр юридических лиц (демонстрационный), версия 2026-09-01",
+                "content_inline": W["__datasets__"]["s30"].manifest_bytes.decode("utf-8"), "marking": PUB,
+                "observations": [{"observed_at": "2026-09-05T08:00:00Z", "origin_uri": "urn:demo:dataset:registry:2026-09-01",
+                                  "observed_by": "svc_dataset_loader"}]})
+    add("c50", {"kind": "Claim", "schema_version": SV4, "project_id": "prj_compliance", "subject": "ent_k_developer",
+                "predicate": "entity.registered_address", "object": L(type="STRING", value=REGISTRY_ROWS[0]["address"]),
+                "evidence": [{"$row": ["s30", [OGRN_DEV], ["address"]]}],
+                "produced_by": {"kind": "HUMAN", "actor_id": "usr_bank_officer"}, "recorded_at": "2026-09-26T09:00:00Z",
+                "marking": CONF_CS})
+
     # ---- reviews: declared decision time + system record time ----
     def rev(name, claim, status, at, rec_at, note=None):
         r = {"kind": "ClaimReview", "review_id": name, "claim_id": "@C:" + claim, "status": status,
@@ -490,7 +541,10 @@ def finalize(W):
     trust = W.pop("__trust__")
     art_tpl = W.pop("__artifacts__", {})
     objects = W.pop("__objects__", {})
+    datasets = W.pop("__datasets__", {})
     sid, cid, aid, content = {}, {}, {}, {}
+    for dv in datasets.values():
+        content.update(dict(dv.files))
     for n, r in W.items():
         if r["kind"] == "Source":
             b = r["content_inline"].encode("utf-8")
@@ -525,6 +579,11 @@ def finalize(W):
                 ev = {"source_id": sid[sname], "span": {"start": start, "end": start + len(qb)},
                       "quote": quote, "quote_sha256": hashlib.sha256(qb).hexdigest()}
                 ev.update({k: res(v) for k, v in x.items() if k != "$ev"})
+                return ev
+            if "$row" in x:                 # evidence by a row of a dataset version: [source, key, quoted columns]
+                sname, key_values, quote = x["$row"]
+                ev = datasets[sname].evidence(key_values, quote)
+                ev["source_id"] = sid[sname]
                 return ev
             if "$anchor" in x:
                 sname, quote = x["$anchor"]
@@ -565,5 +624,5 @@ def finalize(W):
                 r["receipt_id"] = "rcp:sha256:" + digest({k: v for k, v in r.items() if k not in ("receipt_id", "signature")})
                 r["signature"] = b64u(Ed25519PrivateKey.from_private_bytes(SEEDS[seed or r["key_id"]]).sign(r["receipt_id"].encode()))
     names = sorted(W, key=lambda n: (ORDER.index(W[n]["kind"]), n))
-    ds = {"dataset_format": "core-dataset/0.3", "ontology_version": SV3, "records": [W[n] for n in names]}
+    ds = {"dataset_format": "core-dataset/0.3", "ontology_version": SV4, "records": [W[n] for n in names]}
     return ds, {n: i for i, n in enumerate(names)}, trust, content

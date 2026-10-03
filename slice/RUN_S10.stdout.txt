@@ -1,0 +1,166 @@
+    NR01 | REFUSED | = ERROR:  DATASET_MANIFEST_INVALID: манифест не в канонической форме RFC 8785 (или с повторяющимися ключами)
+    NR02 | REFUSED | = ERROR:  DATASET_MANIFEST_INVALID: манифест не в канонической форме RFC 8785 (или с повторяющимися ключами)
+    NR03 | REFUSED | = ERROR:  DATASET_MANIFEST_INVALID: манифест не JSON в UTF-8
+    NR04 | REFUSED | = ERROR:  DATASET_MANIFEST_INVALID: манифест не по схеме ac-dataset-manifest/0.1: состав полей манифеста
+    NR05 | REFUSED | = ERROR:  DATASET_MANIFEST_INVALID: манифест не по схеме ac-dataset-manifest/0.1: manifest_format
+    NR06 | REFUSED | = ERROR:  DATASET_MANIFEST_INVALID: манифест не по схеме ac-dataset-manifest/0.1: имя колонки повторяется
+    NR07 | REFUSED | = ERROR:  DATASET_MANIFEST_INVALID: манифест не по схеме ac-dataset-manifest/0.1: ключ набора называет колонку, которой нет
+    NR08 | REFUSED | = ERROR:  DATASET_MANIFEST_INVALID: манифест не по схеме ac-dataset-manifest/0.1: row_count не равен сумме строк файлов
+    NR09 | REFUSED | = ERROR:  DATASET_MANIFEST_INVALID: манифест не по схеме ac-dataset-manifest/0.1: схема идентификатора — только у строковой колонки
+    NR10 | REFUSED | = ERROR:  DATASET_MANIFEST_INVALID: tenant манифеста не равен tenant источника
+    NR11 | REFUSED | = ERROR:  DATASET_MANIFEST_INVALID: манифест не по схеме ac-dataset-manifest/0.1: row_count
+    NR12 | REFUSED | = ERROR:  DATASET_MANIFEST_INVALID: previous — не версия того же набора данных того же tenant
+    NR13 | REFUSED | = ERROR:  DATASET_MANIFEST_INVALID: previous — не версия того же набора данных того же tenant
+    PR22 | ACCEPTED | 
+    PR23 | ACCEPTED | 
+    NR15 | REFUSED | = ERROR:  DATASET_MANIFEST_INVALID: манифест не по схеме ac-dataset-manifest/0.1: subject называет колонку, которой нет или которая 
+    NR16 | REFUSED | = ERROR:  DATASET_MANIFEST_INVALID: манифест не по схеме ac-dataset-manifest/0.1: subject называет колонку, которой нет или которая 
+    NR17 | REFUSED | = ERROR:  DATASET_MANIFEST_INVALID: манифест не по схеме ac-dataset-manifest/0.1: колонка не по схеме манифеста
+    NR18 | REFUSED | = ERROR:  DATASET_MANIFEST_INVALID: манифест не по схеме ac-dataset-manifest/0.1: файл не по схеме манифеста
+    NR19 | REFUSED | = ERROR:  DATASET_MANIFEST_INVALID: манифест не JSON в UTF-8
+    NR1E | REFUSED | = ERROR:  DATASET_MANIFEST_INVALID: манифест не по схеме ac-dataset-manifest/0.1: row_count
+    NR1A | REFUSED | = ERROR:  SCHEMA_INVALID: версия набора данных — запись core-ontology/0.4 с типом содержимого манифеста
+    NR1B | REFUSED | = ERROR:  SCHEMA_INVALID: версия набора данных — запись core-ontology/0.4 с типом содержимого манифеста
+    NR1C | REFUSED | = ERROR:  SCHEMA_INVALID: schema_version: доказательство-строка — только в записи core-ontology/0.4
+    NR1F | N/A | пометка версии набора записей (конверта) в базе не хранится: в базе нет конверта
+    PR25 | ACCEPTED | 
+    NR1D | REFUSED | = ERROR:  SOURCE_CONTENT_UNAVAILABLE: src:sha256:4d78086272890fea3481e758b65d40fe4325a42dfb1829d3b4fb0ffd968abf42
+    PR01 | ACCEPTED | 
+    PR02 | ACCEPTED | 
+    PR03 | ACCEPTED | 
+    NR20 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: доказательство-строка ссылается на источник, который не версия набора данных
+    NR21 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ячейки не совпадают с колонками манифеста (состав или порядок)
+    NR22 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ячейки не совпадают с колонками манифеста (состав или порядок)
+    NR23 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ячейки не совпадают с колонками манифеста (состав или порядок)
+    NR24 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: хэш строки не равен корню дерева её ячеек
+    NR25 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: хэш строки не равен корню дерева её ячеек
+    NR26 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: хэш строки не равен корню дерева её ячеек
+    NR27 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: хэш строки не равен корню дерева её ячеек
+    NR28 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: строка не входит в файл версии набора (доказательство включения не сходится)
+    NR29 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: строка не входит в файл версии набора (доказательство включения не сходится)
+    NR30 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: строка не входит в файл версии набора (доказательство включения не сходится)
+    NR31 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: строка не входит в файл версии набора (доказательство включения не сходится)
+    NR32 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: в манифесте нет файла с таким номером
+    NR33 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: строка не входит в файл версии набора (доказательство включения не сходится)
+    NR34 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: строка не входит в файл версии набора (доказательство включения не сходится)
+    NR35 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: строка не входит в файл версии набора (доказательство включения не сходится)
+    NR36 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: строка не входит в файл версии набора (доказательство включения не сходится)
+    PR19 | ACCEPTED | 
+    NR37 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: строка не входит в файл версии набора (доказательство включения не сходится)
+    NR38 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: строка не входит в файл версии набора (доказательство включения не сходится)
+    NR39 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: строка не входит в файл версии набора (доказательство включения не сходится)
+    NR3A | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: строка не входит в файл версии набора (доказательство включения не сходится)
+    PR04 | ACCEPTED | 
+    PR05 | ACCEPTED | 
+    PR06 | ACCEPTED | 
+    PR07 | ACCEPTED | 
+    NR40 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ключ строки: колонки ключа должны быть процитированы, а row_key — равен их значениям
+    NR41 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ключ строки: колонки ключа должны быть процитированы, а row_key — равен их значениям
+    NR42 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ключ строки: колонки ключа должны быть процитированы, а row_key — равен их значениям
+    NR43 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: у набора без ключа строка называется своим хэшем, row_key не указывается
+    NR44 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ключ строки: колонки ключа должны быть процитированы, а row_key — равен их значениям
+    NR45 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ключ строки: колонки ключа должны быть процитированы, а row_key — равен их значениям
+    PR08 | ACCEPTED | 
+    PR24 | ACCEPTED | 
+    PR09 | ACCEPTED | 
+    NR50 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: значение колонки employees не типа INTEGER
+    NR51 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: значение колонки active не типа BOOLEAN
+    NR52 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: значение колонки employees не типа INTEGER
+    NR53 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: значение колонки registered_on не типа DATE
+    NR54 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: значение колонки registered_on не типа DATE
+    NR55 | REFUSED | ~ ERROR:  unsupported Unicode escape sequence
+    NR56 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: значение колонки name не типа STRING
+    PR10 | ACCEPTED | 
+    PR11 | ACCEPTED | 
+    PR12 | ACCEPTED | 
+    NR60 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: строка не о субъекте утверждения: ни один процитированный идентификатор субъекта строки не принадлеж
+    NR61 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: строка не о субъекте утверждения: идентификатор субъекта строки расходится с идентификатором субъект
+    NR62 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: строка не о субъекте утверждения: ни один процитированный идентификатор субъекта строки не принадлеж
+    NR63 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: строка не о субъекте утверждения: ни один процитированный идентификатор субъекта строки не принадлеж
+    PR13 | ACCEPTED | 
+    PR20 | ACCEPTED | 
+    NR65 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: набор не объявляет субъект строки (subject) — его строка не может подтверждать утверждение о сущност
+    PR15 | ACCEPTED | 
+    NR64 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: строка не о субъекте утверждения: ни один процитированный идентификатор субъекта строки не принадлеж
+    NR70 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+    NR71 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+    NR72 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+    NR73 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+    NR74 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+    NR75 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+    PR16 | ACCEPTED | 
+    NR76 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+    NR77 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+    PR17 | ACCEPTED | 
+    NR78 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+    NR79 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+    NR7A | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+    NR46 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ключ строки: колонки ключа должны быть процитированы, а row_key — равен их значениям
+    PR30 | ACCEPTED | 
+    PR31 | ACCEPTED | 
+    NR47 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ячейки не совпадают с колонками манифеста (состав или порядок)
+    NR3B | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: строка не входит в файл версии набора (доказательство включения не сходится)
+    PR26 | ACCEPTED | 
+    NR7B | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+    PR27 | ACCEPTED | 
+    NR7C | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+    NR66 | REFUSED | ~ ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки сущности
+    NR7D | REFUSED | ~ ERROR:  insert or update on table "claims" violates foreign key constraint "claims_project_id_object_entity_fkey"
+    PR28 | REFUSED | ~ ERROR:  CLAIM_ABOUT_MERGED_ENTITY: после слияния утверждения пишутся о выжившей сущности
+    NR48 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ячейки не совпадают с колонками манифеста (состав или порядок)
+    NR1G | REFUSED | = ERROR:  DATASET_MANIFEST_INVALID: колонка объявлена для предиката entity.no_such, которого нет ни в реестре, ни в схеме tenant к м
+    NR1H | REFUSED | = ERROR:  DATASET_MANIFEST_INVALID: колонка объявлена для предиката x.no_such, которого нет ни в реестре, ни в схеме tenant к момент
+    NR1I | REFUSED | = ERROR:  DATASET_MANIFEST_INVALID: колонка объявлена для предиката x.note, которого нет ни в реестре, ни в схеме tenant к моменту п
+    NR1J | REFUSED | = ERROR:  DATASET_MANIFEST_INVALID: колонка объявлена для предиката x.note, которого нет ни в реестре, ни в схеме tenant к моменту п
+    PR29 | ACCEPTED | 
+    PRF1 | ACCEPTED | 
+    NRF1 | N/A | файлы строк база не читает; её проверка строк — печать таблицы (S10-04)
+    NRF2 | N/A | файлы строк база не читает; её проверка строк — печать таблицы (S10-04)
+    NRF3 | N/A | файлы строк база не читает; её проверка строк — печать таблицы (S10-04)
+    NRF4 | N/A | файлы строк база не читает; её проверка строк — печать таблицы (S10-04)
+    NRF5 | N/A | файлы строк база не читает; её проверка строк — печать таблицы (S10-04)
+    NRF6 | N/A | файлы строк база не читает; её проверка строк — печать таблицы (S10-04)
+    NRF7 | N/A | файлы строк база не читает; её проверка строк — печать таблицы (S10-04)
+    NRF8 | N/A | файлы строк база не читает; её проверка строк — печать таблицы (S10-04)
+    NRF9 | N/A | файлы строк база не читает; её проверка строк — печать таблицы (S10-04)
+    NRFA | N/A | файлы строк база не читает; её проверка строк — печать таблицы (S10-04)
+    NRFB | N/A | файлы строк база не читает; её проверка строк — печать таблицы (S10-04)
+    PRF2 | ACCEPTED | 
+    NRFD | N/A | файлы строк база не читает; её проверка строк — печать таблицы (S10-04)
+    NRFE | N/A | файлы строк база не читает; её проверка строк — печать таблицы (S10-04)
+    NRFF | N/A | файлы строк база не читает; её проверка строк — печать таблицы (S10-04)
+    NRFG | N/A | файлы строк база не читает; её проверка строк — печать таблицы (S10-04)
+    NRFL | N/A | файлы строк база не читает; её проверка строк — печать таблицы (S10-04)
+    NRFM | N/A | файлы строк база не читает; её проверка строк — печать таблицы (S10-04)
+    NRFN | N/A | файлы строк база не читает; её проверка строк — печать таблицы (S10-04)
+    NRFO | N/A | файлы строк база не читает; её проверка строк — печать таблицы (S10-04)
+    NRFH | N/A | файлы строк база не читает; её проверка строк — печать таблицы (S10-04)
+    NRFI | N/A | файлы строк база не читает; её проверка строк — печать таблицы (S10-04)
+    NRFJ | N/A | файлы строк база не читает; её проверка строк — печать таблицы (S10-04)
+    NRFK | N/A | файлы строк база не читает; её проверка строк — печать таблицы (S10-04)
+    NR80 | REFUSED | = ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки колонки director
+    PR18 | ACCEPTED | 
+    NR81 | REFUSED | = ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки колонки employees
+    NR82 | REFUSED | = ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки источника
+    NR83 | REFUSED | = ERROR:  TEMPORAL_ORDER_INVALID: утверждение записано раньше, чем получен источник
+    NR84 | REFUSED | = ERROR:  CROSS_SCOPE_REFERENCE: источник не найден в tenant утверждения
+S10-PARITY PASS | паритет с валидатором на векторах цикла 10: отвергнутое валидатором база отвергает, принятое — принимает | векторов=146 отвергнуто=92 (тем же кодом 88; другим ['NR55', 'NR66', 'NR7D', 'PR28']) принято=30 не представимо в базе=24 (файлы строк 23, конверт 1) строже базы по своему правилу=['PR28'] расхождений=0 []
+LOAD: OK artifact_nodes=10 artifacts=1 checks=4 claims=38 class_closure=7 class_defs=5 decisions=2 entities=28 entity_keys=45 evidence=41 identifier_defs=1 link_defs=1 projects=6 receipts=1 reviews=8 schema_predicates=4 seals=1 sources=17
+KEYS PARITY (DB-derived == validator): OK rows=45
+S10-01     PASS | версия набора — в каталоге из манифеста; утверждение опирается на строку; досье показывает процитированные ячейки и verified | dst_registry_demo 2026-09-01 5 2; ROW true; ячейки в досье: ['address', 'ogrn']
+S10-02     PASS | одна арифметика на двух языках: JCS строки для каждого из 1 112 063 символов Юникода, листья ячеек всех типов, корни деревьев 1–70, пути и корни включения для всех (размер, номер); чужой номер строки не проходит ни там, ни там | jcs=True быстрый_путь=True листья=True корни=True пути=True чужой_номер: база 0, валидатор 0
+S10-03     PASS | строки версии загружены загрузчиком и запечатаны; доказательство строки, собранное базой из таблицы, побайтно равно доказательству производителя на Python (оно же — в утверждении мира) | запечатано=1 база==python: True
+S10-04     PASS | запечатывание отвергает загрузку, не равную манифесту; незапечатанная версия не читается | изменённая ячейка: отказ; нет строки: отказ; лишняя строка: отказ; строки переставлены: отказ; номер повторён: отказ; чужой секрет: отказ; секрет не той длины: отказ; пустая ячейка вместо значения: отказ; файл не тот: отказ; сброс и повтор: отказ; сброс запечатанной: отказ; дата до н. э.: отказ; дата infinity: отказ; целое больше 2^53: отказ; незапечатанных=13; чтение: ERROR:  SOURCE_CONTENT_UNAVAILABLE: строки версии набора не 
+S10-05     PASS | запечатанная версия неизменяема — и для суперпользователя, и через родительскую таблицу; каталог — производный | loader INSERT: отказ; superuser UPDATE: отказ; superuser DELETE: отказ; superuser TRUNCATE: отказ; через родителя: отказ; UPDATE родителя: отказ; каталог UPDATE: отказ; каталог DELETE: отказ; снять печать: отказ; удалить запись о таблице: отказ; открыть повторно: отказ; запечатать повторно: отказ; loader пишет каталог: отказ
+S10-06     PASS | чтение строки по допуску: колонка с персональными данными скрыта у читателя без этой категории и названа в withheld; доказательство с такой колонкой он не получит; прямого доступа к таблицам нет | без ПД: withheld=['director']; с ПД: withheld=[]; без допуска: ERROR:  ACCESS_DENIED: нет допуска; доказательство с ПД: ERROR:  CLEARANCE_INSUFFICIENT: допуск читателя ниже маркиро
+S10-07     PASS | поиск по идентификатору по запечатанным версиям: ИНН -> строка (ключ), ОГРН -> строка, неизвестный -> пусто | ИНН: [{'row': ['1215000007310'], 'column': 'inn', 'source_id': 'src:sha256:4d78086272890fea3481e758b65d40fe4325a42dfb1829d3b4fb0ffd968abf42', 'dataset_id': 'dst_registry_demo', 'row_sha256': '290d61e97cc25846a990bd27b046447771d0131010e526916d1e3ad9e27d8e37', 'version_label': '2026-09-01'}]; версий с этим ИНН: 2
+S10-08     PASS | вживую: утверждение с доказательством-строкой принято; с подменённой ячейкой, о чужой строке, с колонкой ПД без этой категории, в записи 0.3 — отвергнуты кодами валидатора | (принято); подмена: ERROR:  EVIDENCE_ROW_INVALID: хэш строки не равен корню дере; чужая строка: ERROR:  EVIDENCE_ROW_INVALID: строка не о субъекте утверждения: ни оди; ПД: ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утв; 0.3: ERROR:  SCHEMA_INVALID: schema_version: 
+S10-09     PASS | previous: вторая версия набора принята; версия, чья предыдущая — документ, отвергнута; если документ пришёл позже версии, назвавшей его предыдущей, отвергнут он | v2: (принято); документ как previous: ERROR:  DATASET_MANIFEST_INVALID: previous — не ве; поздний документ: ERROR:  DATASET_MANIFEST_INVALID: previous — не ве
+S10-10     PASS | роли: читатель не открывает и не запечатывает; загрузчик не создаёт таблиц, не читает строки напрямую, не ставит печать сам | reader open: отказ; reader seal: отказ; loader CREATE в acd: отказ; loader читает строки: отказ; loader пишет dataset_tables: отказ
+S10-11     PASS | previous проверяется при фиксации транзакции в любом порядке прихода, и когда названный источник записан без байтов | версия, затем документ без байтов: ERROR:  DATASET_MANIFEST_INVALID: previous — не версия того ; документ без байтов, затем версия: ERROR:  DATASET_MANIFEST_INVALID: previous — не версия того 
+S10-12     PASS | набор из 150 колонок: загружен, запечатан, строка читается, доказательство из базы равно доказательству производителя и принято стражем | ячеек в строке 150, доказательство 13749 знаков
+S10-13     PASS | существует ли версия — не узнать: без допуска и для несуществующей версии ответ один; ключ в доказательстве — как в ячейках | ответы: {'ERROR:  ACCESS_DENIED: нет допуска'}; ключ, переданный строкой "1", в доказательстве: [1]
+S10-14     PASS | поддержка считается по семейству набора: утверждение на той же строке из второй версии реестра не добавляет поддержки | (принято); поддержек до 2, после 2 (версий-источников 3)
+S10-15     PASS | файлы версии видны читателю (адрес, длина, хранится ли объект); длина в манифесте сверяется с длиной объекта в хранилище; ac.claim_provenance показывает и проверяет доказательства-строки | файл 0: NOT_STORED, 1203 байт; чужая длина: ERROR:  DATASET_MANIFEST_INVALID: файл версии набора: длина ; строки в provenance: 4/4
+S10-16     PASS | гонка «версия называет P предыдущей» и «приходит документ P»: ни на одном уровне изоляции и ни в одной смешанной паре не фиксируются обе | READ COMMITTED: коды [0, 3], записей из двух 1; REPEATABLE READ: коды [3, 3], записей из двух 0; SERIALIZABLE: коды [3, 3], записей из двух 0; SERIALIZABLE (медленная) + READ COMMITTED: коды [0, 3], записей из двух 1; REPEATABLE READ (медленная) + READ COMMITTED: коды [0, 3], записей из двух 1
+ALL PASS

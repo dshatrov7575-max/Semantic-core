@@ -1,0 +1,8 @@
+T1 valid world: records=112 errors=0 warnings=1
+T2 vectors: 642 (519 negative, 123 positive)
+T3 error codes covered: 46/46
+T4 fuzz: 3000 cases, crashes=0, internal=0
+T6 JCS parity py/node: 68184 values
+T8 Unicode pinned to 14.0.0: another version -> ['VALIDATOR_INTERNAL_ERROR']
+T9 Model Constructor CLI: 11 commands accepted, 12 refused with the file intact, show/journal checked
+ALL PASS

@@ -1,0 +1,17 @@
+MR80   KILLED by NR1G               колонка: предикат не сверяется с реестром и схемой
+MR81   KILLED by PR29               колонка: предикат схемы tenant не признаётся
+MR82   KILLED by BASE               колонка: предикат реестра не признаётся
+MR83   KILLED by NRF1               файлы версии не проверяются
+MR84   KILLED by NRFN               файл: адрес
+MR85   KILLED by NRF2               файл: длина
+MR86   KILLED by NRFH               файл: конец последней строки
+MR71   KILLED by NR50               тип ячейки: класс значения не проверяется
+MR72   KILLED by NR51               тип ячейки: булева колонка
+MR73   KILLED by NR55               тип ячейки: NUL в строке
+MR74   KILLED by NR53               тип ячейки: дата не проверяется
+MR75   KILLED by NR54               тип ячейки: дата без канонической записи
+MR76   KILLED by BASE               тип ячейки: пустая ячейка запрещена
+MR77   KILLED by PR24               ячейка — не свободный текст
+MR78   KILLED by PR24               ключ строки — не свободный текст
+
+mutants=507 killed=15 equivalent=0 survived/broken=0

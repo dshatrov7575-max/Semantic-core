@@ -131,7 +131,7 @@ N180 | CLAIM_REVIEW_AMBIGUOUS | REJECTED | ERROR:  CLAIM_REVIEW_AMBIGUOUS: ра�
 N190 | CHECK_PROJECT_NOT_COMPLIANCE | REJECTED | ERROR:  CHECK_PROJECT_NOT_COMPLIANCE: chk_wrong
 N191 | CHECK_SUBJECT_INVALID | REJECTED | ERROR:  CHECK_SUBJECT_INVALID: субъект — ACTIVE физлицо или юрлицо
 N192 | CHECK_SUBJECT_INVALID | REJECTED | ERROR:  CHECK_SUBJECT_INVALID: субъект — ACTIVE физлицо или юрлицо
-N194 | CHECK_SUBJECT_INVALID | REJECTED | ERROR:  CHECK_SUBJECT_INVALID: субъект слит или выведен из оборота до закрытия Проверки
+N194 | CHECK_SUBJECT_INVALID | REJECTED | ERROR:  CLAIM_ABOUT_MERGED_ENTITY: после слияния утверждения пишутся о выжившей сущности
 N195 | CHECK_DIMENSION_OUTSIDE_PROFILE | REJECTED | ERROR:  CHECK_DIMENSION_OUTSIDE_PROFILE: chk_tenders_1
 N196 | CHECK_DIMENSION_MISSING | REJECTED | ERROR:  CHECK_DIMENSION_MISSING: chk_full_1
 N198 | CHECK_FINDING_INCONSISTENT | REJECTED | ERROR:  CHECK_FINDING_INCONSISTENT: chk_full_1/SOCIAL_MEDIA: FOUND ⇔ есть утверждения
@@ -402,6 +402,121 @@ N997 | SCHEMA_INVALID | REJECTED | ERROR:  SCHEMA_INVALID: schema_version: сл�
 N998 | SCHEMA_INVALID | REJECTED | ERROR:  SCHEMA_INVALID: schema_version: словарь core-ontology/0.3 (schema.is_a, предикаты и схемы tenant) — только в записи 0.3
 N999 | SCHEMA_INVALID | ACCEPTED | 
 N995 | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: thing совпадает у ent_wk_skeleton и ent_wk_skeleton2
+NR01 | DATASET_MANIFEST_INVALID | REJECTED | ERROR:  DATASET_MANIFEST_INVALID: манифест не в канонической форме RFC 8785 (или с повторяющимися ключами)
+NR02 | DATASET_MANIFEST_INVALID | REJECTED | ERROR:  DATASET_MANIFEST_INVALID: манифест не в канонической форме RFC 8785 (или с повторяющимися ключами)
+NR03 | DATASET_MANIFEST_INVALID | REJECTED | ERROR:  DATASET_MANIFEST_INVALID: манифест не JSON в UTF-8
+NR04 | DATASET_MANIFEST_INVALID | REJECTED | ERROR:  DATASET_MANIFEST_INVALID: манифест не по схеме ac-dataset-manifest/0.1: состав полей манифеста
+NR05 | DATASET_MANIFEST_INVALID | REJECTED | ERROR:  DATASET_MANIFEST_INVALID: манифест не по схеме ac-dataset-manifest/0.1: manifest_format
+NR06 | DATASET_MANIFEST_INVALID | REJECTED | ERROR:  DATASET_MANIFEST_INVALID: манифест не по схеме ac-dataset-manifest/0.1: имя колонки повторяется
+NR07 | DATASET_MANIFEST_INVALID | REJECTED | ERROR:  DATASET_MANIFEST_INVALID: манифест не по схеме ac-dataset-manifest/0.1: ключ набора называет колонку, которой нет
+NR08 | DATASET_MANIFEST_INVALID | REJECTED | ERROR:  DATASET_MANIFEST_INVALID: манифест не по схеме ac-dataset-manifest/0.1: row_count не равен сумме строк файлов
+NR09 | DATASET_MANIFEST_INVALID | REJECTED | ERROR:  DATASET_MANIFEST_INVALID: манифест не по схеме ac-dataset-manifest/0.1: схема идентификатора — только у строковой колонки
+NR10 | DATASET_MANIFEST_INVALID | REJECTED | ERROR:  DATASET_MANIFEST_INVALID: tenant манифеста не равен tenant источника
+NR11 | DATASET_MANIFEST_INVALID | REJECTED | ERROR:  DATASET_MANIFEST_INVALID: манифест не по схеме ac-dataset-manifest/0.1: row_count
+NR12 | DATASET_MANIFEST_INVALID | REJECTED | ERROR:  DATASET_MANIFEST_INVALID: previous — не версия того же набора данных того же tenant
+NR13 | DATASET_MANIFEST_INVALID | REJECTED | ERROR:  DATASET_MANIFEST_INVALID: previous — не версия того же набора данных того же tenant
+NR15 | DATASET_MANIFEST_INVALID | REJECTED | ERROR:  DATASET_MANIFEST_INVALID: манифест не по схеме ac-dataset-manifest/0.1: subject называет колонку, которой нет или которая не идентиф
+NR16 | DATASET_MANIFEST_INVALID | REJECTED | ERROR:  DATASET_MANIFEST_INVALID: манифест не по схеме ac-dataset-manifest/0.1: subject называет колонку, которой нет или которая не идентиф
+NR17 | DATASET_MANIFEST_INVALID | REJECTED | ERROR:  DATASET_MANIFEST_INVALID: манифест не по схеме ac-dataset-manifest/0.1: колонка не по схеме манифеста
+NR18 | DATASET_MANIFEST_INVALID | REJECTED | ERROR:  DATASET_MANIFEST_INVALID: манифест не по схеме ac-dataset-manifest/0.1: файл не по схеме манифеста
+NR19 | DATASET_MANIFEST_INVALID | REJECTED | ERROR:  DATASET_MANIFEST_INVALID: манифест не JSON в UTF-8
+NR1E | DATASET_MANIFEST_INVALID | REJECTED | ERROR:  DATASET_MANIFEST_INVALID: манифест не по схеме ac-dataset-manifest/0.1: row_count
+NR1A | SCHEMA_INVALID | REJECTED | ERROR:  SCHEMA_INVALID: версия набора данных — запись core-ontology/0.4 с типом содержимого манифеста
+NR1B | SCHEMA_INVALID | REJECTED | ERROR:  SCHEMA_INVALID: версия набора данных — запись core-ontology/0.4 с типом содержимого манифеста
+NR1C | SCHEMA_INVALID | REJECTED | ERROR:  SCHEMA_INVALID: schema_version: доказательство-строка — только в записи core-ontology/0.4
+NR1F | SCHEMA_INVALID | ACCEPTED | 
+NR1D | SOURCE_CONTENT_UNAVAILABLE | REJECTED | ERROR:  SOURCE_CONTENT_UNAVAILABLE: src:sha256:4d78086272890fea3481e758b65d40fe4325a42dfb1829d3b4fb0ffd968abf42
+NR20 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: доказательство-строка ссылается на источник, который не версия набора данных
+NR21 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ячейки не совпадают с колонками манифеста (состав или порядок)
+NR22 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ячейки не совпадают с колонками манифеста (состав или порядок)
+NR23 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ячейки не совпадают с колонками манифеста (состав или порядок)
+NR24 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: хэш строки не равен корню дерева её ячеек
+NR25 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: хэш строки не равен корню дерева её ячеек
+NR26 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: хэш строки не равен корню дерева её ячеек
+NR27 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: хэш строки не равен корню дерева её ячеек
+NR28 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: строка не входит в файл версии набора (доказательство включения не сходится)
+NR29 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: строка не входит в файл версии набора (доказательство включения не сходится)
+NR30 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: строка не входит в файл версии набора (доказательство включения не сходится)
+NR31 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: строка не входит в файл версии набора (доказательство включения не сходится)
+NR32 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: в манифесте нет файла с таким номером
+NR33 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: строка не входит в файл версии набора (доказательство включения не сходится)
+NR34 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: строка не входит в файл версии набора (доказательство включения не сходится)
+NR35 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: строка не входит в файл версии набора (доказательство включения не сходится)
+NR36 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: строка не входит в файл версии набора (доказательство включения не сходится)
+NR37 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: строка не входит в файл версии набора (доказательство включения не сходится)
+NR38 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: строка не входит в файл версии набора (доказательство включения не сходится)
+NR39 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: строка не входит в файл версии набора (доказательство включения не сходится)
+NR3A | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: строка не входит в файл версии набора (доказательство включения не сходится)
+NR40 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ключ строки: колонки ключа должны быть процитированы, а row_key — равен их значениям
+NR41 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ключ строки: колонки ключа должны быть процитированы, а row_key — равен их значениям
+NR42 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ключ строки: колонки ключа должны быть процитированы, а row_key — равен их значениям
+NR43 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: у набора без ключа строка называется своим хэшем, row_key не указывается
+NR44 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ключ строки: колонки ключа должны быть процитированы, а row_key — равен их значениям
+NR45 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ключ строки: колонки ключа должны быть процитированы, а row_key — равен их значениям
+NR50 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: значение колонки employees не типа INTEGER
+NR51 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: значение колонки active не типа BOOLEAN
+NR52 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: значение колонки employees не типа INTEGER
+NR53 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: значение колонки registered_on не типа DATE
+NR54 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: значение колонки registered_on не типа DATE
+NR55 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  unsupported Unicode escape sequence
+NR56 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: значение колонки name не типа STRING
+NR60 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: строка не о субъекте утверждения: ни один процитированный идентификатор субъекта строки не принадлежит ему
+NR61 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: строка не о субъекте утверждения: идентификатор субъекта строки расходится с идентификатором субъекта
+NR62 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: строка не о субъекте утверждения: ни один процитированный идентификатор субъекта строки не принадлежит ему
+NR63 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: строка не о субъекте утверждения: ни один процитированный идентификатор субъекта строки не принадлежит ему
+NR65 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: набор не объявляет субъект строки (subject) — его строка не может подтверждать утверждение о сущности
+NR64 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: строка не о субъекте утверждения: ни один процитированный идентификатор субъекта строки не принадлежит ему
+NR70 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+NR71 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+NR72 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+NR73 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+NR74 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+NR75 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+NR76 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+NR77 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+NR78 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+NR79 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+NR7A | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+NR46 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ключ строки: колонки ключа должны быть процитированы, а row_key — равен их значениям
+NR47 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ячейки не совпадают с колонками манифеста (состав или порядок)
+NR3B | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: строка не входит в файл версии набора (доказательство включения не сходится)
+NR7B | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+NR7C | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+NR66 | REF_UNRESOLVED | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки сущности
+NR7D | REF_UNRESOLVED | REJECTED | ERROR:  insert or update on table "claims" violates foreign key constraint "claims_project_id_object_entity_fkey"
+NR48 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ячейки не совпадают с колонками манифеста (состав или порядок)
+NR1G | DATASET_MANIFEST_INVALID | REJECTED | ERROR:  DATASET_MANIFEST_INVALID: колонка объявлена для предиката entity.no_such, которого нет ни в реестре, ни в схеме tenant к моменту пол
+NR1H | DATASET_MANIFEST_INVALID | REJECTED | ERROR:  DATASET_MANIFEST_INVALID: колонка объявлена для предиката x.no_such, которого нет ни в реестре, ни в схеме tenant к моменту получени
+NR1I | DATASET_MANIFEST_INVALID | REJECTED | ERROR:  DATASET_MANIFEST_INVALID: колонка объявлена для предиката x.note, которого нет ни в реестре, ни в схеме tenant к моменту получения в
+NR1J | DATASET_MANIFEST_INVALID | REJECTED | ERROR:  DATASET_MANIFEST_INVALID: колонка объявлена для предиката x.note, которого нет ни в реестре, ни в схеме tenant к моменту получения в
+NRF1 | DATASET_MANIFEST_INVALID | ACCEPTED | 
+NRF2 | DATASET_MANIFEST_INVALID | ACCEPTED | 
+NRF3 | DATASET_MANIFEST_INVALID | ACCEPTED | 
+NRF4 | DATASET_MANIFEST_INVALID | ACCEPTED | 
+NRF5 | DATASET_MANIFEST_INVALID | ACCEPTED | 
+NRF6 | DATASET_MANIFEST_INVALID | ACCEPTED | 
+NRF7 | DATASET_MANIFEST_INVALID | ACCEPTED | 
+NRF8 | DATASET_MANIFEST_INVALID | ACCEPTED | 
+NRF9 | DATASET_MANIFEST_INVALID | ACCEPTED | 
+NRFA | DATASET_MANIFEST_INVALID | ACCEPTED | 
+NRFB | DATASET_MANIFEST_INVALID | ACCEPTED | 
+NRFD | DATASET_MANIFEST_INVALID | ACCEPTED | 
+NRFE | DATASET_MANIFEST_INVALID | ACCEPTED | 
+NRFF | DATASET_MANIFEST_INVALID | ACCEPTED | 
+NRFG | DATASET_MANIFEST_INVALID | ACCEPTED | 
+NRFL | DATASET_MANIFEST_INVALID | ACCEPTED | 
+NRFM | DATASET_MANIFEST_INVALID | ACCEPTED | 
+NRFN | DATASET_MANIFEST_INVALID | ACCEPTED | 
+NRFO | DATASET_MANIFEST_INVALID | ACCEPTED | 
+NRFH | DATASET_MANIFEST_INVALID | ACCEPTED | 
+NRFI | DATASET_MANIFEST_INVALID | ACCEPTED | 
+NRFJ | DATASET_MANIFEST_INVALID | ACCEPTED | 
+NRFK | DATASET_MANIFEST_INVALID | ACCEPTED | 
+NR80 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки колонки director
+NR81 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки колонки employees
+NR82 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки источника
+NR83 | TEMPORAL_ORDER_INVALID | REJECTED | ERROR:  TEMPORAL_ORDER_INVALID: утверждение записано раньше, чем получен источник
+NR84 | CROSS_SCOPE_REFERENCE | REJECTED | ERROR:  CROSS_SCOPE_REFERENCE: источник не найден в tenant утверждения
 
 код ошибки | отвергнуто БД | принято БД | не представимо в SQL
 ARTIFACT_INVALID | 23 | 1 | 0
@@ -418,17 +533,19 @@ CHECK_SUBJECT_INVALID | 6 | 0 | 0
 CLAIM_ID_MISMATCH | 0 | 1 | 0
 CLAIM_REVIEW_AMBIGUOUS | 1 | 0 | 0
 CLASS_NOT_INSTANTIABLE | 2 | 0 | 0
-CROSS_SCOPE_REFERENCE | 8 | 0 | 0
+CROSS_SCOPE_REFERENCE | 9 | 0 | 0
+DATASET_MANIFEST_INVALID | 23 | 23 | 0
 DUPLICATE_ID | 4 | 0 | 0
 ENTITY_DUPLICATE_IN_PROJECT | 51 | 0 | 0
 ENTITY_IDENTITY_INSUFFICIENT | 10 | 0 | 0
 ENTITY_MERGE_INVALID | 8 | 0 | 0
+EVIDENCE_ROW_INVALID | 57 | 0 | 0
 EVIDENCE_SPAN_INVALID | 8 | 0 | 0
 GRAPH_NODE_INVALID | 27 | 0 | 0
 IDENTIFIER_CHECKSUM_INVALID | 10 | 0 | 0
 IDENTIFIER_SCHEME_INVALID | 6 | 0 | 0
 IDENTITY_DECISION_INVALID | 7 | 0 | 0
-MARKING_BROADER_THAN_INPUT | 17 | 0 | 0
+MARKING_BROADER_THAN_INPUT | 20 | 0 | 0
 MARKING_PD_MISSING | 1 | 0 | 0
 ORIGINAL_INVALID | 6 | 0 | 0
 PREDICATE_DOMAIN_VIOLATION | 6 | 0 | 0
@@ -440,13 +557,13 @@ RECEIPT_CLAIM_BINDING_INVALID | 10 | 0 | 1
 RECEIPT_ID_MISMATCH | 0 | 1 | 0
 RECEIPT_KEY_INVALID | 11 | 1 | 0
 RECEIPT_SIGNATURE_INVALID | 0 | 1 | 0
-REF_UNRESOLVED | 25 | 0 | 3
+REF_UNRESOLVED | 27 | 0 | 3
 SCHEMA_CHANGE_INVALID | 22 | 0 | 0
 SCHEMA_DEF_INVALID | 14 | 0 | 0
-SCHEMA_INVALID | 18 | 11 | 4
-SOURCE_CONTENT_UNAVAILABLE | 2 | 0 | 0
+SCHEMA_INVALID | 21 | 12 | 4
+SOURCE_CONTENT_UNAVAILABLE | 3 | 0 | 0
 SOURCE_DIGEST_MISMATCH | 4 | 1 | 0
-TEMPORAL_ORDER_INVALID | 15 | 0 | 0
+TEMPORAL_ORDER_INVALID | 16 | 0 | 0
 TRUST_CONFIG_INVALID | 5 | 1 | 0
 
-negative_vectors=404 rejected_by_db=380 accepted_by_db=17 not_representable=7
+negative_vectors=519 rejected_by_db=471 accepted_by_db=41 not_representable=7

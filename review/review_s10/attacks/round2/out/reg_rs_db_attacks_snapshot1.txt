@@ -1,0 +1,26 @@
+D01  held    P0 | DELETE ключа идентичности освобождает ОГРН: вторая ACTIVE-карточка той же организации | ERROR:  permission denied for table entity_keys
+D02  held    P0 | сущность без строк entity_keys: БД не выводит ключи из identity, дубль Ломова (тот же ИНН) принят | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: ru.inn уже принадлежит другой сущности проекта
+D03  held    P0 | UPDATE ключа (значение/тип) и ложный ИНН для told_apart: слабый ключ обойдён | ERROR:  permission denied for table entity_keys
+D04  FINDING P1 | омоним после неквалифицированного оригинала: пометка у новой сущности не помогает, а старую нельзя изменить (ENTITY_IMMUTABLE) | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: concept совпадает у ent_wk_blue_colour и ent_wk_blue2
+D04b FINDING P1 | ... и исправить оригинал (добавить ему disambiguator) база не даёт | ERROR:  permission denied for table entities
+D05  held    P0 | обход pg_trigger_depth(): доказательство, которого нет в теле утверждения, вписано через триггер временной таблицы | ERROR:  permission denied to create temporary tables in database "review10_r"
+D06  held    P0 | повышение маркировки источника UPDATE-ом: существующие PUBLIC-утверждения теперь шире источника; понижение = рассекречивание | ERROR:  permission denied for table sources
+D07  held    P1 | DELETE байтов источника, на которые ссылаются доказательства; UPDATE byte_length | ERROR:  permission denied for table source_bytes
+D08  held    P1 | системное время наблюдений: UPDATE observed_at в будущее / DELETE наблюдений (INSERT штампуется, UPDATE/DELETE нет) | ERROR:  permission denied for table source_observations
+D09  held    P0 | Проверка завершена UPDATE-ом с утверждением REFUTED (ACCEPTED на момент завершения не проверяется на этом пути) | ERROR:  CHECK_CLAIM_NOT_ACCEPTED_AT_COMPLETION: chk_rs09
+D10  held    P0 | понижение маркировки открытой Проверки после привязки RESTRICTED-утверждения, затем завершение | ERROR:  permission denied for table checks
+D11  held    P1 | смена субъекта открытой Проверки после привязки утверждений, затем завершение | ERROR:  permission denied for table checks
+D12  held    P1 | тело Проверки расходится с колонками и строками; requested_at задним числом делает 25-летний «поиск» допустимым | ERROR:  CHECK_IMMUTABLE: у Проверки меняются только статус и итог
+D13  held    P2 | дописать след поиска в ЗАКРЫТУЮ Проверку (строки check_searches не защищены CHECK_CLOSED) | ERROR:  CHECK_CLOSED: в закрытую Проверку нельзя дописывать след поиска
+D23  FINDING P1 | cancelled_at задаёт пишущий: Проверка отменена «в 2099 году» (completed_at штампуется, cancelled_at — нет) | COMMIT | chk_tenders_1: CANCELLED cancelled_at=2026-10-02 23:59:26.415702+03
+D14  held    P1 | живая роль меняет реестр: профиль FULL из одного измерения, domain person.birth_date += ORGANIZATION, продукт проекта Compliance | ERROR:  permission denied for table check_profiles
+D15  held    P1 | receipt: строки receipt_claims/receipt_inputs не связаны с подписанным телом (emitted_claim_ids, input_source_ids); подпись — мусор | ERROR:  duplicate key value violates unique constraint "claim_evidence_one_node"
+D16  held    P1 | цепочка слияний: выживший Ломов слит в новую карточку; дубль остаётся merged_into MERGED-сущности (валидатор такой набор отвергает) | ERROR:  ENTITY_MERGE_INVALID: ent_d_lomov: в неё уже слиты дубли — цепочки слияний запрещены
+D17  FINDING P2 | created_at сущности задаёт пишущий: будущее 2099 принято и навсегда блокирует слияние/вывод этой сущности | COMMIT
+D17b FINDING P2 | ... попытка вывести её из оборота | COMMIT
+D18  FINDING P2 | окно 5 минут: живое утверждение с recorded_at на 4 минуты раньше транзакции принято | COMMIT | recorded_at - ingested_at = -00:04:00.586384
+D19  held    P1 | модель ролей харнесса: после SET ROLE ac_loader (сессия суперпользователя) можно SET ROLE ac_migrator и писать историю | ERROR:  TEMPORAL_ORDER_INVALID: история до 2026-10-02 23:59:34.611749+03 запечатана
+D19b ok      - | контроль: при SET SESSION AUTHORIZATION ac_loader переход в ac_migrator запрещён | ERROR:  permission denied to set role "ac_migrator"
+D20  held    P2 | ac_migrator задним числом меняет основание ЗАКРЫТОЙ Проверки (REFUTED за 30 с до её завершения) — окно истории не ограничено | ERROR:  TEMPORAL_ORDER_INVALID: история до 2026-10-02 23:59:36.943511+03 запечатана
+D21  held    P2 | ac_trust_admin задним числом снимает отзыв и подменяет открытый ключ (реестр доверия не версионируется) | ERROR:  permission denied for table keys
+D22 held    P1 | гонка слабых ключей: два параллельных INSERT без блокировки | s1=COMMIT s2=ERROR:  ENTITY_DUPLICATE_IN_PROJECT: person.fio_dob совпадае | владельцев слабого ключа иванов иван|1980-01-01 (оба без пометки): 1 | контроль (третий, последовательно): ERROR:  ENTITY_DUPLICATE_IN_PROJECT: person.fio_dob совпадает у ent_ra

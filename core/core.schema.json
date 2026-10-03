@@ -1,7 +1,7 @@
 {
  "$schema": "https://json-schema.org/draft/2020-12/schema",
- "$id": "urn:as:core-ontology:0.3",
- "title": "Архитектура семантики — онтология ядра v0.3 (dataset)",
+ "$id": "urn:as:core-ontology:0.4",
+ "title": "Архитектура семантики — онтология ядра v0.4 (dataset)",
  "type": "object",
  "additionalProperties": false,
  "required": [
@@ -14,7 +14,10 @@
    "const": "core-dataset/0.3"
   },
   "ontology_version": {
-   "const": "core-ontology/0.3"
+   "enum": [
+    "core-ontology/0.3",
+    "core-ontology/0.4"
+   ]
   },
   "records": {
    "type": "array",
@@ -173,7 +176,8 @@
     "schema_version": {
      "enum": [
       "core-ontology/0.2",
-      "core-ontology/0.3"
+      "core-ontology/0.3",
+      "core-ontology/0.4"
      ]
     }
    },
@@ -428,7 +432,8 @@
       "REGISTRY_EXTRACT",
       "REGISTRY_SEARCH_RESULT",
       "WEB_PAGE",
-      "ANALYST_NOTE"
+      "ANALYST_NOTE",
+      "DATASET_VERSION"
      ]
     },
     "media_type": {
@@ -503,7 +508,31 @@
     "marking": {
      "$ref": "#/$defs/Marking"
     }
-   }
+   },
+   "allOf": [
+    {
+     "if": {
+      "properties": {
+       "source_kind": {
+        "const": "DATASET_VERSION"
+       }
+      },
+      "required": [
+       "source_kind"
+      ]
+     },
+     "then": {
+      "properties": {
+       "schema_version": {
+        "const": "core-ontology/0.4"
+       },
+       "media_type": {
+        "const": "application/vnd.ac.dataset-manifest+json"
+       }
+      }
+     }
+    }
+   ]
   },
   "Entity": {
    "type": "object",
@@ -777,7 +806,10 @@
      "then": {
       "properties": {
        "schema_version": {
-        "const": "core-ontology/0.3"
+        "enum": [
+         "core-ontology/0.3",
+         "core-ontology/0.4"
+        ]
        }
       }
      }
@@ -1341,61 +1373,180 @@
      "type": "array",
      "minItems": 1,
      "items": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-       "source_id",
-       "span",
-       "quote_sha256"
-      ],
-      "properties": {
-       "source_id": {
-        "$ref": "#/$defs/SourceId"
-       },
-       "span": {
+      "oneOf": [
+       {
         "type": "object",
         "additionalProperties": false,
         "required": [
-         "start",
-         "end"
+         "source_id",
+         "span",
+         "quote_sha256"
         ],
         "properties": {
-         "start": {
-          "type": "integer",
-          "minimum": 0
+         "source_id": {
+          "$ref": "#/$defs/SourceId"
          },
-         "end": {
-          "type": "integer",
-          "minimum": 1
+         "span": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+           "start",
+           "end"
+          ],
+          "properties": {
+           "start": {
+            "type": "integer",
+            "minimum": 0
+           },
+           "end": {
+            "type": "integer",
+            "minimum": 1
+           }
+          }
+         },
+         "quote": {
+          "type": "string",
+          "minLength": 1
+         },
+         "quote_sha256": {
+          "$ref": "#/$defs/Sha256Hex"
+         },
+         "graph_node": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+           "artifact_digest",
+           "node_id"
+          ],
+          "properties": {
+           "artifact_digest": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+           },
+           "node_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_.:-]{1,128}$"
+           }
+          }
          }
+        },
+        "not": {
+         "required": [
+          "kind"
+         ]
         }
        },
-       "quote": {
-        "type": "string",
-        "minLength": 1
-       },
-       "quote_sha256": {
-        "$ref": "#/$defs/Sha256Hex"
-       },
-       "graph_node": {
+       {
         "type": "object",
         "additionalProperties": false,
         "required": [
-         "artifact_digest",
-         "node_id"
+         "kind",
+         "source_id",
+         "row_sha256",
+         "cells",
+         "proof"
         ],
         "properties": {
-         "artifact_digest": {
-          "type": "string",
-          "pattern": "^sha256:[0-9a-f]{64}$"
+         "kind": {
+          "const": "ROW"
          },
-         "node_id": {
-          "type": "string",
-          "pattern": "^[A-Za-z0-9_.:-]{1,128}$"
+         "source_id": {
+          "$ref": "#/$defs/SourceId"
+         },
+         "row_key": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+           "type": [
+            "string",
+            "integer",
+            "boolean"
+           ]
+          }
+         },
+         "row_sha256": {
+          "$ref": "#/$defs/Sha256Hex"
+         },
+         "cells": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 512,
+          "items": {
+           "oneOf": [
+            {
+             "type": "object",
+             "additionalProperties": false,
+             "required": [
+              "name",
+              "value",
+              "salt"
+             ],
+             "properties": {
+              "name": {
+               "$ref": "#/$defs/ColumnName"
+              },
+              "value": {
+               "type": [
+                "string",
+                "integer",
+                "boolean",
+                "null"
+               ]
+              },
+              "salt": {
+               "$ref": "#/$defs/Sha256Hex"
+              }
+             }
+            },
+            {
+             "type": "object",
+             "additionalProperties": false,
+             "required": [
+              "name",
+              "leaf"
+             ],
+             "properties": {
+              "name": {
+               "$ref": "#/$defs/ColumnName"
+              },
+              "leaf": {
+               "$ref": "#/$defs/Sha256Hex"
+              }
+             }
+            }
+           ]
+          }
+         },
+         "proof": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+           "file",
+           "index",
+           "hashes"
+          ],
+          "properties": {
+           "file": {
+            "type": "integer",
+            "minimum": 0
+           },
+           "index": {
+            "type": "integer",
+            "minimum": 0
+           },
+           "hashes": {
+            "type": "array",
+            "maxItems": 64,
+            "items": {
+             "$ref": "#/$defs/Sha256Hex"
+            }
+           }
+          }
          }
         }
        }
-      }
+      ]
      }
     },
     "produced_by": {
@@ -1460,7 +1611,10 @@
      "then": {
       "properties": {
        "schema_version": {
-        "const": "core-ontology/0.3"
+        "enum": [
+         "core-ontology/0.3",
+         "core-ontology/0.4"
+        ]
        }
       }
      }
@@ -1511,7 +1665,38 @@
      "then": {
       "properties": {
        "schema_version": {
-        "const": "core-ontology/0.3"
+        "enum": [
+         "core-ontology/0.3",
+         "core-ontology/0.4"
+        ]
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "evidence": {
+        "contains": {
+         "properties": {
+          "kind": {
+           "const": "ROW"
+          }
+         },
+         "required": [
+          "kind"
+         ]
+        }
+       }
+      },
+      "required": [
+       "evidence"
+      ]
+     },
+     "then": {
+      "properties": {
+       "schema_version": {
+        "const": "core-ontology/0.4"
        }
       }
      }
@@ -2437,7 +2622,10 @@
      "const": "ClassDef"
     },
     "schema_version": {
-     "const": "core-ontology/0.3"
+     "enum": [
+      "core-ontology/0.3",
+      "core-ontology/0.4"
+     ]
     },
     "class_id": {
      "$ref": "#/$defs/SchemaDefId"
@@ -2503,7 +2691,10 @@
      "const": "LinkDef"
     },
     "schema_version": {
-     "const": "core-ontology/0.3"
+     "enum": [
+      "core-ontology/0.3",
+      "core-ontology/0.4"
+     ]
     },
     "link_id": {
      "$ref": "#/$defs/SchemaDefId"
@@ -2570,7 +2761,10 @@
      "const": "IdentifierDef"
     },
     "schema_version": {
-     "const": "core-ontology/0.3"
+     "enum": [
+      "core-ontology/0.3",
+      "core-ontology/0.4"
+     ]
     },
     "idef_id": {
      "$ref": "#/$defs/SchemaDefId"
@@ -2837,6 +3031,162 @@
      }
     ]
    }
+  },
+  "ColumnName": {
+   "type": "string",
+   "pattern": "^[a-z][a-z0-9_]{0,62}$"
+  },
+  "DatasetManifest": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "manifest_format",
+    "dataset_id",
+    "tenant_id",
+    "version_label",
+    "columns",
+    "key",
+    "row_count",
+    "files"
+   ],
+   "properties": {
+    "manifest_format": {
+     "const": "ac-dataset-manifest/0.1"
+    },
+    "dataset_id": {
+     "type": "string",
+     "pattern": "^dst_[a-z0-9_]{2,64}$"
+    },
+    "tenant_id": {
+     "$ref": "#/$defs/TenantId"
+    },
+    "version_label": {
+     "$ref": "#/$defs/NonEmpty"
+    },
+    "previous": {
+     "$ref": "#/$defs/SourceId"
+    },
+    "columns": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 512,
+     "items": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "name",
+       "type",
+       "marking"
+      ],
+      "properties": {
+       "name": {
+        "$ref": "#/$defs/ColumnName"
+       },
+       "type": {
+        "enum": [
+         "STRING",
+         "INTEGER",
+         "BOOLEAN",
+         "DATE"
+        ]
+       },
+       "marking": {
+        "$ref": "#/$defs/Marking"
+       },
+       "identifier_scheme": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9.]{1,40}$"
+       },
+       "predicate": {
+        "type": "string",
+        "pattern": "^[a-z]+\\.[a-z_]+$"
+       }
+      }
+     }
+    },
+    "key": {
+     "type": "array",
+     "maxItems": 8,
+     "uniqueItems": true,
+     "items": {
+      "$ref": "#/$defs/ColumnName"
+     }
+    },
+    "row_count": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "files": {
+     "type": "array",
+     "maxItems": 100000,
+     "items": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "object",
+       "byte_length",
+       "rows",
+       "rows_root"
+      ],
+      "properties": {
+       "object": {
+        "type": "string",
+        "pattern": "^sha256:[0-9a-f]{64}$"
+       },
+       "byte_length": {
+        "type": "integer",
+        "minimum": 1
+       },
+       "rows": {
+        "type": "integer",
+        "minimum": 1
+       },
+       "rows_root": {
+        "$ref": "#/$defs/Sha256Hex"
+       }
+      }
+     }
+    },
+    "subject": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 8,
+     "uniqueItems": true,
+     "items": {
+      "$ref": "#/$defs/ColumnName"
+     }
+    }
+   }
   }
- }
+ },
+ "allOf": [
+  {
+   "if": {
+    "properties": {
+     "ontology_version": {
+      "const": "core-ontology/0.3"
+     }
+    },
+    "required": [
+     "ontology_version"
+    ]
+   },
+   "then": {
+    "properties": {
+     "records": {
+      "items": {
+       "properties": {
+        "schema_version": {
+         "enum": [
+          "core-ontology/0.2",
+          "core-ontology/0.3"
+         ]
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ ]
 }

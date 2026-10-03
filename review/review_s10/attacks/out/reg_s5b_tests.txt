@@ -1,0 +1,13 @@
+LOAD: OK artifact_nodes=10 artifacts=1 checks=4 claims=38 class_closure=7 class_defs=5 decisions=2 entities=28 entity_keys=45 evidence=41 identifier_defs=1 link_defs=1 projects=6 receipts=1 reviews=8 schema_predicates=4 seals=1 sources=17
+KEYS PARITY (DB-derived == validator): OK rows=45
+S6-01  PASS | мир: у первого забора статьи есть оригинал страницы; проекция показывает тип, размер и состояние «цел» | scrub={'OK': 1, 'MISSING': 0, 'CORRUPT': 0} originals=[('OK', 679, 2)]
+S6-02  PASS | живая запись: шлюз сохранил оригинал с проверкой чтением и зарегистрировал; наблюдение с оригиналом принято; повтор — тот же объект | db=OK objects=2
+S6-03  PASS | оригинал повреждён в хранилище: проверка записала «повреждён», проекция показывает; на момент до проверки — «цел»; новое наблюдение на повреждённый оригинал отвергнуто | scrub={'OK': 1, 'MISSING': 0, 'CORRUPT': 1} now=['CORRUPT'] before=['OK'] | ERROR:  ORIGINAL_INVALID: оригинал повреждён или утрачен по последней 
+S6-04  PASS | оригинал исчез из хранилища: «утрачен» | {'OK': 1, 'MISSING': 1, 'CORRUPT': 0}
+S6-05  PASS | после восстановления из копии следующая проверка — «цел»; история проверок хранит происшествие | OK,OK,CORRUPT,MISSING,OK
+S6-06  PASS | доказательство не зависит от оригинала: при утраченном оригинале цитата по-прежнему сверяется с текстом в базе
+S6-07  PASS | без допуска и для неизвестного утверждения — один и тот же отказ | [True, True]
+
+s5b_tests=7 passed=7
+S5B_RESULT=PASS
+exit=0

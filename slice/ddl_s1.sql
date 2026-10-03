@@ -557,9 +557,11 @@ CREATE TRIGGER claims_before BEFORE INSERT ON ac.claims FOR EACH ROW EXECUTE FUN
 -- evidence rows come ONLY from the claim body (no second, editable version of provenance — ONT-03)
 CREATE FUNCTION ac.claims_after() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = ac, pg_temp AS $$
 BEGIN
-  INSERT INTO ac.claim_evidence (claim_id, ord, tenant_id, source_id, span_start, span_end, quote_sha256, quote, graph_node)
+  -- a fragment of the bytes of a source, or (cycle 10, D27.4) a ROW of a dataset version: the whole element is kept
+  INSERT INTO ac.claim_evidence (claim_id, ord, tenant_id, source_id, span_start, span_end, quote_sha256, quote, graph_node, kind, row_ev)
   SELECT NEW.claim_id, e.ord - 1, NEW.tenant_id, e.v->>'source_id', (e.v->'span'->>'start')::int, (e.v->'span'->>'end')::int,
-         e.v->>'quote_sha256', e.v->>'quote', e.v->'graph_node'
+         e.v->>'quote_sha256', e.v->>'quote', e.v->'graph_node',
+         CASE WHEN e.v ? 'kind' THEN e.v->>'kind' ELSE 'SPAN' END, CASE WHEN e.v ? 'kind' THEN e.v END
   FROM jsonb_array_elements(NEW.body->'evidence') WITH ORDINALITY AS e(v, ord);
   RETURN NULL;
 END $$;
@@ -571,11 +573,17 @@ CREATE TABLE ac.claim_evidence (
   ord           integer NOT NULL,
   tenant_id     text NOT NULL,
   source_id     text NOT NULL,
-  span_start    integer NOT NULL CHECK (span_start >= 0),
-  span_end      integer NOT NULL,
-  quote_sha256  text NOT NULL CHECK (quote_sha256 ~ '^[0-9a-f]{64}$'),
+  span_start    integer CHECK (span_start >= 0),
+  span_end      integer,
+  quote_sha256  text CHECK (quote_sha256 ~ '^[0-9a-f]{64}$'),
   quote         text,
   graph_node    jsonb,
+  kind          text NOT NULL DEFAULT 'SPAN' CHECK (kind IN ('SPAN', 'ROW')),   -- cycle 10: a fragment of bytes or a row of a dataset
+  row_ev        jsonb,                                  -- the ROW element of the claim body, as stated
+  CONSTRAINT evidence_form CHECK (CASE kind
+      WHEN 'SPAN' THEN span_start IS NOT NULL AND span_end IS NOT NULL AND quote_sha256 IS NOT NULL AND row_ev IS NULL
+      ELSE span_start IS NULL AND span_end IS NULL AND quote_sha256 IS NULL AND quote IS NULL AND graph_node IS NULL
+           AND row_ev IS NOT NULL END),
   PRIMARY KEY (claim_id, ord),
   FOREIGN KEY (claim_id, tenant_id) REFERENCES ac.claims (claim_id, tenant_id),   -- evidence only from the claim's tenant
   FOREIGN KEY (tenant_id, source_id) REFERENCES ac.sources,
@@ -588,9 +596,10 @@ BEGIN
   SELECT * INTO c FROM ac.claims WHERE claim_id = NEW.claim_id;
   -- RS-02: an evidence row is exactly an element of the claim body; nothing else can be attached to a claim
   IF NEW.ord < 0 OR NEW.ord >= jsonb_array_length(c.body->'evidence')
-     OR (c.body->'evidence'->NEW.ord) IS DISTINCT FROM jsonb_strip_nulls(jsonb_build_object(
+     OR (c.body->'evidence'->NEW.ord) IS DISTINCT FROM (CASE WHEN NEW.kind = 'SPAN' THEN jsonb_strip_nulls(jsonb_build_object(
           'source_id', NEW.source_id, 'span', jsonb_build_object('start', NEW.span_start, 'end', NEW.span_end),
-          'quote_sha256', NEW.quote_sha256, 'quote', NEW.quote, 'graph_node', NEW.graph_node)) THEN
+          'quote_sha256', NEW.quote_sha256, 'quote', NEW.quote, 'graph_node', NEW.graph_node)) ELSE NEW.row_ev END)
+     OR (NEW.kind <> 'SPAN' AND NEW.source_id IS DISTINCT FROM NEW.row_ev->>'source_id') THEN
     PERFORM ac.fail('APPEND_ONLY', 'доказательство не совпадает с телом утверждения');
   END IF;
   SELECT * INTO src FROM ac.sources WHERE tenant_id = NEW.tenant_id AND source_id = NEW.source_id;
@@ -601,6 +610,11 @@ BEGIN
   IF b IS NULL THEN
     PERFORM ac.fail('SOURCE_CONTENT_UNAVAILABLE', NEW.source_id);
   END IF;
+  IF NEW.kind = 'ROW' THEN
+    -- cycle 10 (ddl_s10.sql): the row is proved against the manifest of the dataset version; without that file loaded
+    -- the call fails and the claim is refused (fail-closed)
+    PERFORM ac.row_evidence_guard(c, src, NEW.row_ev);
+  ELSE
   IF NEW.span_end > length(b) THEN
     PERFORM ac.fail('EVIDENCE_SPAN_INVALID', 'фрагмент за пределами байтов источника');
   END IF;
@@ -615,6 +629,7 @@ BEGIN
   END;
   IF NEW.quote IS NOT NULL AND NEW.quote <> q THEN
     PERFORM ac.fail('EVIDENCE_SPAN_INVALID', 'quote не совпадает с байтами');
+  END IF;
   END IF;
   IF NEW.graph_node IS NOT NULL AND c.produced_kind = 'HUMAN' THEN
     PERFORM ac.fail('RECEIPT_CLAIM_BINDING_INVALID', 'узел графа допустим только у PIPELINE-утверждения');
@@ -1011,7 +1026,7 @@ SELECT c.project_id, c.claim_id, c.subject, c.predicate, c.body->'object' AS obj
 FROM ac.claims c
 JOIN ac.claim_evidence e USING (claim_id)
 JOIN ac.sources s ON s.tenant_id = e.tenant_id AND s.source_id = e.source_id
-JOIN ac.source_bytes b ON b.tenant_id = e.tenant_id AND b.source_id = e.source_id;
+JOIN ac.source_bytes b ON b.tenant_id = e.tenant_id AND b.source_id = e.source_id;   -- rows of datasets: ddl_s10.sql
 
 -- ---------------------------------------------------------------- privileges (least privilege)
 REVOKE ALL ON ALL TABLES IN SCHEMA ac, ac_trust FROM PUBLIC, ac_loader, ac_migrator, ac_trust_admin;

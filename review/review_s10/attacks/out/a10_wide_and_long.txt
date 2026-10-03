@@ -1,0 +1,18 @@
+== W1. Наборы шире 100 колонок: печать проходит, а чтение строки и доказательство от базы?
+   100 колонок: манифест принят, загрузка и печать: ок {'copy_s': 0.11, 'seal_s': 0.04}
+      ac.dataset_row      -> ок
+      ac.dataset_evidence -> ок, знаков 9660
+      утверждение на строке (доказательство производителя, 9241 знаков): валидатор — ПРИНЯТО | база — ПРИНЯТО
+   101 колонок: манифест принят, загрузка и печать: ок {'copy_s': 0.12, 'seal_s': 0.07}
+      ac.dataset_row      -> ERROR:  cannot pass more than 100 arguments to a function
+      ac.dataset_evidence -> ERROR:  cannot pass more than 100 arguments to a function
+      утверждение на строке (доказательство производителя, 9330 знаков): валидатор — ПРИНЯТО | база — ПРИНЯТО
+   512 колонок: манифест принят, загрузка и печать: ок {'copy_s': 0.27, 'seal_s': 0.1}
+      ac.dataset_row      -> ERROR:  cannot pass more than 100 arguments to a function
+      ac.dataset_evidence -> ERROR:  cannot pass more than 100 arguments to a function
+      утверждение на строке (доказательство производителя, 46319 знаков): валидатор — ПРИНЯТО | база — ПРИНЯТО
+== W2. Длинное значение в колонке ключа / идентификатора (строки не ограничены по длине): печать строит b-tree
+   ключ — случайная строка 6000 знаков: манифест принят; печать -> ERROR:  index row size 7752 exceeds btree version 4 maximum 2704 for index "v_18_c_name_idx"
+      а утверждение на эту строку база принимает: ПРИНЯТО
+   идентификатор (не ключ) — случайная строка 6000 знаков: манифест принят; печать -> ERROR:  index row size 7728 exceeds btree version 4 maximum 2704 for index "v_19_c_inn_idx"
+      а утверждение на эту строку база принимает: ПРИНЯТО

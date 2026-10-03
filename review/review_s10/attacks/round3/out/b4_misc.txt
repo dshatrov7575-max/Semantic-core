@@ -1,0 +1,33 @@
+== 1. ac.dataset_reset
+   двойная загрузка: seal — ОТКАЗ: ERROR:  DATASET_LOAD_INVALID: строк загружено 10, в манифесте 5
+   reset читателем — ОТКАЗ: ERROR:  permission denied for function dataset_reset | reset загрузчиком — ПРИНЯТО
+   повторная загрузка: 0 | seal — ПРИНЯТО
+   reset запечатанной — ОТКАЗ: ERROR:  APPEND_ONLY: таблица строк версии не открыта или уже запечатана | reset неоткрытой — ОТКАЗ: ERROR:  APPEND_ONLY: таблица строк версии не открыта или уже запечатана
+   строк в запечатанной таблице после попыток: 5
+   гонка: печать (держит транзакцию 2 с) и сброс — {'seal': 'ПРИНЯТО', 'reset': 'ОТКАЗ: ERROR:  APPEND_ONLY: таблица строк версии не открыта или уже запечатана'} | строк: 5, запечатана: true
+== 2. ac.row_profile_expr: значения, текст которых не тот, что хэшировался
+   манифест '0044-03-15', в таблице '0044-03-15 BC': seal — ОТКАЗ: ERROR:  DATASET_LOAD_INVALID: 1 строк: хэш строки не равен хэшу её ячеек или значение вне про
+   манифест None, в таблице 'infinity': seal — ОТКАЗ: ERROR:  DATASET_LOAD_INVALID: 1 строк: хэш строки не равен хэшу её ячеек или значение вне про
+   манифест None, в таблице '-infinity': seal — ОТКАЗ: ERROR:  DATASET_LOAD_INVALID: 1 строк: хэш строки не равен хэшу её ячеек или значение вне про
+   манифест '0001-01-01', в таблице '0001-01-01 BC': seal — ОТКАЗ: ERROR:  DATASET_LOAD_INVALID: 1 строк: хэш строки не равен хэшу её ячеек или значение вне про
+   манифест '9999-12-31', в таблице '9999-12-31': seal — ПРИНЯТО
+   манифест '0001-01-01', в таблице '0001-01-01': seal — ПРИНЯТО
+== 3. ac.dataset_info
+   ac_rd_none: закрытая версия — ERROR:  ACCESS_DENIED: нет допуска; несуществующая — ERROR:  ACCESS_DENIED: нет допуска; открытая — ERROR:  ACCESS_DENIED: нет допуска
+   ac_rd_cs: закрытая версия — ERROR:  ACCESS_DENIED: нет допуска; несуществующая — ERROR:  ACCESS_DENIED: нет допуска; открытая — выдана, previous = None…
+   ac_rd_full: закрытая версия — выдана; несуществующая — ERROR:  ACCESS_DENIED: нет допуска; открытая — выдана, previous = src:sha256:1448a6bc3e06d3269a3…
+   читателю без PERSONAL_DATA через открытую версию назван адрес закрытой версии (её он читать не может): False
+   поля: ['columns', 'dataset_id', 'files', 'key', 'previous', 'projection', 'row_count', 'rows_loaded', 'source_id', 'subject', 'version_label'] | колонки с маркировкой выше допуска названы: ['director']
+== 4. ac.support_key: семейство — это dataset_id, который набор объявляет о себе сам
+   тот же реестр (те же строки) зарегистрирован под двумя другими dataset_id, то же утверждение на каждой: ПРИНЯТО
+   поддержек адреса девелопера: Московская обл., г. Заречный, ул. Заречная, д. 1 -> 3
+   ключи поддержки: dataset:dst_registry_demo, dataset:dst_registry_demo_copy1, dataset:dst_registry_demo_copy2
+   независимый набор (другие колонки, другой производитель) с тем же dataset_id = dst_registry_demo: ПРИНЯТО — его поддержка сольётся с реестром: ключ dataset:dst_registry_demo
+== 5. ac.claim_provenance для доказательств-строк
+   
+   читатель: ОТКАЗ: ERROR:  permission denied for view claim_provenance
+== 6. Правило конверта
+   конверт 0.3, записи 0.4 (NR1F): ОТКАЗ: SCHEMA_INVALID | 'core-ontology/0.4' is not one of ['core-ontology/0.2', 'core-onto
+   конверт 0.3, у записей 0.4 пометка schema_version снята: ОТКАЗ: SCHEMA_INVALID | 'schema_version' is a required property
+   конверт core-ontology/0.2: ОТКАЗ: SCHEMA_INVALID | 'core-ontology/0.2' is not one of ['core-ontology/0.3', 'core-onto
+   конверт 0.4, запись версии набора помечена 0.3: ОТКАЗ: SCHEMA_INVALID | 'core-ontology/0.4' was expected

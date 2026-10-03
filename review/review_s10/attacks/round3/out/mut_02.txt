@@ -1,0 +1,17 @@
+MR16   KILLED by BASE               манифест читается и у обычного источника
+MR20   KILLED by NR20               строка на источнике, который не версия набора
+MR21   KILLED by NR47               порядок ячеек не проверяется
+MR22   KILLED by NR23               состав ячеек не проверяется
+MR23   KILLED by NR50               тип значения ячейки не проверяется
+MR24   KILLED by NR24               хэш строки не сверяется с ячейками
+MR25   KILLED by NR28               включение строки в файл не проверяется
+MR26   KILLED by BASE               включение: проверяется по хэшу ячеек, а не по листу строки
+MR28   KILLED by NR3A               включение: номер строки вне файла
+MR29   KILLED by NR3B               включение: лишний хэш пути
+MR30   KILLED by NR30               включение: короткий путь
+MR31   KILLED by PR05               включение: правый сосед как левый
+MR32   KILLED by NR45               ключ: колонки ключа могут быть скрыты
+MR33   KILLED by NR41               ключ: row_key не сверяется
+MR34   KILLED by NR43               ключ: row_key у набора без ключа
+
+mutants=507 killed=15 equivalent=0 survived/broken=0
