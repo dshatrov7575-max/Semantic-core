@@ -1,0 +1,134 @@
+sites=2072 sample=133 todo=133
+   13 KILLED    N004 L148 RET return None вместо «return any((55296 <= ord(ch) <= 57343 for ch in s))»
+   33 KILLED    BASE L343 NEG условие отрицается: «'\x00' in t or any((unicodedata.category(ch) == 'Cn' for ch in t))»
+   35 KILLED    BASE L356 NEG условие отрицается: «not m or m.group(1).lower() not in ('http', 'https')»
+   36 KILLED    BASE L359 NEG условие отрицается: «not host»
+   37 KILLED    BASE L361 NEG условие отрицается: «port and (not (scheme, port) in (('http', '80'), ('https', '443')))»
+   44 KILLED    BASE L394 RET return None вместо «return v.isascii() and v.isdigit()»
+   50 KILLED    P931 L418 RET return None вместо «return len(v) in (10, 12) and inn_ok(v)»
+   89 KILLED    BASE L729 NEG условие отрицается: «pr['file'] >= len(m['files'])»
+  108 KILLED    BASE L878 NEG условие отрицается: «R.errors and R.codes() != ['TRUST_CONFIG_INVALID']»
+  151 SURVIVED   L343 BOOL or->and в «'\x00' in t or any((unicodedata.category(ch) == 'Cn' for ch in t))»  [строгая разница на 1 векторах]
+  152 KILLED    BASE L356 BOOL or->and в «not m or m.group(1).lower() not in ('http', 'https')»
+  153 KILLED    BASE L359 NOT удалён not в «not host»
+  154 KILLED    BASE L361 BOOL and->or в «port and (not (scheme, port) in (('http', '80'), ('https', '443')))»
+  156 KILLED    BASE L376 NEG условие отрицается: «host.startswith(pre) and '.' in host[len(pre):]»
+  157 SURVIVED   L394 BOOL and->or в «v.isascii() and v.isdigit()»  [строгая разница на 1 векторах]
+  165 KILLED    N989 L418 BOOL and->or в «len(v) in (10, 12) and inn_ok(v)»
+  170 KILLED    BASE L447 NEG условие отрицается: «not strong and (not weak)»
+  176 KILLED    BASE L557 CMP Lt->LtE в «k * 2 < n»
+  225 KILLED    NR32 L729 CMP GtE->Gt в «pr['file'] >= len(m['files'])»
+  259 KILLED    BASE L878 BOOL and->or в «R.errors and R.codes() != ['TRUST_CONFIG_INVALID']»
+  268 KILLED    BASE L952 NEG условие отрицается: «(tn, class_id) in CLS and CLS[tn, class_id] and (class_id not in out)»
+  288 KILLED    BASE L1101 NEG условие отрицается: «prev in S and S[prev]['tenant_id'] == m['tenant_id'] and (prev not in manifests or manifests[prev][
+  292 KILLED    BASE L1141 NEG условие отрицается: «'published_at' in pb and pb['published_at'] > min((f for _, f in basis))»
+  307 KILLED    BASE L1261 NEG условие отрицается: «c['predicate'] == 'schema.is_a' and lit and (lit['type'] == 'CLASS_REF')»
+  318 KILLED    BASE L1338 NEG условие отрицается: «lit is not None and lit['type'] == 'IDENTIFIER' and lit['scheme'].startswith('x.') and (subj is not
+  329 KILLED    BASE L1548 NEG условие отрицается: «closed_at is not None and (closed_at < k['requested_at'] or k['as_of'] > closed_at[:10])»
+  480 KILLED    BASE L343 CMP In->NotIn в «'\x00' in t»
+  481 KILLED    BASE L356 NOT удалён not в «not m»
+  482 KILLED    BASE L356 CMP NotIn->In в «m.group(1).lower() not in ('http', 'https')»
+  483 KILLED    N612 L361 NOT удалён not в «not (scheme, port) in (('http', '80'), ('https', '443'))»
+  487 KILLED    BASE L376 BOOL and->or в «host.startswith(pre) and '.' in host[len(pre):]»
+  499 KILLED    P931 L418 CMP In->NotIn в «len(v) in (10, 12)»
+  504 KILLED    N092 L447 BOOL and->or в «not strong and (not weak)»
+  517 KILLED    PR05 L572 NEG условие отрицается: «not fn & 1»
+  579 KILLED    N001 L878 CMP NotEq->Eq в «R.codes() != ['TRUST_CONFIG_INVALID']»
+  592 KILLED    BASE L952 BOOL and->or в «(tn, class_id) in CLS and CLS[tn, class_id] and (class_id not in out)»
+  633 KILLED    BASE L1101 BOOL and->or в «prev in S and S[prev]['tenant_id'] == m['tenant_id'] and (prev not in manifests or manifests[prev]['dataset_i
+  642 KILLED    BASE L1131 NEG условие отрицается: «not seen or min(seen) > pb['recorded_at']»
+  648 KILLED    BASE L1141 BOOL and->or в «'published_at' in pb and pb['published_at'] > min((f for _, f in basis))»
+  671 KILLED    BASE L1195 BOOL and->or в «e['status'] == 'MERGED' and e['status_changed_at'] <= d['decided_at']»
+  681 KILLED    BASE L1261 BOOL and->or в «c['predicate'] == 'schema.is_a' and lit and (lit['type'] == 'CLASS_REF')»
+  699 KILLED    BASE L1338 BOOL and->or в «lit is not None and lit['type'] == 'IDENTIFIER' and lit['scheme'].startswith('x.') and (subj is not None)»
+  736 KILLED    BASE L1548 BOOL and->or в «closed_at is not None and (closed_at < k['requested_at'] or k['as_of'] > closed_at[:10])»
+  743 KILLED    BASE L1560 NEG условие отрицается: «(f['result'] == 'FOUND') != bool(f['claim_ids']) or (f['result'] == 'NOT_FOUND' and f['risk'] != 'N
+  744 KILLED    BASE L1562 NEG условие отрицается: «done and (not any((k['requested_at'] <= s['performed_at'] <= k['completed_at'] for s in f['searches
+  761 KILLED    BASE L1653 NEG условие отрицается: «c['recorded_at'] > t»
+  810 KILLED    N040 L1789 NEG условие отрицается: «c is None or c['produced_by']['kind'] != 'PIPELINE'»
+  816 KILLED    N004 L148 CMP LtE->Lt в «55296 <= ord(ch) <= 57343»
+  817 SURVIVED   L148 CMP LtE->Lt в «55296 <= ord(ch) <= 57343»  [строгая разница на 1 векторах]
+  861 KILLED    N612 L361 CMP In->NotIn в «(scheme, port) in (('http', '80'), ('https', '443'))»
+  864 KILLED    N605 L376 CMP In->NotIn в «'.' in host[len(pre):]»
+  877 KILLED    N079 L447 NOT удалён not в «not strong»
+  878 KILLED    N079 L447 NOT удалён not в «not weak»
+  899 KILLED    PR05 L572 NOT удалён not в «not fn & 1»
+  900 KILLED    PR05 L573 NEG условие отрицается: «fn and (not fn & 1)»
+  947 KILLED    BASE L952 CMP In->NotIn в «(tn, class_id) in CLS»
+  948 KILLED    BASE L952 CMP NotIn->In в «class_id not in out»
+  977 KILLED    BASE L1101 CMP In->NotIn в «prev in S»
+  978 KILLED    NR12 L1101 CMP Eq->NotEq в «S[prev]['tenant_id'] == m['tenant_id']»
+  979 KILLED    NR12 L1101 BOOL or->and в «prev not in manifests or manifests[prev]['dataset_id'] != m['dataset_id']»
+  989 KILLED    BASE L1131 BOOL or->and в «not seen or min(seen) > pb['recorded_at']»
+  994 KILLED    N606 L1141 CMP In->NotIn в «'published_at' in pb»
+  995 SURVIVED   L1141 CMP Gt->GtE в «pb['published_at'] > min((f for _, f in basis))»  [строгая разница на 1 векторах]
+ 1013 KILLED    BASE L1195 CMP Eq->NotEq в «e['status'] == 'MERGED'»
+   60 KILLED    (таймаут: зацикливание) L557 NEG условие отрицается: «k * 2 < n»
+ 1023 KILLED    BASE L1239 NEG условие отрицается: «oa == ob»
+ 1024 KILLED    BASE L1243 NEG условие отрицается: «qa is not None and qb is not None and (qa != qb) and (max(ca, cb) >= max(ta or ca, tb or cb))»
+ 1027 KILLED    BASE L1261 CMP Eq->NotEq в «c['predicate'] == 'schema.is_a'»
+ 1028 KILLED    BASE L1261 CMP Eq->NotEq в «lit['type'] == 'CLASS_REF'»
+ 1046 KILLED    BASE L1338 CMP IsNot->Is в «lit is not None»
+ 1047 KILLED    BASE L1338 CMP Eq->NotEq в «lit['type'] == 'IDENTIFIER'»
+ 1048 KILLED    N932 L1338 CMP IsNot->Is в «subj is not None»
+ 1102 KILLED    BASE L1548 CMP IsNot->Is в «closed_at is not None»
+ 1103 KILLED    N154 L1548 BOOL or->and в «closed_at < k['requested_at'] or k['as_of'] > closed_at[:10]»
+ 1014 SURVIVED   L1195 CMP LtE->Lt в «e['status_changed_at'] <= d['decided_at']»  [строгая разница на 1 векторах]
+ 1106 KILLED    BASE L1562 BOOL and->or в «done and (not any((k['requested_at'] <= s['performed_at'] <= k['completed_at'] for s in f['searches'])))»
+ 1119 KILLED    BASE L1606 NEG условие отрицается: «resolve(pv['subject_entity_id']) != subj_id or pv['as_of'] >= k['as_of']»
+ 1122 KILLED    BASE L1624 NOT удалён not в «not key['not_before'] <= t < key['not_after']»
+ 1123 KILLED    BASE L1624 BOOL and->or в «'revoked_at' in key and key['revoked_at'] <= t»
+ 1104 KILLED    N198 L1560 BOOL or->and в «(f['result'] == 'FOUND') != bool(f['claim_ids']) or (f['result'] == 'NOT_FOUND' and f['risk'] != 'NONE')»
+ 1171 KILLED    N040 L1789 BOOL or->and в «c is None or c['produced_by']['kind'] != 'PIPELINE'»
+ 1210 KILLED    BASE L343 CMP Eq->NotEq в «unicodedata.category(ch) == 'Cn'»
+ 1139 KILLED    P248 L1653 CMP Gt->GtE в «c['recorded_at'] > t»
+ 1307 KILLED    NR12 L1101 CMP NotIn->In в «prev not in manifests»
+ 1311 KILLED    BASE L1131 NOT удалён not в «not seen»
+ 1312 SURVIVED   L1131 CMP Gt->GtE в «min(seen) > pb['recorded_at']»  [строгая разница на 1 векторах]
+ 1334 KILLED    BASE L1239 CMP Eq->NotEq в «oa == ob»
+ 1336 KILLED    N092 L1243 BOOL and->or в «qa is not None and qb is not None and (qa != qb) and (max(ca, cb) >= max(ta or ca, tb or cb))»
+ 1382 KILLED    P222 L1503 BOOL and->or в «x.get('valid_from', '0000') <= y.get('valid_to', '9999') and y.get('valid_from', '0000') <= x.get('valid_to',
+ 1385 KILLED    BASE L1543 BOOL or->and в «subj['status'] == 'ACTIVE' or (closed_at is not None and subj['status_changed_at'] > closed_at)»
+ 1390 SURVIVED   L1548 CMP Lt->LtE в «closed_at < k['requested_at']»  [строгая разница на 1 векторах]
+ 1391 KILLED    BASE L1548 CMP Gt->GtE в «k['as_of'] > closed_at[:10]»
+ 1392 KILLED    BASE L1560 CMP NotEq->Eq в «(f['result'] == 'FOUND') != bool(f['claim_ids'])»
+ 1393 KILLED    BASE L1560 BOOL and->or в «f['result'] == 'NOT_FOUND' and f['risk'] != 'NONE'»
+ 1394 KILLED    BASE L1562 NOT удалён not в «not any((k['requested_at'] <= s['performed_at'] <= k['completed_at'] for s in f['searches']))»
+ 1412 KILLED    N216 L1606 BOOL or->and в «resolve(pv['subject_entity_id']) != subj_id or pv['as_of'] >= k['as_of']»
+ 1414 KILLED    BASE L1608 NEG условие отрицается: «pv['status'] != 'COMPLETED' or pv['completed_at'] > k['requested_at']»
+ 1415 KILLED    P237 L1624 CMP LtE->Lt в «key['not_before'] <= t < key['not_after']»
+ 1416 KILLED    N234 L1624 CMP Lt->LtE в «key['not_before'] <= t < key['not_after']»
+ 1417 KILLED    BASE L1624 CMP In->NotIn в «'revoked_at' in key»
+ 1418 KILLED    N232 L1624 CMP LtE->Lt в «key['revoked_at'] <= t»
+ 1433 KILLED    N040 L1789 CMP Is->IsNot в «c is None»
+ 1434 KILLED    N137 L1789 CMP NotEq->Eq в «c['produced_by']['kind'] != 'PIPELINE'»
+ 1536 KILLED    PR05 L573 NOT удалён not в «not fn & 1»
+ 1593 KILLED    BASE L1243 CMP IsNot->Is в «qa is not None»
+ 1594 KILLED    BASE L1243 CMP IsNot->Is в «qb is not None»
+ 1595 KILLED    BASE L1243 CMP NotEq->Eq в «qa != qb»
+ 1596 KILLED    BASE L1243 CMP GtE->Gt в «max(ca, cb) >= max(ta or ca, tb or cb)»
+ 1643 SURVIVED   L1503 CMP LtE->Lt в «x.get('valid_from', '0000') <= y.get('valid_to', '9999')»  [строгая разница на 1 векторах]
+ 1644 SURVIVED   L1504 CMP LtE->Lt в «y.get('valid_from', '0000') <= x.get('valid_to', '9999')»  [строгая разница на 1 векторах]
+ 1646 KILLED    BASE L1543 CMP Eq->NotEq в «subj['status'] == 'ACTIVE'»
+ 1255 KILLED    (таймаут: зацикливание) L573 BOOL and->or в «fn and (not fn & 1)»
+ 1650 KILLED    BASE L1560 CMP Eq->NotEq в «f['result'] == 'FOUND'»
+ 1651 KILLED    BASE L1560 CMP Eq->NotEq в «f['result'] == 'NOT_FOUND'»
+ 1652 KILLED    BASE L1560 CMP NotEq->Eq в «f['risk'] != 'NONE'»
+ 1662 KILLED    BASE L1606 CMP NotEq->Eq в «resolve(pv['subject_entity_id']) != subj_id»
+ 1647 KILLED    N192 L1543 BOOL and->or в «closed_at is not None and subj['status_changed_at'] > closed_at»
+ 1663 KILLED    N220 L1606 CMP GtE->Gt в «pv['as_of'] >= k['as_of']»
+ 1820 KILLED    N192 L1543 CMP IsNot->Is в «closed_at is not None»
+ 1664 KILLED    N445 L1608 BOOL or->and в «pv['status'] != 'COMPLETED' or pv['completed_at'] > k['requested_at']»
+ 1827 KILLED    BASE L1608 CMP NotEq->Eq в «pv['status'] != 'COMPLETED'»
+ 1821 KILLED    N197 L1543 CMP Gt->GtE в «subj['status_changed_at'] > closed_at»
+ 1937 KILLED    P105 L1243 BOOL or->and в «ta or ca»
+ 1938 KILLED    BASE L1243 BOOL or->and в «tb or cb»
+ 1963 KILLED    P206 L1562 CMP LtE->Lt в «k['requested_at'] <= s['performed_at'] <= k['completed_at']»
+ 1964 KILLED    P206 L1562 CMP LtE->Lt в «k['requested_at'] <= s['performed_at'] <= k['completed_at']»
+ 1977 KILLED    BASE L1718 CMP Eq->NotEq в «('parameter' in n) == (spec.get('qualifier') == 'parameter')»
+ 1978 KILLED    BASE L1719 CMP Eq->NotEq в «('condition' in n) == (spec.get('qualifier') == 'condition')»
+ 2028 KILLED    BASE L1718 CMP In->NotIn в «'parameter' in n»
+ 2029 KILLED    BASE L1718 CMP Eq->NotEq в «spec.get('qualifier') == 'parameter'»
+ 2030 KILLED    BASE L1719 CMP In->NotIn в «'condition' in n»
+ 2031 KILLED    BASE L1719 CMP Eq->NotEq в «spec.get('qualifier') == 'condition'»
+ 1828 SURVIVED   L1608 CMP Gt->GtE в «pv['completed_at'] > k['requested_at']»  [строгая разница на 1 векторах]

@@ -1,0 +1,8 @@
+субъект c50: ent_k_developer (ОГРН 1215000007310 ИНН 5012007313); строка R-1: ОГРН 1102900017440 ИНН 5012007313 адрес: г. Архангельск, пр. Ломоносова, д. 7
+валидатор, процитировано ['inn', 'address', 'ogrn']: ОТКАЗ errors=[('EVIDENCE_ROW_INVALID', 'строка не о субъекте утверждения: идентификатор субъекта строки расходится с идентификатором субъекта')] warnings=['CONTRADICTION_SINGLE_VALUED']
+валидатор, процитировано ['inn', 'address']: ПРИНЯТО errors=[] warnings=['CONTRADICTION_SINGLE_VALUED']
+   база (без валидатора впереди): ПРИНЯТО
+   досье девелопера (читатель ac_rd_cs): {"cells": {"inn": "5012007313", "reg_no": "R-1", "address": "г. Архангельск, пр. Ломоносова, д. 7"}, "verified": true, "proves": ["subject", "object"], "subject_conflict": null}
+   загрузка и печать строк: ПРИНЯТО
+   ac.dataset_subject (читатель ac_rd_full): CONFLICT|[{"by": ["ru.inn"], "entity_id": "ent_k_developer", "entity_type": "ORGANIZATION"}, {"by": ["ru.ogrn"], "entity_id": "ent_k_trub", "entity_type": "ORGANIZATION"}]
+   досье после загрузки (ac_rd_full): {"verified": true, "subject_conflict": null}

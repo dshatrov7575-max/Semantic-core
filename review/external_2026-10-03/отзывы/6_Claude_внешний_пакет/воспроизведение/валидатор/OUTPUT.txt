@@ -1,0 +1,148 @@
+################ 01_skeleton_not_case_insensitive.py
+'Siemens'    'SIEMENS'    точный ключ равен: True;  скелет равен: False   ('siеmеns' / 'siемеns')
+'Tom Hanks'  'TOM HANKS'  точный ключ равен: True;  скелет равен: False   ('тоm наnкs' / 'том наnкs')
+'Bosch'      'BOSCH'      точный ключ равен: True;  скелет равен: False   ('воsсh' / 'воsсн')
+'Иванов'     'ИВАНОВ'     точный ключ равен: True;  скелет равен: True   ('иванов' / 'иванов')
+PERSON  Hanks Tom / HANKS TOM, одна дата рождения: ([], [])
+MODEL   Siemens S7-1200 / SIEMENS S7-1200: ([], [])
+EVENT   Meeting hq / MEETING HQ, одна дата: ([], [])
+ORG неформальная  Team Alpha / TEAM ALPHA, один disambiguator: ([], [])
+контроль: PERSON Иванов Пётр / ИВАНОВ ПЁТР (кириллица) -> (['ENTITY_DUPLICATE_IN_PROJECT'], [])
+контроль: CONCEPT (точный ключ) Moby Dick / MOBY DICK -> (['ENTITY_DUPLICATE_IN_PROJECT'], [])
+################ 02_c1_control_chars_invisible_duplicate.py
+U+0080 категория Cc: PERSON «Ломов»/«Ломо<U+0080>в», та же дата рождения -> ([], [])  ключи: 'ломо\x80в' 'ломо\x80в'
+U+0086 категория Cc: PERSON «Ломов»/«Ломо<U+0086>в», та же дата рождения -> ([], [])  ключи: 'ломо\x86в' 'ломо\x86в'
+U+009F категория Cc: PERSON «Ломов»/«Ломо<U+009F>в», та же дата рождения -> ([], [])  ключи: 'ломо\x9fв' 'ломо\x9fв'
+U+0085 категория Cc: PERSON «Ломов»/«Ломо<U+0085>в», та же дата рождения -> ([], [])  ключи: 'ломо в' 'ломо в'
+EQUIPMENT тег «Н-101» / «Н-101<U+0086>» на одной площадке -> ([], [])
+контроль U+001F (C0) в фамилии -> (['SCHEMA_INVALID'], [])
+контроль U+200B (Cf) в фамилии -> (['ENTITY_DUPLICATE_IN_PROJECT'], [])
+################ 03_cli_duplicate_json_keys.py
+ok.json                exit=0  errors=0 warnings=1
+dup_marking.json       exit=0  errors=0 warnings=1
+dup_records.json       exit=0  errors=0 warnings=1
+dup_trust_keys.json    exit=0  errors=0 warnings=1
+контроль — тот же приём в артефакте: артефакт не JSON в UTF-8 или с повторяющимися ключами
+################ 04_artifact_argument_node_marking.py
+[литерал из RESTRICTED-источника] errors=[]
+[литерал из RESTRICTED-источника] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+утверждение c3: {'level': 'INTERNAL', 'categories': []} | литерал: вскрыть пломбу 7-Б и подать резервное питание с фидера 12
+источники его доказательств: [('Инструкция по эксплуатации нас', 'INTERNAL')]
+литерал есть в байтах процитированного источника: False
+################ 05_check_not_found_contradicts_dataset.py
+эталон: FOUND MEDIUM | c18: media.negative_mention о ent_k_developer | ACCEPTED записано 2026-09-08T10:05:00Z | Проверка завершена 2026-09-10T12:00:00Z
+[NEGATIVE: NOT_FOUND/NONE при принятом негативном утверждении о субъекте] errors=[]
+[NEGATIVE: NOT_FOUND/NONE при принятом негативном утверждении о субъекте] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+[FULL: все шесть измерений NOT_FOUND при пяти принятых утверждениях] errors=[]
+[FULL: все шесть измерений NOT_FOUND при пяти принятых утверждениях] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+################ 06_row_dash_in_national_id_column.py
+ИНН в строке = '-'   -> [('EVIDENCE_ROW_INVALID', 'строка не о субъекте утверждения: идентификатор субъекта строки расходится с идентификатором су')]
+ИНН в строке = ' '   -> [('EVIDENCE_ROW_INVALID', 'строка не о субъекте утверждения: идентификатор субъекта строки расходится с идентификатором су')]
+ИНН в строке = '0'   -> [('EVIDENCE_ROW_INVALID', 'строка не о субъекте утверждения: идентификатор субъекта строки расходится с идентификатором су')]
+ИНН в строке = ''    -> принято
+ИНН в строке = None  -> принято
+################ 07_check_same_day_previous.py
+предыдущая: as_of 2026-09-25 завершена 2026-09-26T15:00:00Z | новая: as_of 2026-09-25 запрошена 2026-09-29T09:00:00Z
+[та же дата as_of, предыдущая завершена раньше запроса] errors=[('CHECK_PREVIOUS_INVALID', 'chk_tenders_1', 'предыдущая Проверка: тот же субъект и более ранняя дата')]
+[та же дата as_of, предыдущая завершена раньше запроса] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+################ 08_time_incoherence_accepted.py
+субъект создан 2026-09-05T12:00:00Z | проект создан 2026-09-01T09:00:00Z
+[Проверка 2020 года о сущности, созданной в 2026] errors=[]
+[Проверка 2020 года о сущности, созданной в 2026] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+[утверждение c17 (06.09) о сущности, созданной 30.09] errors=[]
+[утверждение c17 (06.09) о сущности, созданной 30.09] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+[сущность создана в 2000, проект — в 2026] errors=[]
+[сущность создана в 2000, проект — в 2026] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+[источник опубликован в 2031, получен в 2026] errors=[]
+[источник опубликован в 2031, получен в 2026] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+[слияние 06.09 в сущность, созданную 29.09 (RS-17)] errors=[]
+[слияние 06.09 в сущность, созданную 29.09 (RS-17)] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+################ 09_marks_and_homoglyph_gaps.py
+— комбинируемые знаки (фамилия «Ломов» против «Ломо+знак+в»)
+  U+0301 Mn COMBINING ACUTE ACCENT                 -> (['ENTITY_DUPLICATE_IN_PROJECT'], [])
+  U+0306 Mn COMBINING BREVE                        -> ('ПРИНЯТЫ ОБЕ', [])
+  U+0308 Mn COMBINING DIAERESIS                    -> ('ПРИНЯТЫ ОБЕ', [])
+  U+0483 Mn COMBINING CYRILLIC TITLO               -> ('ПРИНЯТЫ ОБЕ', [])
+  U+0489 Me COMBINING CYRILLIC MILLIONS SIGN       -> ('ПРИНЯТЫ ОБЕ', [])
+  U+0591 Mn HEBREW ACCENT ETNAHTA                  -> ('ПРИНЯТЫ ОБЕ', [])
+  U+064E Mn ARABIC FATHA                           -> ('ПРИНЯТЫ ОБЕ', [])
+  U+2DE0 Mn COMBINING CYRILLIC LETTER BE           -> ('ПРИНЯТЫ ОБЕ', [])
+  U+A66F Mn COMBINING CYRILLIC VZMET               -> ('ПРИНЯТЫ ОБЕ', [])
+— двойники
+  'Зiнченко' / 'Зінченко' -> ('ПРИНЯТЫ ОБЕ', [])
+  'Iваненко' / 'Іваненко' -> ('ПРИНЯТЫ ОБЕ', [])
+  'Jovanović' / 'Јovanović' -> ('ПРИНЯТЫ ОБЕ', [])
+  'Smith' / 'Ѕmith' -> ('ПРИНЯТЫ ОБЕ', [])
+  'Ломов' / 'Лoмoв' -> (['ENTITY_DUPLICATE_IN_PROJECT'], [])
+— теги оборудования на одной площадке
+  'О-101' / '0-101' -> ('ПРИНЯТЫ ОБЕ', [])
+  'З-12' / '3-12' -> ('ПРИНЯТЫ ОБЕ', [])
+  'Н-1О1' / 'Н-101' -> ('ПРИНЯТЫ ОБЕ', [])
+  'Н-l01' / 'Н-101' -> ('ПРИНЯТЫ ОБЕ', [])
+  'НС-2' / 'HC-2' -> ('ПРИНЯТЫ ОБЕ', ['POSSIBLE_DUPLICATE'])
+################ 10_placeholder_ids_and_empty_keys.py
+inn_ok('0000000000') = True | inn_ok('000000000000') = True | ogrn_ok('0'*13) = True | ogrnip_ok('0'*15) = True | imo_ok('0000000') = True
+[организация: ИНН и ОГРН из нулей] errors=[]
+[организация: ИНН и ОГРН из нулей] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+[физлицо: ИНН и ОГРНИП из нулей] errors=[]
+[физлицо: ИНН и ОГРНИП из нулей] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+[судно: IMO 0000000] errors=[]
+[судно: IMO 0000000] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+[авто: VIN из нулей] errors=[]
+[авто: VIN из нулей] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+[участок 00:00:000000:0] errors=[]
+[участок 00:00:000000:0] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+ключ ФИО невидимого имени: '' | ключ тега «-»: '' | ключ ««»»: ''
+[PERSON: имя из невидимых символов] errors=[]
+[PERSON: имя из невидимых символов] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+[EQUIPMENT: тег «-»] errors=[]
+[EQUIPMENT: тег «-»] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+[EVENT: название «»] errors=[]
+[EVENT: название «»] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+################ 11_self_reference_and_contradictions.py
+[corp.founder_of: организация — учредитель самой себя] errors=[]
+[corp.founder_of: организация — учредитель самой себя] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+[corp.branch_of: филиал самого себя] errors=[]
+[corp.branch_of: филиал самого себя] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+[corp.branch_of: в identity ИНН одной организации, объект — другая] errors=[]
+[corp.branch_of: в identity ИНН одной организации, объект — другая] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+[wiki.is_a: понятие — вид самого себя] errors=[]
+[wiki.is_a: понятие — вид самого себя] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+[ts.part_of: насос в станции И станция в насосе] errors=[]
+[ts.part_of: насос в станции И станция в насосе] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+[доли учредителей 100 % + 100 %] errors=[]
+[доли учредителей 100 % + 100 %] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+[слияние физлиц с разными действительными ИНН] errors=[]
+[слияние физлиц с разными действительными ИНН] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+[слияние организаций с разными ОГРН и ИНН] errors=[]
+[слияние организаций с разными ОГРН и ИНН] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+[слияние участков с разными кадастровыми номерами] errors=[]
+[слияние участков с разными кадастровыми номерами] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+################ 12_same_entity_twice_by_design.py
+Наталья / Наталия: ошибки=[] предупреждения=[]
+с отчеством / без отчества: ошибки=[] предупреждения=[]
+порядок: фамилия и имя переставлены: ошибки=[] предупреждения=[]
+инициалы: ошибки=[] предупреждения=[]
+двойная фамилия: «-» / « - » / пробел: ошибки=[] предупреждения=[]
+транслитерация: ошибки=[] предупреждения=[]
+запятая после фамилии: ошибки=[] предупреждения=[]
+три записи одного человека: с датой рождения / с disambiguator / только с ИНН: ошибки=[] предупреждения=[]
+та же организация ещё раз как «филиал» (тот же ИНН + любой КПП): ошибки=[] предупреждения=[]
+та же организация ещё раз как «неформальная»: ошибки=[] предупреждения=[]
+одна по ОГРН, вторая по ИНН: ошибки=[] предупреждения=[]
+событие: место «г. Заречный» / «Заречный»: ошибки=[] предупреждения=[]
+понятие «Синий кит»: lang ru / rus: ошибки=[] предупреждения=[]
+################ 13_quantity_not_canonical.py
+ошибки: [] | предупреждения: [('CONTRADICTION_SINGLE_VALUED', 'x.max_length: источники расходятся')]
+QUANTITY value='-0': принято
+QUANTITY value='-0.0': принято
+QUANTITY value='30.000': принято
+################ 14_deprecated_class_attribute.py
+[класс выведен 2026-09-04T10:00:00Z, утверждение с его атрибутом записано 2026-09-05] errors=[]
+[класс выведен 2026-09-04T10:00:00Z, утверждение с его атрибутом записано 2026-09-05] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся'), ('CONTRADICTION_SINGLE_VALUED', 'x.itis_tsn: источники расходятся')]
+[контроль: связь выведена, утверждение с ней после вывода] errors=[('PREDICATE_UNKNOWN', 'clm:sha256:c6f5905df3d9d1bd3fb4ba47e1091', 'x.belongs_to: в схеме tenant на момент записи такого предиката нет')]
+[контроль: связь выведена, утверждение с ней после вывода] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+################ 15_membership_inference.py
+[членство CONFIDENTIAL, атрибут класса PUBLIC] errors=[]
+[членство CONFIDENTIAL, атрибут класса PUBLIC] warnings=[('CONTRADICTION_SINGLE_VALUED', 'person.birth_date: источники расходятся')]
+c41: schema.is_a {'level': 'CONFIDENTIAL', 'categories': []} | c42: x.max_length {'level': 'PUBLIC', 'categories': []}

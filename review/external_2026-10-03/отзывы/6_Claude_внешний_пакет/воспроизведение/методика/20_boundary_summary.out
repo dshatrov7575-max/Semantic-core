@@ -1,0 +1,39 @@
+точек сравнения <,<=,>,>=: 72; прогнано: 72; {'KILLED': 42, 'SURVIVED': 30}; выжило 42%
+все автоматические мутанты (все прогоны, без повторов): 241 {'KILLED': 200, 'SURVIVED': 41}
+   BOOL {'KILLED': 35, 'SURVIVED': 2}
+   CMP {'KILLED': 89, 'SURVIVED': 30}
+   CONST {'SURVIVED': 9, 'KILLED': 8}
+   DEL {'KILLED': 9}
+   NEG {'KILLED': 39}
+   NOT {'KILLED': 11}
+   RET {'KILLED': 9}
+  L564 [inclusion_root] Lt->LtE в «0 <= index < size»
+  L625 [parse_manifest] LtE->Lt в «set(m['key']) <= set(names)»
+  L148 [_bad_str] LtE->Lt в «55296 <= ord(ch) <= 57343»
+  L1141 [_semantic] Gt->GtE в «pb['published_at'] > min((f for _, f in basis))»
+  L1148 [_semantic] Lt->LtE в «e['status_changed_at'] < e['created_at']»
+  L1195 [_semantic] LtE->Lt в «e['status_changed_at'] <= d['decided_at']»
+  L1292 [_semantic] LtE->Lt в «x['status_changed_at'] <= t»
+  L1408 [_semantic] Gt->GtE в «c['valid_from'] > c['valid_to']»
+  L1421 [_semantic] Gt->GtE в «min((o['observed_at'] for o in s['observations'])) > c['recorded_at']»
+  L1479 [_semantic] Lt->LtE в «rv['reviewed_at'] < c['recorded_at']»
+  L1479 [_semantic] Lt->LtE в «rv['recorded_at'] < rv['reviewed_at']»
+  L170 [prescan] Gt->GtE в «abs(node) > MAX_SAFE»
+  L296 [tag_norm] Lt->LtE в «j < len(s)»
+  L298 [tag_norm] Lt->LtE в «j < len(s)»
+  L1039 [_semantic] Gt->GtE в «sum((x.get('max', 1) for x in first['format'])) > 64»
+  L1131 [_semantic] Gt->GtE в «min(seen) > pb['recorded_at']»
+  L1269 [_semantic] LtE->Lt в «x[0] <= t»
+  L1548 [_semantic] Lt->LtE в «closed_at < k['requested_at']»
+  L1503 [_semantic] LtE->Lt в «x.get('valid_from', '0000') <= y.get('valid_to', '9999')»
+  L1504 [_semantic] LtE->Lt в «y.get('valid_from', '0000') <= x.get('valid_to', '9999')»
+  L178 [prescan] GtE->Gt в «depth >= MAX_DEPTH»
+  L871 [validate] Lt->LtE в «k['revoked_at'] < k['not_before']»
+  L1608 [_semantic] Gt->GtE в «pv['completed_at'] > k['requested_at']»
+  L1703 [_semantic] Lt->LtE в «an['start'] < an['end'] <= len(sb)»
+  L1703 [_semantic] LtE->Lt в «an['start'] < an['end'] <= len(sb)»
+  L250 [_drop_marks] LtE->Lt в «a <= ord(ch) <= b»
+  L250 [_drop_marks] LtE->Lt в «a <= ord(ch) <= b»
+  L466 [entity_identifiers] LtE->Lt в «{'inn', 'kpp'} <= i.keys()»
+  L1284 [_semantic] LtE->Lt в «t <= seen»
+  L186 [prescan] Lt->LtE в «ord(ch) < 32»

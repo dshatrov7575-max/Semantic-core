@@ -1,0 +1,9 @@
+base_key: mismatches=0 [] | unassigned-in-Python (Unicode 14.0.0) folded by PostgreSQL: 0 []
+skel_nokc: mismatches=0 [] | unassigned-in-Python (Unicode 14.0.0) folded by PostgreSQL: 0 []
+tag_norm: mismatches=0 [] | unassigned-in-Python (Unicode 14.0.0) folded by PostgreSQL: 0 []
+id_norm: mismatches=0 [] | unassigned-in-Python (Unicode 14.0.0) folded by PostgreSQL: 62 ['0x1e030', '0x1e031', '0x1e032', '0x1e033']
+EXHAUSTIVE_PARITY_RESULT=PASS
+
+real	21m18.426s
+user	0m34.238s
+sys	0m0.481s

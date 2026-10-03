@@ -1,0 +1,7 @@
+набор без subject: ОТКАЗ errors=[('EVIDENCE_ROW_INVALID', 'набор не объявляет субъект строки (subject) — его строка не может подтверждать утверждение о сущности')] warnings=['CONTRADICTION_SINGLE_VALUED']
+subject = (inn), ячейка inn пуста, процитирована: ОТКАЗ errors=[('EVIDENCE_ROW_INVALID', 'строка не о субъекте утверждения: ни один процитированный идентификатор субъекта строки не принадлежит ему')] warnings=['CONTRADICTION_SINGLE_VALUED']
+subject = (inn), ячейка inn скрыта: ОТКАЗ errors=[('EVIDENCE_ROW_INVALID', 'строка не о субъекте утверждения: ни один процитированный идентификатор субъекта строки не принадлежит ему')] warnings=['CONTRADICTION_SINGLE_VALUED']
+чужая строка (ОГРН «Трубопроводстроя») об адресе девелопера: ОТКАЗ errors=[('EVIDENCE_ROW_INVALID', 'строка не о субъекте утверждения: ни один процитированный идентификатор субъекта строки не принадлежит ему')] warnings=['CONTRADICTION_SINGLE_VALUED']
+набор без ключа: строка названа хэшем, процитированы ogrn и address: ПРИНЯТО errors=[] warnings=['CONTRADICTION_SINGLE_VALUED']
+   в доказательстве row_key: False | поля: ['cells', 'kind', 'proof', 'row_sha256', 'source_id'] | поля ячеек: ['leaf', 'name', 'salt', 'value']
+секрет строки встречается в доказательстве: False | соль director встречается: False

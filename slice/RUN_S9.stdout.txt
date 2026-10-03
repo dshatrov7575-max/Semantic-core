@@ -133,7 +133,7 @@ KEYS PARITY (DB-derived == validator): OK rows=45
 S9-01  PASS | мир: 5 версий классов, 1 связь, 1 тип идентификатора; замыкание = рекурсивный расчёт; у каждого предиката tenant один владелец | 5 1 1 4; x.belongs_to=sdf_belongs_to x.exhibit_length=sdf_exhibit x.itis_tsn=sdf_whale_species x.max_length=sdf_whale_species
 S9-02a PASS | модель: атрибут, добавленный родителю, виден у наследника (declared_in = родитель); на момент до изменения его нет | сейчас [('x.rank', 'sdf_taxon'), ('x.itis_tsn', 'sdf_whale_species'), ('x.max_length', 'sdf_whale_species')]; до изменения ['x.itis_tsn', 'x.max_length']; 
 S9-02b PASS | модель: класс с маркировкой INTERNAL и его запись журнала видит только читатель с допуском INTERNAL | PUBLIC: 4 классов, INTERNAL: 5
-S9-02c PASS | модель на прошлый момент воспроизводима (тот же digest) | sha256:4e87cdfb98241de2
+S9-02c PASS | модель на прошлый момент воспроизводима (тот же digest) | sha256:a275084f5c8226a3
 S9-02d PASS | время версии ставит база: поданное «1999-12-31» заменено системным временем | recorded_at свежее минуты: t
 S9-03  PASS | вживую: загрузчик заводит сущность, называет её класс (schema.is_a) и пишет утверждение с атрибутом родительского класса | (принято); (принято); (принято)
 S9-03n PASS | вживую отвергнуто: атрибут наследника у экземпляра родителя; значение не того типа; предиката нет в схеме | ERROR:  PREDICATE_DOMAIN_VIOLATION: субъект не является экзе / ERROR:  PREDICATE_RANGE_VIOLATION: значение не того типа, ед / ERROR:  PREDICATE_UNKNOWN: x.nowhere: в схеме tenant на моме

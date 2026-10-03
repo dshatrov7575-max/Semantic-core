@@ -1,0 +1,51 @@
+sites=2072 sample=72 todo=50
+  147 KILLED    BASE L293 CMP Lt->LtE в «i < len(s)»
+  514 SURVIVED   L564 CMP Lt->LtE в «0 <= index < size»  [строгая разница на 1 векторах]
+  528 KILLED    BASE L632 CMP LtE->Lt в «set(m.get('subject', ())) <= ident»
+  570 KILLED    BASE L818 CMP GtE->Gt в «LEVEL[a['level']] >= LEVEL[b['level']]»
+  527 SURVIVED   L625 CMP LtE->Lt в «set(m['key']) <= set(names)»  [строгая разница на 1 векторах]
+  571 KILLED    BASE L818 CMP GtE->Gt в «set(a['categories']) >= set(b['categories'])»
+  679 KILLED    BASE L1228 CMP Gt->GtE в «len(owners) > 1»
+  782 KILLED    BASE L1730 CMP Gt->GtE в «len(rids) > 1»
+  813 KILLED    BASE L1815 CMP Gt->GtE в «len(cids) > 1»
+  997 SURVIVED   L1148 CMP Lt->LtE в «e['status_changed_at'] < e['created_at']»  [строгая разница на 1 векторах]
+ 1034 SURVIVED   L1292 CMP LtE->Lt в «x['status_changed_at'] <= t»  [строгая разница на 1 векторах]
+ 1066 SURVIVED   L1408 CMP Gt->GtE в «c['valid_from'] > c['valid_to']»  [строгая разница на 1 векторах]
+ 1074 SURVIVED   L1421 CMP Gt->GtE в «min((o['observed_at'] for o in s['observations'])) > c['recorded_at']»  [строгая разница на 1 векторах]
+ 1086 KILLED    BASE L1460 CMP LtE->Lt в «st < en <= len(b)»
+ 1085 KILLED    N169 L1460 CMP Lt->LtE в «st < en <= len(b)»
+ 1089 SURVIVED   L1479 CMP Lt->LtE в «rv['reviewed_at'] < c['recorded_at']»  [строгая разница на 1 векторах]
+ 1165 KILLED    BASE L1753 CMP LtE->Lt в «nk <= group»
+ 1090 SURVIVED   L1479 CMP Lt->LtE в «rv['recorded_at'] < rv['reviewed_at']»  [строгая разница на 1 векторах]
+ 1196 KILLED    N406 L227 CMP LtE->Lt в «a <= cp <= b»
+ 1197 KILLED    N316 L227 CMP LtE->Lt в «a <= cp <= b»
+ 1193 SURVIVED   L170 CMP Gt->GtE в «abs(node) > MAX_SAFE»  [строгая разница на 1 векторах]
+ 1203 SURVIVED   L296 CMP Lt->LtE в «j < len(s)»  [строгая разница на 1 векторах]
+ 1207 SURVIVED   L298 CMP Lt->LtE в «j < len(s)»  [строгая разница на 1 векторах]
+ 1321 KILLED    N421 L1181 CMP Lt->LtE в «d['decided_at'] < x['created_at']»
+ 1304 SURVIVED   L1039 CMP Gt->GtE в «sum((x.get('max', 1) for x in first['format'])) > 64»  [строгая разница на 1 векторах]
+ 1380 KILLED    BASE L1486 CMP Gt->GtE в «len(v) > 1»
+ 1422 KILLED    BASE L1655 CMP LtE->Lt в «{ev['source_id'] for ev in c['evidence']} <= set(r['input_source_ids'])»
+ 1339 SURVIVED   L1269 CMP LtE->Lt в «x[0] <= t»  [строгая разница на 1 векторах]
+ 1561 KILLED    N915 L922 CMP LtE->Lt в «r['change']['recorded_at'] <= prev['change']['recorded_at']»
+ 1599 KILLED    BASE L1274 CMP LtE->Lt в «rt <= t»
+ 1640 KILLED    P211 L1490 CMP LtE->Lt в «rv['recorded_at'] <= t»
+ 1563 KILLED    P927 L934 CMP LtE->Lt в «r['change']['recorded_at'] <= t»
+ 1763 KILLED    N021 L871 CMP Lt->LtE в «k['not_before'] < k['not_after']»
+ 1692 SURVIVED   L178 CMP GtE->Gt в «depth >= MAX_DEPTH»  [строгая разница на 2 векторах]
+ 1765 SURVIVED   L871 CMP Lt->LtE в «k['revoked_at'] < k['not_before']»  [строгая разница на 1 векторах]
+ 1780 KILLED    P920 L1038 CMP Gt->GtE в «x['min'] > x['max']»
+ 1835 SURVIVED   L1703 CMP Lt->LtE в «an['start'] < an['end'] <= len(sb)»  [строгая разница на 1 векторах]
+ 1836 SURVIVED   L1703 CMP LtE->Lt в «an['start'] < an['end'] <= len(sb)»  [строгая разница на 1 векторах]
+ 1906 SURVIVED   L250 CMP LtE->Lt в «a <= ord(ch) <= b»  [строгая разница на 1 векторах]
+ 1907 SURVIVED   L250 CMP LtE->Lt в «a <= ord(ch) <= b»  [строгая разница на 1 векторах]
+ 1930 KILLED    N305 L1156 CMP Gt->GtE в «t['status_changed_at'] > e['status_changed_at']»
+ 1939 KILLED    BASE L1251 CMP Lt->LtE в «a < b»
+ 1911 SURVIVED   L466 CMP LtE->Lt в «{'inn', 'kpp'} <= i.keys()»  [строгая разница на 1 векторах]
+ 1979 KILLED    BASE L1809 CMP LtE->Lt в «an['start'] <= sp['start']»
+ 1980 KILLED    BASE L1809 CMP LtE->Lt в «sp['end'] <= an['end']»
+ 2020 KILLED    P140 L1400 CMP LtE->Lt в «s.get('min', v) <= v <= s.get('max', v)»
+ 2021 KILLED    BASE L1400 CMP LtE->Lt в «s.get('min', v) <= v <= s.get('max', v)»
+ 2043 KILLED    BASE L175 CMP Lt->LtE в «ord(ch) < 32»
+ 1942 SURVIVED   L1284 CMP LtE->Lt в «t <= seen»  [строгая разница на 1 векторах]
+ 2057 SURVIVED   L186 CMP Lt->LtE в «ord(ch) < 32»  [строгая разница на 1 векторах]

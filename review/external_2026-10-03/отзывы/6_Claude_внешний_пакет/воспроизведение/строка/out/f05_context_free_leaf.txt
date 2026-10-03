@@ -1,0 +1,6 @@
+v1, процитирован director | валидатор: ОТКАЗ errors=[('MARKING_BROADER_THAN_INPUT', 'маркировка утверждения шире маркировки колонки director')] warnings=['CONTRADICTION_SINGLE_VALUED']
+(а) манифест-двойник: director PUBLIC, те же rows_root | валидатор: ПРИНЯТО errors=[] warnings=['CONTRADICTION_SINGLE_VALUED']
+      база: ПРИНЯТО | досье читателя ac_rd_cs (без категории ПД): [{"ogrn": "1215000007310", "address": "Московская обл., г. Заречный, ул. Заречная, д. 1", "director": "Ломов Аркадий Семёнович"}]
+(б) манифест-двойник: 5 колонок, внутренний узел дерева ячеек выдан за лист | валидатор: ПРИНЯТО errors=[] warnings=['CONTRADICTION_SINGLE_VALUED']
+      база: ПРИНЯТО | досье читателя ac_rd_cs (без категории ПД): [{"ogrn": "1215000007310", "address": "Московская обл., г. Заречный, ул. Заречная, д. 1"}]
+row_sha256 одинаков во всех трёх: True

@@ -1,0 +1,61 @@
+sites=2072 sample=60 todo=60
+  115 KILLED    N539 L90 RET return None вместо «return (None, 'артефакт: ' + raw[0][1])»
+   20 KILLED    BASE L251 RET return None вместо «return unicodedata.normalize('NFC', s)»
+ 1387 KILLED    N191 L1545 DEL удалён оператор «R.err('CHECK_SUBJECT_INVALID', kid, 'субъект: ACTIVE физлицо или юрлицо (на момент закрытия Проверки)')
+  587 KILLED    BASE L935 NEG условие отрицается: «ok»
+ 1181 KILLED    BASE L1812 NEG условие отрицается: «why»
+ 2038 KILLED    N109 L510 CMP Eq->NotEq в «t == 'CONCEPT'»
+ 1586 KILLED    P424b L1194 CMP Eq->NotEq в «t == 'PERSON'»
+  437 SURVIVED   L219 CONST константа 12644->12645 в «(0x180B, 0x180F), (0x200B, 0x200F), (0x202A, 0x202E), (0x2060, 0x206F), (0x3164, 0x3164),»  [строгая разница на 1 векторах]
+  208 KILLED    NRF3 L654 RET return None вместо «return 'строк не столько, сколько объявлено в манифесте'»
+   74 KILLED    BASE L625 NEG условие отрицается: «not set(m['key']) <= set(names)»
+ 1950 KILLED    BASE L1385 CMP NotIn->In в «obj_ent['entity_type'] not in rng['entity']»
+ 1221 SURVIVED   L414 CONST константа 10->11 в «return len(v) == 15 and int(v[:14]) % 13 % 10 == int(v[14])»  [строгая разница на 1 векторах]
+  508 KILLED    BASE L483 NEG условие отрицается: «t == 'REAL_ESTATE'»
+  520 KILLED    PR19 L579 CONST константа 1->2 в «sn >>= 1»
+  232 KILLED    NR65 L745 RET return None вместо «return 'набор не объявляет субъект строки (subject) — его строка не может подтверждать утверждение о
+  922 KILLED    PR17 L759 BOOL or->and в «obj_keys is None or (isinstance(v, str) and scheme[col['name']] is not None and (row_id(scheme[col['name']], 
+ 2011 SURVIVED   L973 CONST константа 1->0 в «R.err("SCHEMA_DEF_INVALID", f"{kind} {key[0]}/{did}", f"предикат {key[1]} уже определён в {first[1]}»  [строгая разница на 2 векторах]
+  589 KILLED    N920 L942 DEL удалён оператор «R.err('REF_UNRESOLVED', ref, f'{what}: класса {class_id} нет в схеме tenant')»
+  946 KILLED    BASE L924 NEG условие отрицается: «schema_change_of(k, prev, r) != r['change']['type']»
+ 1244 KILLED    P086 L478 NEG условие отрицается: «not id_norm(f['value'])»
+ 1395 KILLED    BASE L1565 CMP In->NotIn в «'result_source_id' in s»
+ 1363 KILLED    BASE L1381 BOOL and->or в «subj is not None and subj['entity_type'] not in p['domain']»
+ 1543 KILLED    NRF6 L659 BOOL and->or в «isinstance(r, dict) and r.keys() == {'h', 'k', 's', 'v'} and isinstance(r['v'], list) and isinstance(r['s'], 
+ 1032 KILLED    NR1G L1285 DEL удалён оператор «R.err('DATASET_MANIFEST_INVALID', sid, f"колонка {col['name']} объявлена для предиката {pid}, которого 
+  752 KILLED    N045 L1620 DEL удалён оператор «continue»
+  158 KILLED    BASE L400 RET return None вместо «return sum((c * x for c, x in zip(coef, d[:n]))) % 11 % 10»
+ 1310 KILLED    N701 L1116 DEL удалён оператор «R.err('ORIGINAL_INVALID', sid, f'observations[{n}]: байты оригинала не совпадают с адресом или длиной')
+ 1850 KILLED    N404 L206 CONST константа 1017->1018 в «0x00EB: "ё", 0x00CB: "Ё", 0x03F9: "С", 0x03F2: "с", 0x0555: "О", 0x0585: "о",»
+ 1474 KILLED    BASE L374 CONST константа 0->-1 в «host = n.split("://", 1)[1].split("/", 1)[0].split(":", 1)[0]»
+  146 SURVIVED   L292 CONST константа 0->-1 в «i = 0»  [строгая разница на 1 векторах]
+  778 KILLED    BASE L1711 NEG условие отрицается: «n['type'] == 'RELATION'»
+  349 KILLED    BASE L1741 NEG условие отрицается: «art['artifact_format'] != r['artifact_schema_version'] or art['semantic_profile'] != r['semantic_pr
+  129 SURVIVED   L121 CONST константа 0->1 в «RISK = {"NONE": 0, "LOW": 1, "MEDIUM": 2, "HIGH": 3}»  [строгая разница на 2 векторах]
+ 1325 SURVIVED   L1191 CONST константа 0->-1 в «e, eid = ents[0], ids[0]»  [строгая разница на 1 векторах]
+ 1233 KILLED    N080 L455 BOOL or->and в «'disambiguator' not in i or {'ogrn', 'inn', 'kpp'} & i.keys() or 'legal_form' in i»
+ 1186 SURVIVED   L148 CONST константа 55296->55295 в «return any(0xD800 <= ord(ch) <= 0xDFFF for ch in s)»  [строгая разница на 1 векторах]
+  880 KILLED    N079 L449 DEL удалён оператор «R.err('ENTITY_IDENTITY_INSUFFICIENT', ref, 'PERSON без ИНН, ОГРНИП и даты рождения требует disambiguato
+  513 KILLED    BASE L564 CMP LtE->Lt в «0 <= index < size»
+ 1283 KILLED    BASE L934 BOOL or->and в «t is None or r['change']['recorded_at'] <= t»
+ 1662 KILLED    BASE L1606 CMP NotEq->Eq в «resolve(pv['subject_entity_id']) != subj_id»
+ 1879 SURVIVED   L208 CONST константа 655->654 в «0x1D18: "р", 0x1D1B: "т", 0x028F: "у", 0x1D26: "г", 0x1D28: "п", 0x1D2B: "л",»  [строгая разница на 1 векторах]
+  600 KILLED    N940 L1014 NOT удалён not в «not lst»
+  811 KILLED    BASE L1791 NEG условие отрицается: «any(('graph_node' not in ev for ev in c['evidence']))»
+ 1279 KILLED    N902 L923 DEL удалён оператор «R.err('TEMPORAL_ORDER_INVALID', ref, f"версия {r['version']} записана не позже предыдущей")»
+ 1262 KILLED    NR61 L751 CMP In->NotIn в «sch in mine»
+  749 KILLED    N066 L1617 DEL удалён оператор «R.err('RECEIPT_ID_MISMATCH', rid, 'receipt_id != sha256(JCS(receipt без receipt_id/signature))')»
+  492 KILLED    BASE L403 CONST константа 12->13 в «if len(d) == 12:»
+ 1018 KILLED    N434 L1204 NEG условие отрицается: «field == 'place'»
+  322 KILLED    BASE L1479 NEG условие отрицается: «rv['reviewed_at'] < c['recorded_at'] or rv['recorded_at'] < rv['reviewed_at']»
+  725 KILLED    BASE L1522 NEG условие отрицается: «(prj, eid, pid) not in has»
+ 1737 KILLED    BASE L405 CONST константа 9->8 в «and ctl([3, 7, 2, 4, 10, 3, 5, 9, 4, 6, 8], 11) == d[11])»
+   34 KILLED    BASE L345 RET return None вместо «return 'sha256:' + hashlib.sha256(pub_norm(t).encode('utf-8')).hexdigest()»
+ 1260 KILLED    BASE L707 CONST константа 1->2 в «return {x for x in ids if x[1]}        # «-» and the empty string are not identifiers: registries us»
+  157 SURVIVED   L394 BOOL and->or в «v.isascii() and v.isdigit()»  [строгая разница на 1 векторах]
+  924 KILLED    NR75 L762 NEG условие отрицается: «lit['type'] == 'IDENTIFIER' and lit['scheme'] == col['identifier_scheme'] and (lit['value'] == v)»
+  981 KILLED    BASE L1111 DEL удалён оператор «continue»
+  127 SURVIVED   L120 CONST константа 3->4 в «LEVEL = {"PUBLIC": 0, "INTERNAL": 1, "CONFIDENTIAL": 2, "RESTRICTED": 3}»  [строгая разница на 1 векторах]
+ 2047 KILLED    P903 L803 CONST константа 0->1 в «if len(diff) == 1 and not added and not removed and all(pa[diff[0]].get(f) == ca[diff[0]].get(f) for»
+  168 KILLED    BASE L438 CMP Eq->NotEq в «t == 'PERSON'»
+  375 KILLED    P409 L214 CONST константа 773->774 в «_MARKS = ((0x0300, 0x0305), (0x0307, 0x0307), (0x0309, 0x036F), (0x1AB0, 0x1AFF), (0x1DC0, 0x1DFF)

@@ -1,0 +1,12 @@
+базовый мир в базу: ПРИНЯТО
+(а) версия-пустышка (0 строк, 0 файлов, previous = адрес документа, которого ещё нет): ПРИНЯТО
+    честный загрузчик регистрирует сам документ: ERR ERROR:  DATASET_MANIFEST_INVALID: previous — не версия того же набора данных того же tenant
+    в базе документ есть: 0 | пустышку убрать: ERR ERROR:  permission denied for table datasets
+    валидатор: мир + пустышка: ПРИНЯТО errors=[] warnings=['CONTRADICTION_SINGLE_VALUED']
+    валидатор: мир + пустышка + документ: ОТКАЗ errors=[('DATASET_MANIFEST_INVALID', 'previous — не версия того же набора данных того же tenant')] warnings=['CONTRADICTION_SINGLE_VALUED']
+(б) строки версии v1 мира загружены и запечатаны: ПРИНЯТО
+    актуальность строки c50 до: [{"status": "CURRENT"}]
+    честная v2 (previous = v1): ПРИНЯТО | строки: ПРИНЯТО
+    актуальность строки c50 после честной v2: [{"latest": {"source_id": "src:sha256:2b925eaadc4d359e34fa51af616fce0cfbf4b127a887dcfa7ef3b4ac4eabfd4b", "version_label": "2026-10-01"}, "status": "CHANGED", "changed_columns": ["address"]}]
+    пустышка (тот же dataset_id, previous = v1, 0 строк, 0 файлов): ПРИНЯТО
+    актуальность строки c50 после пустышки: [{"status": "BRANCHED"}]

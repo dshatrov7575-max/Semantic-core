@@ -1,0 +1,25 @@
+21:22:50 rc=0 slice/RUN_LOAD_S1.stdout.txt :: KEYS PARITY (DB-derived == validator): OK rows=45
+21:23:04 rc=0 slice/RUN_KEYS_PARITY.stdout.txt :: PARITY_RESULT=PASS
+21:23:07 rc=0 slice/RUN_S1.stdout.txt :: S2_RESULT=PASS
+21:23:41 rc=0 slice/RUN_RS_REGRESSION.stdout.txt :: D22 held    P1 | гонка слабых ключей: два параллельных INSERT без блокировки | s1=COMMIT s2=ERROR:  ENTIT
+21:23:52 rc=0 slice/RUN_S22_REGRESSION.stdout.txt :: S22_REGRESSION=PASS
+21:24:30 rc=0 slice/RUN_S23_RACES.stdout.txt :: S23_RACES=PASS
+21:24:56 rc=0 slice/RUN_S24_REGRESSION.stdout.txt :: S24_REGRESSION=PASS
+21:25:02 rc=0 slice/RUN_S3.stdout.txt :: S3_RESULT=PASS
+21:25:13 rc=0 slice/RUN_S4.stdout.txt :: S4_RESULT=PASS
+21:25:24 rc=0 slice/RUN_S4_ATTACKS.stdout.txt :: S4_ATTACKS=PASS
+21:25:40 rc=0 slice/RUN_S5.stdout.txt :: S5_RESULT=PASS
+21:25:44 rc=0 slice/RUN_S5_ATTACKS.stdout.txt :: S5_ATTACKS=PASS
+21:26:06 rc=0 slice/RUN_S5_RACES.stdout.txt :: S5_RACES=PASS
+21:26:08 rc=0 slice/RUN_S5_PARITY.stdout.txt :: S5_PARITY=PASS
+21:26:08 rc=1 slice/RUN_S5B.stdout.txt :: ModuleNotFoundError: No module named 'requests'
+21:26:15 rc=0 slice/RUN_S5B_ATTACKS.stdout.txt :: S5B_ATTACKS=PASS
+21:30:26 rc=0 slice/RUN_S9.stdout.txt :: S9: ALL PASS
+21:30:50 rc=0 slice/RUN_S9_ATTACKS.stdout.txt :: attacks=86 findings=0
+21:35:51 rc=0 slice/RUN_S10.stdout.txt :: ALL PASS
+21:51:09 rc=0 slice/RUN_S10_ATTACKS.stdout.txt :: attacks=32 findings=0
+21:52:16 rc=0 slice/RUN_S11.stdout.txt :: ALL PASS
+21:53:06 rc=0 slice/RUN_S11_ATTACKS.stdout.txt :: attacks=43 findings=0
+21:53:07 rc=0 slice/RUN_ADAPTER.stdout.txt :: ADAPTER_RESULT=PASS
+21:53:07 rc=1 store/RUN_STORE.stdout.txt :: ModuleNotFoundError: No module named 'requests'
+done

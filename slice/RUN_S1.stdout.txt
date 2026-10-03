@@ -78,7 +78,7 @@ DB-A77 REJECTED | D13: живая роль ставит печать истор�
 DB-A78 REJECTED | S21-01: тег «ｱ-9» (полуширинная катакана) после «ア-9» | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: equipment уже принадлежит другой сущности проекта
 DB-A79 REJECTED | RS-12: тёзка «Ломо́в» (U+0301) с той же датой, без ИНН | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: person.fio_dob совпадает у ent_d_lomov и ent_d_ns
 DB-A80 REJECTED | RS-14: «К 1.12» — та же задвижка, что «К-1/12» | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: equipment уже принадлежит другой сущности проекта
-DB-A81 REJECTED | D13: ac_migrator пишет рецензию «задним числом» до печати истории | ERROR:  TEMPORAL_ORDER_INVALID: история до 2026-10-03 15:03:09.191132+03 запечатана
+DB-A81 REJECTED | D13: ac_migrator пишет рецензию «задним числом» до печати истории | ERROR:  TEMPORAL_ORDER_INVALID: история до 2026-10-03 23:36:02.365114+03 запечатана
 DB-A82 REJECTED | D13: ac_migrator дописывает утверждение в Проверку, закрытую до печати | ERROR:  CHECK_CLOSED: в закрытую Проверку нельзя добавлять утверждения
 OK-01 OK | новое утверждение «сейчас»: доказательство проверено по байтам | 1
 OK-02 OK | рецензия с заявленным «задним» временем: база ставит системное время | true

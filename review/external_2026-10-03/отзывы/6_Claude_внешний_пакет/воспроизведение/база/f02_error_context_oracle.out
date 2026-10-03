@@ -1,0 +1,36 @@
+session_user = ac_rd_none; допусков: 6 строк всего, у ac_rd_none — 0
+
+[dossier] РАЗЛИЧИМО
+  есть, нельзя: ERROR:  ACCESS_DENIED: нет допуска / CONTEXT:  PL/pgSQL function require_clearance(text,jsonb) line 5 at RAISE / PL/pgSQL function dossier(text,text,timestamp with time zone) line 9 at assignment
+  нет записи : ERROR:  ACCESS_DENIED: нет допуска / CONTEXT:  PL/pgSQL function dossier(text,text,timestamp with time zone) line 7 at RAISE
+
+[check_report] РАЗЛИЧИМО
+  есть, нельзя: ERROR:  ACCESS_DENIED: нет допуска / CONTEXT:  PL/pgSQL function require_clearance(text,jsonb) line 5 at RAISE / PL/pgSQL function check_report(text) line 8 at assignment
+  нет записи : ERROR:  ACCESS_DENIED: нет допуска / CONTEXT:  PL/pgSQL function check_report(text) line 6 at RAISE
+
+[provenance] РАЗЛИЧИМО
+  есть, нельзя: ERROR:  ACCESS_DENIED: нет допуска / CONTEXT:  PL/pgSQL function require_clearance(text,jsonb) line 5 at RAISE / PL/pgSQL function provenance(text) line 8 at assignment
+  нет записи : ERROR:  ACCESS_DENIED: нет допуска / CONTEXT:  PL/pgSQL function provenance(text) line 6 at RAISE
+
+[custody] РАЗЛИЧИМО
+  есть, нельзя: ERROR:  ACCESS_DENIED: нет допуска / CONTEXT:  PL/pgSQL function require_clearance(text,jsonb) line 5 at RAISE / PL/pgSQL function custody(text,timestamp with time zone) line 9 at assignment
+  нет записи : ERROR:  ACCESS_DENIED: нет допуска / CONTEXT:  PL/pgSQL function custody(text,timestamp with time zone) line 7 at RAISE
+
+[equipment_card] РАЗЛИЧИМО
+  есть, нельзя: ERROR:  ACCESS_DENIED: нет допуска / CONTEXT:  PL/pgSQL function require_clearance(text,jsonb) line 5 at RAISE / PL/pgSQL function equipment_card(text,text,timestamp with time zone) line 10 at assignment
+  нет записи : ERROR:  ACCESS_DENIED: нет допуска / CONTEXT:  PL/pgSQL function equipment_card(text,text,timestamp with time zone) line 8 at RAISE
+
+[wm_feed] РАЗЛИЧИМО
+  есть, нельзя: ERROR:  ACCESS_DENIED: нет допуска / CONTEXT:  PL/pgSQL function require_clearance(text,jsonb) line 5 at RAISE / PL/pgSQL function wm_feed(text,text,timestamp with time zone,date,date) line 9 at assignment
+  нет записи : ERROR:  ACCESS_DENIED: нет допуска / CONTEXT:  PL/pgSQL function wm_feed(text,text,timestamp with time zone,date,date) line 7 at RAISE
+
+[model] неразличимо
+  есть, нельзя: ERROR:  ACCESS_DENIED: нет допуска / CONTEXT:  PL/pgSQL function model(text,timestamp with time zone) line 6 at RAISE
+  нет записи : ERROR:  ACCESS_DENIED: нет допуска / CONTEXT:  PL/pgSQL function model(text,timestamp with time zone) line 6 at RAISE
+
+[schema_gaps] неразличимо
+  есть, нельзя: ERROR:  ACCESS_DENIED: нет допуска / CONTEXT:  PL/pgSQL function schema_gaps(text,timestamp with time zone) line 6 at RAISE
+  нет записи : ERROR:  ACCESS_DENIED: нет допуска / CONTEXT:  PL/pgSQL function schema_gaps(text,timestamp with time zone) line 6 at RAISE
+
+ИТОГ: различимо у 6 проекций из 8
+перебор под ac_rd_none, существуют в prj_dossier: ['ent_d_lomov', 'ent_d_trub', 'ent_d_car']

@@ -1,0 +1,41 @@
+ac_app|ac_app
+psql:findings/f05_privileges_hold.sql:4: ERROR:  permission denied for database rev_db
+psql:findings/f05_privileges_hold.sql:5: ERROR:  permission denied for schema public
+LINE 1: create table public.x_app(i int);
+                     ^
+psql:findings/f05_privileges_hold.sql:6: ERROR:  permission denied to create temporary tables in database "rev_db"
+LINE 1: create temp table x_app(i int);
+                          ^
+psql:findings/f05_privileges_hold.sql:7: ERROR:  permission denied for schema public
+psql:findings/f05_privileges_hold.sql:8: ERROR:  permission denied to create extension "pgcrypto"
+HINT:  Must have CREATE privilege on current database to create this extension.
+psql:findings/f05_privileges_hold.sql:9: ERROR:  permission denied to set role "ac_migrator"
+psql:findings/f05_privileges_hold.sql:10: ERROR:  permission denied to set session authorization "postgres"
+psql:findings/f05_privileges_hold.sql:11: ERROR:  permission denied to set parameter "session_replication_role"
+psql:findings/f05_privileges_hold.sql:12: ERROR:  must be owner of table claims
+psql:findings/f05_privileges_hold.sql:13: ERROR:  permission denied for table claims
+psql:findings/f05_privileges_hold.sql:14: ERROR:  must be owner of table claims
+psql:findings/f05_privileges_hold.sql:15: ERROR:  permission denied for table claim_reviews
+psql:findings/f05_privileges_hold.sql:16: ERROR:  permission denied for table claims
+psql:findings/f05_privileges_hold.sql:17: ERROR:  permission denied for table entity_keys
+psql:findings/f05_privileges_hold.sql:18: ERROR:  permission denied for table clearances
+psql:findings/f05_privileges_hold.sql:19: ERROR:  permission denied for table clearances
+psql:findings/f05_privileges_hold.sql:20: ERROR:  ENTITY_STATUS_TRANSITION: допустим только один переход ACTIVE -> MERGED|RETIRED
+CONTEXT:  PL/pgSQL function fail(text,text) line 2 at RAISE
+SQL statement "SELECT ac.fail('ENTITY_STATUS_TRANSITION', 'допустим только один переход ACTIVE -> MERGED|RETIRED')"
+PL/pgSQL function entities_guard() line 24 at PERFORM
+psql:findings/f05_privileges_hold.sql:21: ERROR:  CHECK_CLOSED: закрытая Проверка не меняется
+CONTEXT:  PL/pgSQL function fail(text,text) line 2 at RAISE
+SQL statement "SELECT ac.fail('CHECK_CLOSED', 'закрытая Проверка не меняется')"
+PL/pgSQL function checks_guard() line 5 at PERFORM
+psql:findings/f05_privileges_hold.sql:22: ERROR:  CHECK_CLOSED: закрытая Проверка не меняется
+CONTEXT:  PL/pgSQL function fail(text,text) line 2 at RAISE
+SQL statement "SELECT ac.fail('CHECK_CLOSED', 'закрытая Проверка не меняется')"
+PL/pgSQL function checks_guard() line 5 at PERFORM
+psql:findings/f05_privileges_hold.sql:24: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра и проекции, которые берут блокировку (сохранность, модель, пробелы схемы), выполняются только в READ COMMITTED (стражам нужен снимок, взятый после блокировки)
+CONTEXT:  PL/pgSQL function ac.require_read_committed() line 4 at RAISE
+SQL statement "SELECT ac.require_read_committed()"
+PL/pgSQL function ac.isolation_guard() line 3 at PERFORM
+f
+psql:findings/f05_privileges_hold.sql:30: WARNING:  there is no transaction in progress
+psql:findings/f05_privileges_hold.sql:31: ERROR:  permission denied for function dossier

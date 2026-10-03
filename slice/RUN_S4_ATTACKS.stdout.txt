@@ -34,12 +34,12 @@ D425   held | значение 2.5 вместо 1.6 | ERROR:  GRAPH_NODE_INVALID
 D426   held | уточнение другого параметра | ERROR:  GRAPH_NODE_INVALID: узел r3: уточнения не совпадают с узлом
 D427   held | отношение part-of выдано за instance-of | ERROR:  GRAPH_NODE_INVALID: узел r2: предикат не совпадает с ролью узла
 D428   held | второе утверждение на тот же узел | ERROR:  duplicate key value violates unique constraint "claim_evidence_one_node"
-D429   held | утверждение receipt без узла графа | ERROR:  GRAPH_NODE_INVALID: clm:sha256:bfa8a65213e94f08add5d3e8621a95d8cfa124a7b98e21b43bd954b6a8d48cf0: доказательство 
+D429   held | утверждение receipt без узла графа | ERROR:  GRAPH_NODE_INVALID: clm:sha256:b030e222bc1a550712ce6eafb0a79f85833b300d27ddc46ef95db933e3275c67: доказательство 
 D430   held | утверждение аналитика с узлом графа | ERROR:  RECEIPT_CLAIM_BINDING_INVALID: узел графа допустим только у PIPELINE-утверждения
 D431   held | узел n12 чужого артефакта (НС-2) у утверждения о задвижке | ERROR:  GRAPH_NODE_INVALID: фрагмент доказательства вне якоря узла n12
 D432   held | артефакт сохранён только в другом tenant | ERROR:  GRAPH_NODE_INVALID: узла r1 нет в сохранённом артефакте tenant или это не отношение
 D433   held | утверждение из артефакта со сроком действия (S4R-01) | ERROR:  GRAPH_NODE_INVALID: узел r3: у отношения нет срока действия, а у утверждения есть
-D434   held | лишнее доказательство без узла (S4R-07) | ERROR:  GRAPH_NODE_INVALID: clm:sha256:b7e1afa16b37b69d54d1a17a9531b1dffdd1d8a2e0df0e992bfae0f6e6f37aee: доказательство 
+D434   held | лишнее доказательство без узла (S4R-07) | ERROR:  GRAPH_NODE_INVALID: clm:sha256:2f26c5cd37573c8b123f67439522bba093ba14d1c4b09b41580ad6d657e77edf: доказательство 
 D435   held | повтор того же запуска другими байтами артефакта (S4R-08) | ERROR:  duplicate key value violates unique constraint "artifacts_one_per_run"
 D436   held | TAB в теге узла (S4R-03) | ERROR:  ARTIFACT_INVALID: управляющий символ в структурном поле или строка длиннее 2000 (S4R-03)
 D436b  held | строка длиннее 2000 в описании узла (S4R-03) | ERROR:  ARTIFACT_INVALID: управляющий символ в структурном поле или строка длиннее 2000 (S4R-03)

@@ -1,0 +1,31 @@
+-- «проверено, держит»: что роль приложения ac_app НЕ может (каждая команда должна завершиться ошибкой)
+\set ON_ERROR_STOP off
+select session_user, current_user;
+create schema x_app;
+create table public.x_app(i int);
+create temp table x_app(i int);
+create function public.x_f() returns int language sql as 'select 1';
+create extension pgcrypto;
+set role ac_migrator;
+set session authorization postgres;
+set session_replication_role = replica;
+alter table ac.claims disable trigger all;
+truncate ac.claims;
+create rule x_r as on insert to ac.claims do instead nothing;
+delete from ac.claim_reviews;
+update ac.claims set body = body;
+insert into ac.entity_keys values ('prj_dossier','PERSON','x','1','ent_d_lomov','STRONG',null);
+insert into ac_trust.clearances (role_name, project_id, level) values ('ac_rd_none','prj_dossier','RESTRICTED');
+select count(*) from ac_trust.clearances;
+update ac.entities set status='ACTIVE', merged_into=null, status_changed_at=null where entity_id='ent_d_lomov_media';
+update ac.checks set status='IN_PROGRESS', completed_at=null, overall_risk=null, body = body || '{"status":"IN_PROGRESS"}' where check_id='chk_full_1';
+update ac.checks set overall_risk='NONE' where check_id='chk_full_1';
+begin isolation level repeatable read;
+insert into ac.claim_reviews values ('rev_x', (select claim_id from ac.claims limit 1), 'ACCEPTED', 'u', now(), now());
+rollback;
+begin;
+set local ac.historical_import = 'on';
+select ac.historical();
+rollback;
+prepare transaction 'x';
+select ac.dossier('prj_dossier','ent_d_lomov');

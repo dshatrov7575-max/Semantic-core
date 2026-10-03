@@ -1,0 +1,51 @@
+настройки: max_locks_per_transaction=64 max_connections=100 max_prepared_transactions=0
+
+=== N = 1000 (одна транзакция ac_app: 1000 сущностей + 1000 утверждений), всего 4.4 c
+   Time: 0.041 ms
+   Time: 3165.383 ms (00:03.165)
+   locks after entities: 2000
+   Time: 1.437 ms
+   Time: 1137.240 ms (00:01.137)
+   locks after claims: 3000
+   Time: 1.746 ms
+   Time: 32.052 ms
+   committed entities: 1000
+   Time: 1.580 ms
+   committed claims: 1000
+   Time: 2.885 ms
+   => на 1 сущность 3.17 мс, на 1 утверждение 1.14 мс
+
+=== N = 4200 (одна транзакция ac_app: 4200 сущностей + 4200 утверждений), всего 20.0 c
+   Time: 0.043 ms
+   Time: 12782.499 ms (00:12.782)
+   locks after entities: 8400
+   Time: 12.642 ms
+   Time: 6940.270 ms (00:06.940)
+   locks after claims: 12600
+   Time: 19.104 ms
+   Time: 199.138 ms
+   committed entities: 4200
+   Time: 6.855 ms
+   committed claims: 4200
+   Time: 8.154 ms
+   => на 1 сущность 3.04 мс, на 1 утверждение 1.65 мс
+
+=== N = 4400 (одна транзакция ac_app: 4400 сущностей + 4400 утверждений), всего 16.6 c
+   Time: 1.560 ms
+   Time: 14059.920 ms (00:14.060)
+   locks after entities: 8800
+   Time: 15.878 ms
+   Time: 2447.579 ms (00:02.448)
+   Time: 4.013 ms
+   Time: 2.865 ms
+   committed entities: 0
+   Time: 3.688 ms
+   committed claims: 0
+   Time: 12.915 ms
+   ERROR:  out of shared memory
+   HINT:  You might need to increase max_locks_per_transaction.
+   CONTEXT:  SQL statement "SELECT pg_advisory_xact_lock_shared(hashtextextended(k, 7)) FROM (SELECT DISTINCT k FROM unnest(keys) k WHERE k IS NOT NULL ORDER BY k) x"
+   PL/pgSQL function ac.lock_keys_shared(text[]) line 4 at PERFORM
+   SQL statement "SELECT ac.lock_keys_shared(ARRAY['entity:' || NEW.subject, 'entity:' || NEW.object_entity])"
+   PL/pgSQL function ac.claims_before() line 7 at PERFORM
+   ERROR:  current transaction is aborted, commands ignored until end of transaction block

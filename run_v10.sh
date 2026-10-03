@@ -16,8 +16,11 @@ run() {  # output file, command...
   "$@" > "$out" 2>&1
   local rc=$?
   echo "$(date +%H:%M:%S) rc=$rc $out :: $(tail -1 "$out" | cut -c1-150)" >> runs/v10_summary.txt
-  touch "$mark"
+  # a step is «done» only if it SUCCEEDED (external review 03.10: the mark used to be set after a failed step, and a
+  # repeated start skipped it); a failed step is run again next time and fails the whole script
+  if [ $rc -eq 0 ]; then touch "$mark"; else FAILED=$((FAILED + 1)); fi
 }
+FAILED=0
 run $S/RUN_LOAD_S1.stdout.txt        python3 $S/load_s1.py
 run $S/RUN_KEYS_PARITY.stdout.txt    python3 $S/keys_parity_s1.py
 run $S/RUN_S1.stdout.txt             python3 $S/attacks_s1.py
@@ -46,4 +49,5 @@ case " $* " in *" fast "*) ;; *)
   run $S/RUN_S5_EXHAUSTIVE.stdout.txt python3 $S/parity_s5_exhaustive.py
   run $S/DB_VECTORS_S1.stdout.txt     python3 $S/db_vectors_s1.py;;
 esac
-echo done >> runs/v10_summary.txt
+echo "done failed=$FAILED code=$(cat core/validator.py slice/*.sql | sha256sum | cut -c1-16)" >> runs/v10_summary.txt
+[ "$FAILED" -eq 0 ]

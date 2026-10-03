@@ -30,4 +30,9 @@ fi
 cd $A
 if [ ! -f $D/reg.started ]; then rm -f runs/v10/*.done runs/v10_summary.txt; touch $D/reg.started; fi
 if [ ! -f $D/reg.done ]; then ./run_v10.sh && touch $D/reg.done; fi
-echo ALLDONE > $D/all.done
+# ALLDONE only if every stage left its mark and the mutation run has no survivors (external review 03.10)
+if [ -f $D/tests.done ] && [ -f $D/mut.done ] && [ -f $D/reg.done ] && tail -1 $A/slice/RUN_MUTANTS_CORE_v0.4.stdout.txt | grep -q "survived/broken=0 "; then
+  echo ALLDONE > $D/all.done
+else
+  echo "NOT DONE: a stage failed" >&2; rm -f $D/all.done; exit 1
+fi

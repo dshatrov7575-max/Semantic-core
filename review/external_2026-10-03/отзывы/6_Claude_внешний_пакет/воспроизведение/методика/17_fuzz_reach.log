@@ -1,0 +1,4 @@
+{'остановлено фазой 0/1 (SCHEMA_INVALID)': 2959, 'дошло до семантики': 41}
+из дошедших — без ошибок (повреждение принято): 10
+коды семантики: [('CLAIM_ID_MISMATCH', 26), ('QUALIFIER_INVALID', 9), ('GRAPH_NODE_INVALID', 4), ('EVIDENCE_SPAN_INVALID', 4), ('EVIDENCE_ROW_INVALID', 2), ('ENTITY_IDENTITY_INSUFFICIENT', 2), ('SOURCE_DIGEST_MISMATCH', 2), ('IDENTIFIER_SCHEME_INVALID', 1), ('PREDICATE_UNKNOWN', 1), ('SCHEMA_CHANGE_INVALID', 1)]
+T6: записей всего 72568 разных 1071

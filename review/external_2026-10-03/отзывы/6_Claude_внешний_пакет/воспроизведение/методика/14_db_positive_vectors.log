@@ -1,0 +1,159 @@
+P077 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | IMO с верной контрольной цифрой
+P086 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | иностранная организация с foreign_ids
+P089 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | имущество OTHER с регистрацией
+P094 | False | REJECTED | ERROR:  POSSIBLE_DUPLICATE: skel:equipment: ent_ts_pump и ent_ts_pump2 совпадают по скелету — нужно решение аналитика (identity_decisions) | ['CONTRADICTION_SINGLE_VALUED', 'POSSIBLE_DUPLICATE'] | латинская «H» в теге: теги PT-101/РТ-101 бывают разными приборами — только предупреждение (RR-02)
+P104 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | тёзки с одной датой рождения и разными ИНН
+P105 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | два одноимённых события в один день в разных местах
+P114 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | та же организация в двух проектах — не дубль (проекты изолированы)
+P140 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | доля ровно 100% и 0,01%
+P163 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | фрагмент ровно по эмодзи
+P167 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | прод: все источники без content_inline, байты из хранилища
+P181 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | одинаковое заявленное время, разное время записи — порядок однозначен
+P193 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | слияние субъекта ПОСЛЕ завершённых Проверок; идущая Проверка — на выжившей сущности
+P197 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | отменённая Проверка без измерений и поисков
+P206 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | поиск ровно в момент запроса и ровно в момент завершения
+P208 | False | REJECTED | ERROR:  CLAIM_ABOUT_MERGED_ENTITY: после слияния утверждения пишутся о выжившей сущности | ['CONTRADICTION_SINGLE_VALUED'] | утверждение о слитом дубле субъекта засчитывается субъекту
+P211 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | ACCEPTED записан ровно в момент завершения
+P214 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | оспаривание после завершения не меняет завершённую Проверку (база) — без него то же
+P233 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | ключ отозван после выдачи
+P235 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | issued_at = not_after − 1 с
+P237 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | issued_at == not_before
+P248 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | утверждение записано ровно в момент выдачи
+P115 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | тёзки с одной датой рождения без ИНН, но с разными disambiguator (аналитик их различил)
+P116 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | слитый дубль с тем же ИНН, что у выжившей сущности, — не дубль
+P221 | False | ACCEPTED |  | [] | отклонённое утверждение не порождает противоречия
+P222 | False | ACCEPTED |  | [] | непересекающиеся сроки — не противоречие
+P223 | False | ACCEPTED |  | [] | одинаковые значения из двух источников — не противоречие
+P224 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | база: ровно одно предупреждение о расхождении даты рождения
+P300 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | субъект закрытых Проверок выведен из оборота после их закрытия (RR-01)
+P303 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | выжившая сущность выведена из оборота после слияния — дубли остаются корректными (RR-13)
+P306 | False | REJECTED | ERROR:  POSSIBLE_DUPLICATE: skel:equipment: ent_ts_pt и ent_ts_rt совпадают по скелету — нужно решение аналитика (identity_decisions) | ['CONTRADICTION_SINGLE_VALUED', 'POSSIBLE_DUPLICATE'] | PT-101 (латиница, датчик давления) и РТ-101 (кириллица, регулятор) — разные приборы, предупреждение
+P307 | False | REJECTED | ERROR:  POSSIBLE_DUPLICATE: skel:concept: ent_wk_palate и ent_wk_sky совпадают по скелету — нужно решение аналитика (identity_decisions) | ['CONTRADICTION_SINGLE_VALUED', 'POSSIBLE_DUPLICATE'] | понятия «небо» и «нёбо» различны — только предупреждение
+P308 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | омонимы «Орёл» (город) и «орёл» (птица) с разными пометками — не дубль и без предупреждения
+P321 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | два ИП-тёзки с одной датой рождения и разными ОГРНИП (RR-04)
+P323 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | ключ с тем же key_id у другого tenant (другой открытый ключ, первым в реестре) не подменяет ключ этого tenant (RR-06)
+P327 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | многострочное действие TechSense (STRING-литерал) (RR-10)
+P330 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | одинаковая пара «схема+значение» у организации и у имущества — разные пространства (RR-12)
+P408 | False | REJECTED | ERROR:  POSSIBLE_DUPLICATE: skel:equipment: ent_ts_pump и ent_ts_pump2 совпадают по скелету — нужно решение аналитика (identity_decisions) | ['CONTRADICTION_SINGLE_VALUED', 'POSSIBLE_DUPLICATE'] | тег «Н́-101»: точный ключ другой, скелет тот же — предупреждение (RS-12 B2-04)
+P409 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | й не теряется: Зуйков и Зуиков с одной датой рождения — разные люди
+P410 | False | REJECTED | ERROR:  POSSIBLE_DUPLICATE: skel:equipment: ent_ts_valve_a и ent_ts_valve_b совпадают по скелету — нужно решение аналитика (identity_decisions) | ['CONTRADICTION_SINGLE_VALUED', 'POSSIBLE_DUPLICATE'] | К-1/12 и К-11/2 без решения аналитика — предупреждение, не дубль (RS-14 B2-01)
+P411 | False | REJECTED | ERROR:  POSSIBLE_DUPLICATE: skel:equipment: ent_ts_t1 и ent_ts_t2 совпадают по скелету — нужно решение аналитика (identity_decisions) | ['CONTRADICTION_SINGLE_VALUED', 'POSSIBLE_DUPLICATE'] | TT-10-1 и TT-101 — предупреждение, не дубль (RS-14 B2-02)
+P412 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | модели «ЦНС 10²» и «ЦНС 102» — разные (без NFKC в ключе модели, RS-14 B2-09)
+P414 | False | REJECTED | ERROR:  POSSIBLE_DUPLICATE: skel:equipment: ent_ts_pump и ent_ts_pump2 совпадают по скелету — нужно решение аналитика (identity_decisions) | ['CONTRADICTION_SINGLE_VALUED', 'POSSIBLE_DUPLICATE'] | «Н-1-01» и «Н-101»: граница групп цифр значима — предупреждение
+P42A | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | то же уточнение без такого символа — контроль к N42A
+P424b | False | REJECTED | ERROR:  ENTITY_MERGE_INVALID: ent_d_lomov_x: цель того же проекта и типа, ACTIVE на момент слияния, не шире по маркировке | ['CONTRADICTION_SINGLE_VALUED'] | уточнение, а слияние позже — допустимо (решение проверяется на момент принятия)
+P433 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | событие без места уточняется местом, затем заводится одноимённое событие в другом месте (RS-15)
+P435 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | понятие с латинской C: два решения «различны» снимают оба предупреждения (RS-13)
+P436 | False | REJECTED | ERROR:  POSSIBLE_DUPLICATE: skel:concept: ent_wk_c и ent_wk_blue_colour совпадают по скелету — нужно решение аналитика (identity_decisions) | ['CONTRADICTION_SINGLE_VALUED', 'POSSIBLE_DUPLICATE'] | одно решение из двух нужных — предупреждение остаётся (RS-13)
+P437 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | уточнение физлица с датой рождения (ИНН есть) — допустимо
+P439b | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | омоним заведён в ту же секунду, что и уточнение оригинала
+P440b | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | слитая в уточнённую сущность без своей пометки: омоним с другой пометкой допустим
+P441b | False | REJECTED | ERROR:  CLAIM_ABOUT_MERGED_ENTITY: после слияния утверждения пишутся о выжившей сущности | ['CONTRADICTION_SINGLE_VALUED'] | слияние в сущность с той же маркировкой допустимо
+P534 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | фрагмент доказательства — часть якоря узла
+P535 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | в артефакте есть неотображаемое отношение, которое не дало утверждения
+P536 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | тег в графе записан «Н 101» — тот же строгий ключ, что «Н-101»
+P537 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | узел-сущность без якоря допустим
+P548 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | узел назван ключом слитой сущности, утверждение — о выжившей (S4R-02)
+P608 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | отредактированная статья (другое слово) — не рендеринг: отдельный источник без ошибки
+P610 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | канонический адрес с упорядоченными параметрами
+P616 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | адрес наблюдения с «@» — не рендеринг издания (S5R-09): маркировка такой версии публикацию не ограничивает
+P617 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | версия статьи без байтов, на которую никто не ссылается, — не рендеринг и не ошибка (S5R-07)
+P704 | False | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | два наблюдения ссылаются на один оригинал
+P900 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | версия 2 класса: переименование (RENAME_CLASS) — одно допустимое отличие
+P901 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | связь выведена из употребления ПОСЛЕ утверждения c43: старое утверждение читается по своей версии схемы
+P902 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | атрибут x.max_length удалён версией 3 ПОСЛЕ утверждения c42: утверждение остаётся действительным
+P903 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | CHANGE_ATTRIBUTE: кардинальность атрибута ONE → MANY (тип значения не тронут)
+P904 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | CHANGE_IDENTIFIER_STRENGTH: сила типа идентификатора tenant STRONG → WEAK
+P905 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | тот же class_id в другом tenant — другая схема (область схемы — tenant)
+P906 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | IdentifierDef для встроенной схемы ru.inn: только порядок (приоритет) у корневого типа, без формата
+P907 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | симметричная связь между сущностями одного класса
+P924 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | записи версий в наборе идут не по порядку версий (версия 2 раньше версии 1) — порядок записей не важен
+P908 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | наследник создан ДО вывода родителя из употребления — остаётся действительным
+P925 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | тип идентификатора выведен из употребления ПОСЛЕ атрибута и утверждения; следующая версия класса (переименование) атрибут не трогает — всё действительно
+P909 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | атрибут-идентификатор встроенной схемы ru.inn: определение tenant не требуется
+P910 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | та же схема tenant для ДРУГОГО корневого типа — отдельное определение
+P926 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | та же схема и тот же корневой тип в схеме ДРУГОГО tenant — отдельное определение
+P927 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | schema.is_a записано в ту же секунду, что и класс («записан к моменту t» включает t)
+P911 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | schema.is_a записано ДО вывода класса из употребления — остаётся действительным
+P912 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | атрибут родительского класса у экземпляра наследника (наследование вниз по дереву)
+P931 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | атрибут tenant со встроенной схемой ru.inn: верный ИНН принят
+P928 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | принадлежность отозвана и восстановлена (ACCEPTED) до записи нового утверждения — действует последняя рецензия
+P929 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | принадлежность отозвана ПОСЛЕ утверждений с атрибутами — они остаются; отозванная принадлежность не требует обязательных атрибутов (предупреждения нет)
+P913 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | утверждение INTERNAL с атрибутом класса INTERNAL
+P914 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | два разных значения атрибута с кардинальностью ONE — предупреждение о расхождении источников
+P915 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | мир с атрибутом tenant в проекте проверок без ссылки из Проверки
+P916 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED', 'REQUIRED_ATTRIBUTE_MISSING'] | у экземпляра класса нет обязательного атрибута — предупреждение
+P917 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED', 'REQUIRED_ATTRIBUTE_MISSING'] | обязательный атрибут есть, но утверждение отозвано — предупреждение
+P918 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED', 'REQUIRED_ATTRIBUTE_MISSING'] | обязательный атрибут родителя не заполнен у экземпляров родителя и наследника — два предупреждения
+P919 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | обязательный атрибут удалён последней версией класса — предупреждения нет
+P920 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | формат с литералом: «ZB-» + 6 знаков
+P930 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | записи прежних девяти видов в мире помечены core-ontology/0.2 (их производителям и адресам менять нечего); та же запись с пометкой core-ontology/0.3 тоже действительна
+P921 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | одноимённые вещи с разными пометками — разные сущности
+P922 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | решение аналитика уточняет вещь пометкой (как понятие)
+P923 | True | REJECTED | ERROR:  POSSIBLE_DUPLICATE: skel:thing: ent_wk_skeleton и ent_wk_skeleton2 совпадают по скелету — нужно решение аналитика (identity_decisions) | ['CONTRADICTION_SINGLE_VALUED', 'POSSIBLE_DUPLICATE'] | вещи, совпадающие только по скелету (латинская «c»), — предупреждение, не ошибка
+PR22 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | previous называет источник другого tenant — для этого tenant он неизвестен
+PR23 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | словарь 0.3 (предикат tenant) в записи, помеченной core-ontology/0.4
+PR25 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | набор без записей 0.4 может быть объявлен core-ontology/0.3
+PR01 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | версия набора со ссылкой на предыдущую версию того же набора
+PR02 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | предыдущая версия не входит в этот набор записей — ссылка допустима
+PR03 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | версия набора, на строки которой никто не ссылается
+PR19 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | дерево из 13 строк: путь из нескольких хэшей
+PR04 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | файл из одной строки: путь доказательства пуст
+PR05 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | все строки в одном файле (дерево из пяти листьев)
+PR06 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | файлы по две строки
+PR07 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | строка из первого файла версии (файлы по три строки)
+PR08 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | набор без ключа: строка называется своим хэшем
+PR24 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | ключ строки с табуляцией: ключ — те же данные, что и ячейки
+PR09 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | составной ключ
+PR10 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | процитированы ячейки всех типов (строка, дата, булево, целое)
+PR11 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | пустые ячейки процитированы
+PR12 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | перевод строки и табуляция в строковой ячейке — свободный текст
+PR13 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | субъект строки назван ИНН (ключ набора — название)
+PR20 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | у субъекта нет идентификатора одной из схем строки (ИНН) — совпадения по ОГРН достаточно
+PR15 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | субъект после слияния несёт идентификаторы влившейся сущности
+PR16 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | колонка-идентификатор: номер дела из строки
+PR17 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | объект-сущность: ячейка называет её идентификатором
+PR30 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | ключ — целая колонка
+PR31 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | ключ — булева и строковая колонки
+PR26 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | объект-сущность: ячейка называет идентификатор сущности, влитой в объект ДО утверждения (S10R-09)
+PR27 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | колонка дат подтверждает литерал-дату (S10R-09)
+PR28 | True | REJECTED | ERROR:  CLAIM_ABOUT_MERGED_ENTITY: после слияния утверждения пишутся о выжившей сущности | ['CONTRADICTION_SINGLE_VALUED'] | субъект утверждения сам влит в девелопера до утверждения: строка девелопера — о нём (правило «после слияния пишут о выжившем» — только у базы) (S10R-09)
+PR29 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | колонка объявлена для предиката схемы tenant
+PRF1 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | файлов версии в хранилище нет — версия регистрируется по манифесту
+PRF2 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | строки файла не в порядке ключа: порядок не правило, правило — единственность ключа (S10R-28)
+WS01 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED', 'ROW_SUBJECT_CONFLICT'] | ОГРН строки — у субъекта, ИНН строки — у ДРУГОЙ организации проекта: по строке одна сущность, в проекте две
+WS02 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED', 'ROW_SUBJECT_CONFLICT'] | другая организация создана ПОЗЖЕ утверждения — конфликт есть: это состояние проекта, а не дефект утверждения
+WS03 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED', 'ROW_SUBJECT_CONFLICT'] | другая организация выведена из употребления (RETIRED) — ключ остаётся её, конфликт остаётся
+WS04 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED', 'ROW_SUBJECT_CONFLICT'] | другая организация влита в ТРЕТЬЮ — ключом владеет третья, конфликт остаётся
+WS05 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED', 'ROW_SUBJECT_CONFLICT'] | тот же номер несёт другая ОРГАНИЗАЦИЯ проекта (иностранный идентификатор, записан с дефисами и заглавными)
+WS06 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED', 'ROW_SUBJECT_CONFLICT'] | другая организация маркирована СТРОЖЕ утверждения (ПД): конфликт есть — валидатор видит весь мир, база показывает флаг читателю с допуском к обеим (S11R2-04)
+PS01 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | другая организация влита в субъект — конфликта нет
+PS02 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | идентификатор строки с тем же значением несёт сущность ДРУГОГО типа (регистрационный номер прицепа) — не конфликт
+PS03 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | ИНН строки не процитирован — чужой ИНН в проекте не виден из утверждения
+PS04 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | ИНН строки несёт организация ДРУГОГО проекта — не конфликт
+PS05 | True | REJECTED | ERROR:  CLAIM_ABOUT_MERGED_ENTITY: после слияния утверждения пишутся о выжившей сущности | ['CONTRADICTION_SINGLE_VALUED'] | субъект утверждения сам влит в девелопера; идентификаторы строки — девелопера: конфликта нет
+PS06 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | идентификатор субъекта в строке записан с дефисами и заглавными буквами, у сущности — в нормальной форме: это он (S11R-09)
+PS07 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | объект-сущность: ячейка называет её иностранный идентификатор в другой записи (S11R-09)
+PS08 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | кадастровый номер в строке с ведущими нулями — тот же объект
+PS10 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | ОГРНИП в строке записан как у сущности
+PS11 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | VIN в строке записан как у сущности
+PS12 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | IMO в строке записан как у сущности
+PS09 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | в колонке идентификатора субъекта прочерк: это не идентификатор, строка субъекту не противоречит (S11R2-09)
+PR18 | True | ACCEPTED |  | ['CONTRADICTION_SINGLE_VALUED'] | колонка с персональными данными процитирована в утверждении с этой категорией
+
+позитивных: 142 | (входит в паритет s9/s10/s11, результат): {(False, 'ACCEPTED'): 50, (False, 'REJECTED'): 11, (True, 'ACCEPTED'): 78, (True, 'REJECTED'): 3}
+отвергнуто базой, хотя валидатор принимает:
+   P094 | False | REJECTED | ERROR:  POSSIBLE_DUPLICATE: skel:equipment: ent_ts_pump и ent_ts_pump2 совпадают по скелету — нужно решение аналитика (identity_decisions) | ['CONTRADICTION_SINGLE_VALUED', 'POSSIBLE_DUPLICATE'] | латинская «H» в теге: теги PT-101/РТ-101 бывают разными приборами — только предупреждение (RR-02)
+   P208 | False | REJECTED | ERROR:  CLAIM_ABOUT_MERGED_ENTITY: после слияния утверждения пишутся о выжившей сущности | ['CONTRADICTION_SINGLE_VALUED'] | утверждение о слитом дубле субъекта засчитывается субъекту
+   P306 | False | REJECTED | ERROR:  POSSIBLE_DUPLICATE: skel:equipment: ent_ts_pt и ent_ts_rt совпадают по скелету — нужно решение аналитика (identity_decisions) | ['CONTRADICTION_SINGLE_VALUED', 'POSSIBLE_DUPLICATE'] | PT-101 (латиница, датчик давления) и РТ-101 (кириллица, регулятор) — разные приборы, предупреждение
+   P307 | False | REJECTED | ERROR:  POSSIBLE_DUPLICATE: skel:concept: ent_wk_palate и ent_wk_sky совпадают по скелету — нужно решение аналитика (identity_decisions) | ['CONTRADICTION_SINGLE_VALUED', 'POSSIBLE_DUPLICATE'] | понятия «небо» и «нёбо» различны — только предупреждение
+   P408 | False | REJECTED | ERROR:  POSSIBLE_DUPLICATE: skel:equipment: ent_ts_pump и ent_ts_pump2 совпадают по скелету — нужно решение аналитика (identity_decisions) | ['CONTRADICTION_SINGLE_VALUED', 'POSSIBLE_DUPLICATE'] | тег «Н́-101»: точный ключ другой, скелет тот же — предупреждение (RS-12 B2-04)
+   P410 | False | REJECTED | ERROR:  POSSIBLE_DUPLICATE: skel:equipment: ent_ts_valve_a и ent_ts_valve_b совпадают по скелету — нужно решение аналитика (identity_decisions) | ['CONTRADICTION_SINGLE_VALUED', 'POSSIBLE_DUPLICATE'] | К-1/12 и К-11/2 без решения аналитика — предупреждение, не дубль (RS-14 B2-01)
+   P411 | False | REJECTED | ERROR:  POSSIBLE_DUPLICATE: skel:equipment: ent_ts_t1 и ent_ts_t2 совпадают по скелету — нужно решение аналитика (identity_decisions) | ['CONTRADICTION_SINGLE_VALUED', 'POSSIBLE_DUPLICATE'] | TT-10-1 и TT-101 — предупреждение, не дубль (RS-14 B2-02)
+   P414 | False | REJECTED | ERROR:  POSSIBLE_DUPLICATE: skel:equipment: ent_ts_pump и ent_ts_pump2 совпадают по скелету — нужно решение аналитика (identity_decisions) | ['CONTRADICTION_SINGLE_VALUED', 'POSSIBLE_DUPLICATE'] | «Н-1-01» и «Н-101»: граница групп цифр значима — предупреждение
+   P424b | False | REJECTED | ERROR:  ENTITY_MERGE_INVALID: ent_d_lomov_x: цель того же проекта и типа, ACTIVE на момент слияния, не шире по маркировке | ['CONTRADICTION_SINGLE_VALUED'] | уточнение, а слияние позже — допустимо (решение проверяется на момент принятия)
+   P436 | False | REJECTED | ERROR:  POSSIBLE_DUPLICATE: skel:concept: ent_wk_c и ent_wk_blue_colour совпадают по скелету — нужно решение аналитика (identity_decisions) | ['CONTRADICTION_SINGLE_VALUED', 'POSSIBLE_DUPLICATE'] | одно решение из двух нужных — предупреждение остаётся (RS-13)
+   P441b | False | REJECTED | ERROR:  CLAIM_ABOUT_MERGED_ENTITY: после слияния утверждения пишутся о выжившей сущности | ['CONTRADICTION_SINGLE_VALUED'] | слияние в сущность с той же маркировкой допустимо
+   P923 | True | REJECTED | ERROR:  POSSIBLE_DUPLICATE: skel:thing: ent_wk_skeleton и ent_wk_skeleton2 совпадают по скелету — нужно решение аналитика (identity_decisions) | ['CONTRADICTION_SINGLE_VALUED', 'POSSIBLE_DUPLICATE'] | вещи, совпадающие только по скелету (латинская «c»), — предупреждение, не ошибка
+   PR28 | True | REJECTED | ERROR:  CLAIM_ABOUT_MERGED_ENTITY: после слияния утверждения пишутся о выжившей сущности | ['CONTRADICTION_SINGLE_VALUED'] | субъект утверждения сам влит в девелопера до утверждения: строка девелопера — о нём (правило «после слияния пишут о выжившем» — только у базы) (S10R-09)
+   PS05 | True | REJECTED | ERROR:  CLAIM_ABOUT_MERGED_ENTITY: после слияния утверждения пишутся о выжившей сущности | ['CONTRADICTION_SINGLE_VALUED'] | субъект утверждения сам влит в девелопера; идентификаторы строки — девелопера: конфликта нет
