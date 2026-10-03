@@ -219,6 +219,7 @@ N413b | ENTITY_DUPLICATE_IN_PROJECT | REJECTED | ERROR:  ENTITY_DUPLICATE_IN_PRO
 N420 | IDENTITY_DECISION_INVALID | REJECTED | ERROR:  IDENTITY_DECISION_INVALID: ent_d_developer: уточнение допустимо один раз, только недостающего disambiguator у слабого ключа (ФИО+дат
 N421 | IDENTITY_DECISION_INVALID | REJECTED | ERROR:  IDENTITY_DECISION_INVALID: ent_wk_blue_colour: уточнение допустимо один раз, только недостающего disambiguator у слабого ключа (ФИО+
 N422 | IDENTITY_DECISION_INVALID | REJECTED | ERROR:  IDENTITY_DECISION_INVALID: ent_wk_blue: уточнение допустимо один раз, только недостающего disambiguator у слабого ключа (ФИО+дата, с
+N42A | IDENTITY_DECISION_INVALID | REJECTED | ERROR:  IDENTITY_DECISION_INVALID: ent_k_tender: уточнение с символом, не назначенным в Юникоде валидатора
 N423 | IDENTITY_DECISION_INVALID | REJECTED | ERROR:  IDENTITY_DECISION_INVALID: ent_wk_baleen: уточнение допустимо один раз, только недостающего place у слабого ключа (ФИО+дата, событие
 N424 | IDENTITY_DECISION_INVALID | REJECTED | ERROR:  ENTITY_MERGE_INVALID: ent_d_lomov_x: цель того же проекта и типа, ACTIVE на момент слияния, не шире по маркировке
 N425 | IDENTITY_DECISION_INVALID | REJECTED | ERROR:  IDENTITY_DECISION_INVALID: «различны» — только для несливших сущностей одного типа
@@ -482,6 +483,7 @@ NR47 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ячей�
 NR3B | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: строка не входит в файл версии набора (доказательство включения не сходится)
 NR7B | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
 NR7C | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+NR67 | EVIDENCE_ROW_INVALID,REF_UNRESOLVED | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки сущности
 NR66 | REF_UNRESOLVED | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки сущности
 NR7D | REF_UNRESOLVED | REJECTED | ERROR:  insert or update on table "claims" violates foreign key constraint "claims_project_id_object_entity_fkey"
 NR48 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ячейки не совпадают с колонками манифеста (состав или порядок)
@@ -512,6 +514,24 @@ NRFH | DATASET_MANIFEST_INVALID | ACCEPTED |
 NRFI | DATASET_MANIFEST_INVALID | ACCEPTED | 
 NRFJ | DATASET_MANIFEST_INVALID | ACCEPTED | 
 NRFK | DATASET_MANIFEST_INVALID | ACCEPTED | 
+NS01 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: строка не о субъекте утверждения: ни один процитированный идентификатор субъекта строки не принадлежит ему
+NS02 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+NS03 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: строка не о субъекте утверждения: ни один процитированный идентификатор субъекта строки не принадлежит ему
+NS04 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+NS08 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: строка не о субъекте утверждения: ни один процитированный идентификатор субъекта строки не принадлежит ему
+NS09 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: строка не о субъекте утверждения: ни один процитированный идентификатор субъекта строки не принадлежит ему
+NS10 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+NS11 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+NS12 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+NS13 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+NS05 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: строка не о субъекте утверждения: ни один процитированный идентификатор субъекта строки не принадлежит ему
+NS06 | ENTITY_IDENTITY_INSUFFICIENT | REJECTED | ERROR:  ENTITY_IDENTITY_INSUFFICIENT: иностранный идентификатор без единого значащего знака
+NS14 | ENTITY_IDENTITY_INSUFFICIENT | REJECTED | ERROR:  ENTITY_IDENTITY_INSUFFICIENT: identity с символом, не назначенным в Юникоде валидатора
+NS15 | ENTITY_IDENTITY_INSUFFICIENT | REJECTED | ERROR:  ENTITY_IDENTITY_INSUFFICIENT: identity с символом, не назначенным в Юникоде валидатора
+NS17 | ENTITY_IDENTITY_INSUFFICIENT | REJECTED | ERROR:  ENTITY_IDENTITY_INSUFFICIENT: identity с символом, не назначенным в Юникоде валидатора
+NS18 | ENTITY_IDENTITY_INSUFFICIENT,EVIDENCE_ROW_INVALID | REJECTED | ERROR:  ENTITY_IDENTITY_INSUFFICIENT: identity с символом, не назначенным в Юникоде валидатора
+NS16 | EVIDENCE_ROW_INVALID | REJECTED | ERROR:  EVIDENCE_ROW_INVALID: строка не о субъекте утверждения: ни один процитированный идентификатор субъекта строки не принадлежит ему
+NS07 | ENTITY_IDENTITY_INSUFFICIENT | REJECTED | ERROR:  ENTITY_IDENTITY_INSUFFICIENT: регистрационный номер без единого значащего знака
 NR80 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки колонки director
 NR81 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки колонки employees
 NR82 | MARKING_BROADER_THAN_INPUT | REJECTED | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки источника
@@ -537,14 +557,14 @@ CROSS_SCOPE_REFERENCE | 9 | 0 | 0
 DATASET_MANIFEST_INVALID | 23 | 23 | 0
 DUPLICATE_ID | 4 | 0 | 0
 ENTITY_DUPLICATE_IN_PROJECT | 51 | 0 | 0
-ENTITY_IDENTITY_INSUFFICIENT | 10 | 0 | 0
+ENTITY_IDENTITY_INSUFFICIENT | 16 | 0 | 0
 ENTITY_MERGE_INVALID | 8 | 0 | 0
-EVIDENCE_ROW_INVALID | 57 | 0 | 0
+EVIDENCE_ROW_INVALID | 71 | 0 | 0
 EVIDENCE_SPAN_INVALID | 8 | 0 | 0
 GRAPH_NODE_INVALID | 27 | 0 | 0
 IDENTIFIER_CHECKSUM_INVALID | 10 | 0 | 0
 IDENTIFIER_SCHEME_INVALID | 6 | 0 | 0
-IDENTITY_DECISION_INVALID | 7 | 0 | 0
+IDENTITY_DECISION_INVALID | 8 | 0 | 0
 MARKING_BROADER_THAN_INPUT | 20 | 0 | 0
 MARKING_PD_MISSING | 1 | 0 | 0
 ORIGINAL_INVALID | 6 | 0 | 0
@@ -557,7 +577,7 @@ RECEIPT_CLAIM_BINDING_INVALID | 10 | 0 | 1
 RECEIPT_ID_MISMATCH | 0 | 1 | 0
 RECEIPT_KEY_INVALID | 11 | 1 | 0
 RECEIPT_SIGNATURE_INVALID | 0 | 1 | 0
-REF_UNRESOLVED | 27 | 0 | 3
+REF_UNRESOLVED | 28 | 0 | 3
 SCHEMA_CHANGE_INVALID | 22 | 0 | 0
 SCHEMA_DEF_INVALID | 14 | 0 | 0
 SCHEMA_INVALID | 21 | 12 | 4
@@ -566,4 +586,4 @@ SOURCE_DIGEST_MISMATCH | 4 | 1 | 0
 TEMPORAL_ORDER_INVALID | 16 | 0 | 0
 TRUST_CONFIG_INVALID | 5 | 1 | 0
 
-negative_vectors=519 rejected_by_db=471 accepted_by_db=41 not_representable=7
+negative_vectors=539 rejected_by_db=491 accepted_by_db=41 not_representable=7

@@ -1,0 +1,13 @@
+T1 A->T открыто / T->U: (принято) | ERROR:  ENTITY_MERGE_INVALID: ent_t2_t: в неё уже слиты дубли — цепочк | ent_t2_t:ACTIVE, ent_t3_u:ACTIVE, ent_t1_a:MERGED->ent_t2_t
+   T->U открыто / A->T: (принято) | ERROR:  ENTITY_MERGE_INVALID: ent_t4_a: цель того же проекта и типа, A | ent_t4_a:ACTIVE, ent_t6_u:ACTIVE, ent_t5_t:MERGED->ent_t6_u
+T2 A->T открыто / вывод T: (принято) | (принято) | ent_t7_a:MERGED->ent_t8_t, ent_t8_t:RETIRED
+   вывод T открыт / A->T: (принято) | ERROR:  ENTITY_MERGE_INVALID: ent_t9_a: цель того же проекта и типа, A | ent_t9_a:ACTIVE, ent_t10_t:RETIRED
+T3 вставка D сразу слитой в T (открыто) / T->U: (принято) | ERROR:  ENTITY_MERGE_INVALID: ent_t11_t: в неё уже слиты дубли — цепоч
+   T->U открыто / вставка D сразу слитой в T: (принято) | ERROR:  ENTITY_MERGE_INVALID: ent_t_ins2: цель того же проекта и типа,
+   нарушений (слита в слитую / в выведенную раньше): ['0', '0', '0', '0', '0', '0']
+T1-3     устояло | слияние в цель против слияния/вывода самой цели, вставка сразу слитой
+T6 «различны»(C, D); C->A открыто / D->A: (принято) | ERROR:  IDENTITY_DECISION_INVALID: ent_t_ins3 и ent_t16_a: аналитик решил «разли
+T6       устояло | решение «различны» обойдено
+T4 два сеанса, по два слияния в цели T, U в противоположном порядке: ERROR:  deadlock detected | (принято)
+T5 утверждение о цели + слияние дубля в неё, два сеанса: (принято) | (принято)
+T5       устояло | взаимная блокировка S11R2-05 вернулась

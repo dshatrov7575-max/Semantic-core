@@ -30,6 +30,6 @@ def esc(cp):
 
 cn_cls = "[" + "".join(esc(a) if a == b else f"{esc(a)}-{esc(b)}" for a, b in cn) + "]"
 src = (HERE / "ddl_s5.src.sql").read_text(encoding="utf-8")
-assert src.count("@@WS@@") == 1 and src.count("@@CN@@") == 1
+assert src.count("@@WS@@") == 1 and src.count("@@CN@@") == 2
 (HERE / "ddl_s5.sql").write_text(src.replace("@@WS@@", cls).replace("@@CN@@", cn_cls), encoding="utf-8")
 print("ddl_s5.sql:", len(cls), "chars in the whitespace class;", len(cn), f"unassigned ranges (Unicode {unicodedata.unidata_version})")

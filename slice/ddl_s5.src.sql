@@ -87,16 +87,50 @@ CREATE TABLE ac.source_texts (
 );
 CREATE INDEX source_texts_digest ON ac.source_texts (tenant_id, text_digest);
 CREATE TRIGGER source_texts_no_update BEFORE UPDATE OR DELETE ON ac.source_texts FOR EACH ROW EXECUTE FUNCTION ac.forbid();
+-- S11R-07: a rendition that arrives AFTER a publication was written (in another session or later in the same
+-- transaction) but is observed by the publication's recorded_at is its basis too — the publication may not be marked
+-- broader than it. The publication is already there, so the arriving rendition is refused.
+-- a code point unassigned in the validator's Unicode version (the same generated class as in ac.text_digest): the
+-- normal form of such a string differs between Unicode versions (S5R-02, S11R2-01)
+CREATE FUNCTION ac.has_unassigned(t text) RETURNS boolean LANGUAGE sql IMMUTABLE AS $$ SELECT t ~ '@@CN@@' $$;
+
+CREATE FUNCTION ac.rendition_check(tn text, sid text) RETURNS void LANGUAGE plpgsql STABLE AS $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM ac.source_texts st
+             JOIN ac.sources s ON s.tenant_id = st.tenant_id AND s.source_id = st.source_id
+             JOIN ac.source_observations o ON o.tenant_id = st.tenant_id AND o.source_id = st.source_id
+             JOIN ac.publications p ON p.tenant_id = st.tenant_id AND p.text_digest = st.text_digest
+                                   AND p.outlet = ac.url_outlet(o.origin_uri) AND o.observed_at <= p.recorded_at
+             WHERE st.tenant_id = tn AND st.source_id = sid AND NOT ac.dominates(p.marking, s.marking)) THEN
+    PERFORM ac.fail('MARKING_BROADER_THAN_INPUT', 'источник — рендеринг уже записанной публикации, полученный к её recorded_at, '
+                    'и маркирован строже неё');
+  END IF;
+END $$;
+
+CREATE FUNCTION ac.observation_rendition_after() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = ac, pg_temp AS $$
+DECLARE d text;
+BEGIN
+  SELECT text_digest INTO d FROM ac.source_texts WHERE tenant_id = NEW.tenant_id AND source_id = NEW.source_id;
+  IF d IS NOT NULL THEN                 -- the text is known: otherwise the check runs when its bytes arrive
+    PERFORM ac.lock_keys(ARRAY['text:' || NEW.tenant_id || '/' || d]);
+    PERFORM ac.rendition_check(NEW.tenant_id, NEW.source_id);
+  END IF;
+  RETURN NULL;
+END $$;
+
 CREATE FUNCTION ac.source_texts_after() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = ac, pg_temp AS $$
 DECLARE d text := ac.text_digest(NEW.bytes);
 BEGIN
   IF d IS NOT NULL THEN
     PERFORM ac.lock_keys(ARRAY['source:' || NEW.source_id]);      -- serialised with Check closing (D14), time after the lock
+    PERFORM ac.lock_keys(ARRAY['text:' || NEW.tenant_id || '/' || d]);   -- and with publications of this text (S11R-07)
     INSERT INTO ac.source_texts VALUES (NEW.tenant_id, NEW.source_id, d, clock_timestamp());
+    PERFORM ac.rendition_check(NEW.tenant_id, NEW.source_id);
   END IF;
   RETURN NULL;
 END $$;
 CREATE TRIGGER source_texts_after AFTER INSERT ON ac.source_bytes FOR EACH ROW EXECUTE FUNCTION ac.source_texts_after();
+CREATE TRIGGER observation_rendition_after AFTER INSERT ON ac.source_observations FOR EACH ROW EXECUTE FUNCTION ac.observation_rendition_after();
 
 -- ---------------------------------------------------------------- публикации
 CREATE TABLE ac.publications (
@@ -154,6 +188,7 @@ BEGIN
   NEW.published_at := (NEW.body->>'published_at')::timestamptz;
   PERFORM ac.check_supplied_time(NEW.recorded_at);
   -- S5R-01: serialised with the closing of Checks that cite any source with this text; time read after the lock
+  PERFORM ac.lock_keys(ARRAY['text:' || NEW.tenant_id || '/' || NEW.text_digest]);   -- S11R-07: with arriving renditions
   PERFORM ac.lock_keys(ARRAY(SELECT 'source:' || st.source_id FROM ac.source_texts st
                              WHERE st.tenant_id = NEW.tenant_id AND st.text_digest = NEW.text_digest));
   NEW.ingested_at := clock_timestamp();

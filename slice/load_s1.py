@@ -26,7 +26,7 @@ from schema_s9 import schema_sql  # noqa: E402
 TAG = "$ac_q$"
 DDL_ALL = "\n".join((HERE / f).read_text(encoding="utf-8") for f in ("ddl_s1.sql", "unicode_s1.sql", "keys_s1.sql", "proj_s3.sql",
                                                                           "ddl_s4.sql", "proj_s4.sql", "ddl_s5.sql", "proj_s5.sql", "ddl_s5b.sql",
-                                                                          "ddl_s9.sql", "ddl_s10.sql"))
+                                                                          "ddl_s9.sql", "ddl_s10.sql", "ddl_s11.sql"))
 
 
 def q(v):

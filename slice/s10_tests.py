@@ -111,13 +111,13 @@ NOT_IN_DB = {"NR1F": "пометка версии набора записей (�
 NOT_IN_DB.update({v["id"]: "файлы строк база не читает; её проверка строк — печать таблицы (S10-04)" for v in VECTORS
                   if v["id"].startswith("NRF")})
 # accepted by the validator, refused by the database with a rule that only the database has (D8)
-DB_STRICTER = {"PR28": "CLAIM_ABOUT_MERGED_ENTITY"}
+DB_STRICTER = {"PR28": "CLAIM_ABOUT_MERGED_ENTITY", "PS05": "CLAIM_ABOUT_MERGED_ENTITY"}
 
 
-def parity():
+def parity(letter="R", tid="S10-PARITY", cycle="10"):
     rows, wrong = [], []
     for v in VECTORS:
-        if v["id"][1] != "R":
+        if v["id"][1] != letter:
             continue
         ds, tr, ct = build(v)
         rep = VAL.validate(ds, tr, ct)
@@ -147,7 +147,7 @@ def parity():
     neg = sum(1 for r in rows if r[1] == "REFUSED")
     same = sum(1 for r in rows if r[2].startswith("="))
     other = [r[0] for r in rows if r[1] == "REFUSED" and not r[2].startswith("=")]
-    check("S10-PARITY", not wrong, "паритет с валидатором на векторах цикла 10: отвергнутое валидатором база отвергает, принятое — принимает",
+    check(tid, not wrong, f"паритет с валидатором на векторах цикла {cycle}: отвергнутое валидатором база отвергает, принятое — принимает",
           f"векторов={len(rows)} отвергнуто={neg} (тем же кодом {same}; другим {other}) принято={sum(1 for r in rows if r[1] == 'ACCEPTED')} "
           f"не представимо в базе={sum(1 for r in rows if r[1] == 'N/A')} (файлы строк {sum(1 for k in NOT_IN_DB if k.startswith('NRF'))}, "
           f"конверт 1) строже базы по своему правилу={sorted(DB_STRICTER)} расхождений={len(wrong)} {wrong}")

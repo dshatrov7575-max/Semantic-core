@@ -1,0 +1,8 @@
+S24-Г1   held    | утверждение, добавленное в Проверку другой транзакцией, и рецензия REFUTED в полёте | Проверка: IN_PROGRESS ASSERTED; TED_AT_COMPLETION', k.check_id)"
+PL/pgSQL function ac.check_complete() line 22 at PERFORM 
+S24-Г2a  held    | наблюдение раньше закрытия: first_observed_at в закрытом отчёте не меняется | второй ждал: True;  
+S24-Г2b  held    | закрытие раньше наблюдения: first_observed_at в закрытом отчёте не меняется | второй ждал: True;  
+S24-01   held    | схема идентификатора, единица и контрольные цифры литерала проверяются базой | ERROR:  PREDICATE_RANGE_VIOLATION: court.party_to_case: / ERROR:  IDENTIFIER_CHECKSUM_INVALID: контрольные цифры  / ERROR:  PREDICATE_RANGE_VIOLATION: ts.has_parameter: сх
+
+regression_s24=4 findings=0
+S24_REGRESSION=PASS

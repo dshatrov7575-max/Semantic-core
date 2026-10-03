@@ -280,13 +280,7 @@ CREATE FUNCTION ac.tenant_predicate_by(tn text, pid text, t timestamptz) RETURNS
 CREATE FUNCTION ac.dataset_refs_trigger() RETURNS trigger LANGUAGE plpgsql AS $$
 DECLARE d record;
 BEGIN
-  -- the check reads what OTHER transactions committed while this one waited for the lock: that needs a snapshot taken
-  -- after the lock. REPEATABLE READ and SERIALIZABLE keep the snapshot of the first statement: such a transaction does
-  -- not see what a READ COMMITTED one committed meanwhile (S10R-20; SERIALIZABLE protects only against other
-  -- SERIALIZABLE transactions). So these records are written in READ COMMITTED only.
-  IF current_setting('transaction_isolation') <> 'read committed' THEN
-    PERFORM ac.fail('ISOLATION_LEVEL_UNSUPPORTED', 'версии наборов данных и источники, на которые они ссылаются, пишутся только в READ COMMITTED');
-  END IF;
+  PERFORM ac.require_read_committed();     -- the check reads what others committed while this one waited (S10R-20)
   IF TG_TABLE_NAME = 'datasets' THEN
     PERFORM ac.lock_keys(ARRAY['dsprev:' || NEW.tenant_id || '/' || coalesce(NEW.previous, '-')]);
     PERFORM ac.dataset_refs_check(NEW.tenant_id, NEW.source_id);
@@ -312,6 +306,53 @@ CREATE FUNCTION ac.group_strong_keys(eid text, at timestamptz) RETURNS text[] LA
        g AS (SELECT x.entity_type, x.identity FROM ac.entities x, o
              WHERE x.entity_id = o.oid OR (x.status = 'MERGED' AND x.merged_into = o.oid AND x.status_changed_at <= at))
   SELECT ARRAY(SELECT DISTINCT unnest(ac.strong_keys(g.entity_type, g.identity)) FROM g) $$;
+
+-- who carries a strong key: looked up by the conflict rule of a row (cycle 11)
+-- (the index expression runs as the writer of the entity: it reads the fixed Unicode case-folding table)
+GRANT SELECT ON ac.casefold_map TO ac_loader, ac_migrator;
+CREATE INDEX entities_strong_keys ON ac.entities USING gin (ac.strong_keys(entity_type, identity));
+
+-- an identifier taken from a cell of a row, as the strong key of an entity 'scheme|value' (validator.py: row_id): the
+-- value in the normal form in which ac.identity_keys keeps keys of that scheme
+CREATE FUNCTION ac.row_id(scheme text, v text) RETURNS text LANGUAGE plpgsql IMMUTABLE AS $$
+BEGIN
+  IF scheme = 'ru.cadastral' THEN          -- digits and colons only; anything else is compared as written
+    RETURN scheme || '|' || CASE WHEN v ~ '^[0-9]{1,18}(:[0-9]{1,18})*$' THEN ac.cadastral_norm(v) ELSE v END;
+  END IF;
+  -- a value with a code point unassigned in the validator's Unicode version is compared as written (S11R2-01)
+  RETURN scheme || '|' || CASE WHEN scheme IN ('ru.inn', 'ru.ogrn', 'ru.ogrnip', 'vin', 'imo') OR ac.has_unassigned(v) THEN v ELSE ac.id_norm(v) END;
+END $$;
+
+-- the identifiers of the row's subject that the evidence quotes, as entity keys (validator.py: row_subject_ids)
+CREATE FUNCTION ac.row_subject_ids(ev jsonb, m jsonb) RETURNS text[] LANGUAGE sql IMMUTABLE AS $$
+  SELECT ARRAY(SELECT DISTINCT ac.row_id(col->>'identifier_scheme', q->>'value')
+               FROM jsonb_array_elements(m->'columns') col
+               JOIN jsonb_array_elements(ev->'cells') q ON q->>'name' = col->>'name'
+               WHERE coalesce(m->'subject', '[]') ? (col->>'name') AND q ? 'salt' AND jsonb_typeof(q->'value') = 'string'
+                 -- «-» and the empty string are not identifiers: registries use them as blanks (S11R2-09)
+                 AND ac.row_id(col->>'identifier_scheme', q->>'value') <> (col->>'identifier_scheme') || '|') $$;
+
+-- The conflict of strong keys of a row (D27.3, validator.py: ROW_SUBJECT_CONFLICT): the identifiers of the row name
+-- ONE entity; if one of them belongs — at the moment t — to another entity of the project than the subject of the
+-- claim, the project holds two entities where the row has one. It is a state of the project (it can arise after the
+-- claim was written and ends with a merge), so it is shown where the claim is read, not refused where it is written.
+-- An entity the READER may not see is not counted (S11R2-04: by the clearance of the reader, not by the marking of the
+-- claim — a reader cleared for both entities sees the conflict, as in ac.dataset_subject). A session without a
+-- clearance in the project is either the owner of the database (sees everything, like the validator) or gets what the
+-- marking of the claim allows.
+CREATE FUNCTION ac.conflict_clearance(c ac.claims) RETURNS jsonb LANGUAGE sql STABLE AS $$
+  SELECT coalesce(ac.my_clearance(c.project_id),
+                  CASE WHEN NOT (SELECT rolsuper FROM pg_roles WHERE rolname = session_user) THEN c.marking END) $$;
+
+CREATE FUNCTION ac.row_subject_conflict(c ac.claims, ev jsonb, m jsonb, t timestamptz) RETURNS boolean LANGUAGE sql STABLE AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM ac.entities s0
+    JOIN ac.entities e2 ON e2.project_id = s0.project_id AND e2.entity_type = s0.entity_type
+     AND ac.strong_keys(e2.entity_type, e2.identity) && ac.row_subject_ids(ev, m)
+    WHERE s0.entity_id = c.subject AND e2.created_at <= t
+      AND ac.resolve_at(e2.entity_id, t) <> ac.resolve_at(s0.entity_id, t)
+      AND (ac.conflict_clearance(c) IS NULL OR (ac.dominates(ac.conflict_clearance(c), e2.marking)
+           AND ac.dominates(ac.conflict_clearance(c), (SELECT x.marking FROM ac.entities x WHERE x.entity_id = ac.resolve_at(e2.entity_id, t)))))) $$;
 
 -- the shape of a ROW element (core.schema.json: Claim.evidence, the ROW form)
 CREATE FUNCTION ac.row_shape_ok(ev jsonb) RETURNS boolean LANGUAGE sql IMMUTABLE AS $$
@@ -386,18 +427,14 @@ BEGIN
   IF NOT m ? 'subject' THEN
     RETURN 'набор не объявляет субъект строки (subject) — его строка не может подтверждать утверждение о сущности';
   END IF;
-  IF true THEN
-    subj_keys := ac.group_strong_keys(c.subject, c.recorded_at);
-    ids := ARRAY(SELECT (x.col->>'identifier_scheme') || '|' || (quoted->>(x.col->>'name'))
-                 FROM jsonb_array_elements(cols) x(col)
-                 WHERE (m->'subject') ? (x.col->>'name') AND jsonb_typeof(quoted->(x.col->>'name')) = 'string');
-    IF NOT ids && subj_keys THEN
-      RETURN 'строка не о субъекте утверждения: ни один процитированный идентификатор субъекта строки не принадлежит ему';
-    END IF;
-    IF EXISTS (SELECT 1 FROM unnest(ids) x WHERE x <> ALL (subj_keys)
-               AND EXISTS (SELECT 1 FROM unnest(subj_keys) y WHERE split_part(y, '|', 1) = split_part(x, '|', 1))) THEN
-      RETURN 'строка не о субъекте утверждения: идентификатор субъекта строки расходится с идентификатором субъекта';
-    END IF;
+  subj_keys := ac.group_strong_keys(c.subject, c.recorded_at);
+  ids := ac.row_subject_ids(ev, m);
+  IF NOT ids && subj_keys THEN
+    RETURN 'строка не о субъекте утверждения: ни один процитированный идентификатор субъекта строки не принадлежит ему';
+  END IF;
+  IF EXISTS (SELECT 1 FROM unnest(ids) x WHERE x <> ALL (subj_keys)
+             AND EXISTS (SELECT 1 FROM unnest(subj_keys) y WHERE split_part(y, '|', 1) = split_part(x, '|', 1))) THEN
+    RETURN 'строка не о субъекте утверждения: идентификатор субъекта строки расходится с идентификатором субъекта';
   END IF;
   -- the claim says what the row says
   IF c.object_entity IS NOT NULL THEN
@@ -407,7 +444,7 @@ BEGIN
     CONTINUE WHEN col->>'predicate' IS DISTINCT FROM c.predicate OR NOT quoted ? (col->>'name');
     v := quoted->(col->>'name');
     IF c.object_entity IS NOT NULL THEN
-      IF jsonb_typeof(v) = 'string' AND col ? 'identifier_scheme' AND ((col->>'identifier_scheme') || '|' || (v #>> '{}')) = ANY (obj_keys) THEN
+      IF jsonb_typeof(v) = 'string' AND col ? 'identifier_scheme' AND ac.row_id(col->>'identifier_scheme', v #>> '{}') = ANY (obj_keys) THEN
         RETURN NULL;
       END IF;
     ELSIF col ? 'identifier_scheme' THEN
@@ -520,6 +557,7 @@ CREATE FUNCTION ac.row_profile_expr(cols jsonb) RETURNS text LANGUAGE sql IMMUTA
 CREATE FUNCTION ac.dataset_reset(tn text, sid text) RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = ac, pg_temp AS $$
 DECLARE t ac.dataset_tables;
 BEGIN
+  PERFORM ac.require_read_committed();
   SELECT * INTO t FROM ac.dataset_tables WHERE tenant_id = tn AND source_id = sid FOR UPDATE;
   IF t.source_id IS NULL OR t.sealed_at IS NOT NULL THEN
     PERFORM ac.fail('APPEND_ONLY', 'таблица строк версии не открыта или уже запечатана');
@@ -552,6 +590,8 @@ BEGIN
   EXECUTE format('CREATE TABLE acd.%I PARTITION OF acd.%I FOR VALUES IN (%s)', part, parent, vno);
   EXECUTE format('ALTER TABLE acd.%I ALTER COLUMN version_no SET DEFAULT %s', part, vno);
   EXECUTE format('GRANT INSERT ON acd.%I TO ac_loader', part);
+  EXECUTE format('CREATE TRIGGER a_isolation_guard BEFORE INSERT OR UPDATE OR DELETE ON acd.%I FOR EACH STATEMENT '
+                 'EXECUTE FUNCTION ac.isolation_guard()', part);
   INSERT INTO ac.dataset_tables (tenant_id, source_id, version_no, table_name, parent_name) VALUES (tn, sid, vno, part, parent);
   RETURN 'acd.' || quote_ident(part);
 END $$;
@@ -783,6 +823,138 @@ BEGIN
   RETURN jsonb_build_object('projection', 'dataset_find/0.1', 'scheme', scheme, 'value', val, 'hits', hits);
 END $$;
 
+-- ---------------------------------------------------------------- «актуальность строки» (cycle 11, D27.3)
+-- A claim rests on a row of ITS version and stays true of that version forever. What became of the row since: the
+-- versions that FOLLOW the claim's one are those that name it (or its follower) as «previous»; the row is looked up in
+-- the last of them whose rows are loaded and sealed by the moment t.
+--   CURRENT            no later version is known: the claim rests on the latest one
+--   NOT_LOADED         later versions are known, the rows of none of them are loaded
+--   UNCHANGED          the same row (the same hash) is in the latest loaded version
+--   CHANGED            a quoted cell holds another value now: changed_columns names them
+--   CHANGED_ELSEWHERE  the quoted cells are the same, the row differs (in the cells the claim does not quote)
+--   ABSENT             no row with this key in the latest loaded version (a dataset without a key names a row by its
+--                      hash, so a changed row of such a dataset is ABSENT too)
+--   INCOMPARABLE       the latest loaded version has another key (other columns or types)
+--   BRANCHED           two versions name the same one as «previous»: «the latest» is not defined
+-- Nothing is said beyond what the reader of the claim may know: a version whose source is marked above the claim does
+-- not exist for this projection (the chain of followers ends before it); a quoted column is compared by value only if
+-- the claim dominates its marking in the latest version; no values are returned. That the row as a whole is or is not the same is said by its hash — the hash the claim itself carries.
+-- A version registered or sealed within the last minutes is «provisional» like everything else in a projection (S23).
+CREATE FUNCTION ac.row_currency(tn text, sid text, ev jsonb, claim_marking jsonb, t timestamptz) RETURNS jsonb LANGUAGE plpgsql STABLE AS $$
+DECLARE d ac.datasets; l ac.datasets; r record; changed jsonb; who jsonb; cur text := sid; nxt text[]; hid text[]; last text;
+        later boolean := false; hops int := 0;
+BEGIN
+  SELECT * INTO d FROM ac.datasets WHERE tenant_id = tn AND source_id = sid;
+  LOOP
+    -- the followers the reader of the claim may know of: registered by t, their source not marked above the claim
+    SELECT array_agg(x.source_id) FILTER (WHERE ac.dominates(claim_marking, s.marking)),
+           array_agg(x.source_id) FILTER (WHERE NOT ac.dominates(claim_marking, s.marking)) INTO nxt, hid
+    FROM ac.datasets x JOIN ac.sources s USING (tenant_id, source_id)
+    WHERE x.tenant_id = tn AND x.previous = cur AND x.dataset_id = d.dataset_id
+      AND EXISTS (SELECT 1 FROM ac.source_observations o WHERE o.tenant_id = tn AND o.source_id = x.source_id AND o.ingested_at <= t);
+    IF cardinality(nxt) > 1 THEN
+      RETURN jsonb_build_object('status', 'BRANCHED');
+    END IF;
+    IF nxt IS NULL THEN
+      -- S11R2-06: a version marked above the claim is passed through without being named or counted — a later version
+      -- the reader may know is still «the latest»; several hidden followers: the chain is not followed further
+      EXIT WHEN hid IS NULL OR cardinality(hid) > 1;
+      cur := hid[1];
+      hops := hops + 1;
+      EXIT WHEN hops > 100000;
+      CONTINUE;
+    END IF;
+    cur := nxt[1];
+    later := true;
+    IF EXISTS (SELECT 1 FROM ac.dataset_tables tt WHERE tt.tenant_id = tn AND tt.source_id = cur AND tt.sealed_at <= t) THEN
+      last := cur;
+    END IF;
+    hops := hops + 1;
+    EXIT WHEN hops > 100000;
+  END LOOP;
+  IF last IS NULL THEN
+    RETURN jsonb_build_object('status', CASE WHEN later THEN 'NOT_LOADED' ELSE 'CURRENT' END);
+  END IF;
+  SELECT * INTO l FROM ac.datasets WHERE tenant_id = tn AND source_id = last;
+  who := jsonb_build_object('source_id', l.source_id, 'version_label', l.version_label);
+  -- the same key: the same columns of the same types
+  IF (SELECT jsonb_agg(jsonb_build_array(c->>'name', c->>'type') ORDER BY c->>'name') FROM jsonb_array_elements(l.manifest->'columns') c
+      WHERE (l.manifest->'key') ? (c->>'name'))
+     IS DISTINCT FROM
+     (SELECT jsonb_agg(jsonb_build_array(c->>'name', c->>'type') ORDER BY c->>'name') FROM jsonb_array_elements(d.manifest->'columns') c
+      WHERE (d.manifest->'key') ? (c->>'name'))
+     OR l.manifest->'key' IS DISTINCT FROM d.manifest->'key' THEN
+    RETURN jsonb_build_object('status', 'INCOMPARABLE', 'latest', who);
+  END IF;
+  BEGIN
+    SELECT * INTO r FROM ac.dataset_cells(tn, l.source_id, CASE WHEN jsonb_array_length(d.manifest->'key') > 0 THEN ev->'row_key'
+                                                                ELSE to_jsonb(ev->>'row_sha256') END);
+  EXCEPTION WHEN others THEN
+    RETURN jsonb_build_object('status', 'INCOMPARABLE', 'latest', who);
+  END;
+  IF r.cells IS NULL THEN
+    RETURN jsonb_build_object('status', 'ABSENT', 'latest', who);
+  END IF;
+  IF encode(r.row_hash, 'hex') = ev->>'row_sha256' THEN
+    RETURN jsonb_build_object('status', 'UNCHANGED', 'latest', who);
+  END IF;
+  SELECT jsonb_agg(q->>'name' ORDER BY o) INTO changed
+  FROM jsonb_array_elements(ev->'cells') WITH ORDINALITY a(q, o)
+  WHERE q ? 'salt'
+    AND coalesce((SELECT ac.dominates(claim_marking, c->'marking') FROM jsonb_array_elements(l.manifest->'columns') c WHERE c->>'name' = q->>'name'), true)
+    AND (q->'value') IS DISTINCT FROM (SELECT x->'value' FROM jsonb_array_elements(r.cells) x WHERE x->>'name' = q->>'name');
+  IF changed IS NULL THEN
+    RETURN jsonb_build_object('status', 'CHANGED_ELSEWHERE', 'latest', who);
+  END IF;
+  RETURN jsonb_build_object('status', 'CHANGED', 'latest', who, 'changed_columns', changed);
+END $$;
+
+-- whom a row is about IN A PROJECT: the entities that own the identifiers of the row's subject (D27.3) —
+--   NONE           nobody owns them: an entity for this row does not exist yet
+--   ONE            one entity owns them
+--   CONFLICT       two entities of one type own them: the row is one entity, the project has two — a merge decides
+--   SEVERAL_TYPES  entities of different types own them (a company and a trailer with the same number): not a conflict
+-- The reader must be cleared for the key and the subject columns; owners he may not see are neither listed nor counted.
+CREATE FUNCTION ac.dataset_subject(p text, sid text, key jsonb) RETURNS jsonb LANGUAGE plpgsql STABLE
+  SECURITY DEFINER SET search_path = ac, pg_temp AS $$
+DECLARE tn text; d ac.datasets; clr jsonb; r record; owners jsonb; st text;
+BEGIN
+  SELECT tenant_id INTO tn FROM ac.projects WHERE project_id = p;
+  SELECT * INTO d FROM ac.datasets WHERE tenant_id = tn AND source_id = sid;
+  IF d.source_id IS NULL THEN
+    RAISE EXCEPTION 'ACCESS_DENIED: нет допуска' USING ERRCODE = 'insufficient_privilege';
+  END IF;
+  clr := ac.require_clearance(p, (SELECT marking FROM ac.sources WHERE tenant_id = tn AND source_id = sid));
+  IF EXISTS (SELECT 1 FROM jsonb_array_elements(d.manifest->'columns') c
+             WHERE ((d.manifest->'key') ? (c->>'name') OR coalesce(d.manifest->'subject', '[]') ? (c->>'name'))
+               AND NOT ac.dominates(clr, c->'marking')) THEN
+    PERFORM ac.fail('CLEARANCE_INSUFFICIENT', 'допуск читателя ниже маркировки ключа или идентификаторов субъекта строки');
+  END IF;
+  SELECT * INTO r FROM ac.dataset_cells(tn, sid, key);
+  IF r.cells IS NULL THEN
+    RETURN NULL;
+  END IF;
+  -- only the owners the reader may see are listed AND counted: an owner above his clearance does not turn ONE into CONFLICT
+  SELECT coalesce(jsonb_agg(jsonb_build_object('entity_id', o.owner, 'entity_type', o.entity_type, 'by', o.by) ORDER BY o.owner), '[]'),
+         CASE WHEN count(*) = 0 THEN 'NONE' WHEN count(*) = 1 THEN 'ONE'
+              WHEN count(*) > count(DISTINCT o.entity_type) THEN 'CONFLICT'       -- two owners of one type
+              ELSE 'SEVERAL_TYPES' END                                            -- one owner per type: not a conflict
+  INTO owners, st
+  FROM (SELECT k.owner_entity_id AS owner, k.entity_type, jsonb_agg(DISTINCT k.scheme) AS by
+        FROM ac.entity_keys k
+        JOIN jsonb_array_elements(d.manifest->'columns') c ON k.scheme = c->>'identifier_scheme'
+        JOIN jsonb_array_elements(r.cells) x ON x->>'name' = c->>'name' AND jsonb_typeof(x->'value') = 'string'
+                                            AND k.scheme || '|' || k.value = ac.row_id(c->>'identifier_scheme', x->>'value')
+        WHERE k.project_id = p AND k.strength = 'STRONG' AND (d.manifest->'subject') ? (c->>'name')
+          AND ac.entity_visible(clr, k.owner_entity_id, now())
+        GROUP BY k.owner_entity_id, k.entity_type) o;
+  RETURN jsonb_build_object('projection', 'dataset_subject/0.1', 'dataset_id', d.dataset_id, 'source_id', sid,
+                            'row_sha256', encode(r.row_hash, 'hex'), 'status', st, 'owners', owners);
+END $$;
+ALTER FUNCTION ac.dataset_subject(text, text, jsonb) OWNER TO ac_projector;
+REVOKE EXECUTE ON FUNCTION ac.dataset_subject(text, text, jsonb) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION ac.dataset_subject(text, text, jsonb) TO ac_reader;
+
 -- ---------------------------------------------------------------- evidence of a claim for the projections: a fragment or a row
 CREATE OR REPLACE FUNCTION ac.evidence_json(cid text, t timestamptz) RETURNS jsonb LANGUAGE sql STABLE AS $$
   SELECT coalesce(jsonb_agg(CASE WHEN e.kind = 'ROW' THEN jsonb_strip_nulls(jsonb_build_object(
@@ -791,6 +963,11 @@ CREATE OR REPLACE FUNCTION ac.evidence_json(cid text, t timestamptz) RETURNS jso
            'cells', (SELECT jsonb_object_agg(x->>'name', x->'value') FROM jsonb_array_elements(e.row_ev->'cells') x WHERE x ? 'salt')))
            || jsonb_build_object(
            'proves', '["subject", "object"]'::jsonb,     -- qualifiers and validity are the author's statement, as with a quote
+           'currency', ac.row_currency(e.tenant_id, e.source_id, e.row_ev,           -- the row in the latest version (cycle 11)
+                                       (SELECT c.marking FROM ac.claims c WHERE c.claim_id = e.claim_id), t),
+           'subject_conflict', CASE WHEN ac.row_subject_conflict((SELECT c FROM ac.claims c WHERE c.claim_id = e.claim_id), e.row_ev,
+                                       (SELECT d.manifest FROM ac.datasets d WHERE d.tenant_id = e.tenant_id AND d.source_id = e.source_id), t)
+                                    THEN true END,
            'verified', ac.row_evidence_error(e.row_ev, (SELECT d.manifest FROM ac.datasets d WHERE d.tenant_id = e.tenant_id AND d.source_id = e.source_id),
                                              (SELECT c FROM ac.claims c WHERE c.claim_id = e.claim_id)) IS NULL,
            'first_observed_at', (SELECT min(o.observed_at) FROM ac.source_observations o

@@ -1,0 +1,26 @@
+P1 COPY строк версии в acd: {'REPEATABLE READ': 'ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра и проекции, которые берут блокировку (сохранность, ', 'SERIALIZABLE': 'ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра и проекции, которые берут блокировку (сохранность, '}; строк в секции после COMMIT в REPEATABLE READ: 0
+P1       устояло | строки версии набора (схема acd) записаны в REPEATABLE READ — на таблицах acd стража изоляции нет
+P2 dataset_reset в REPEATABLE READ: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра и проекции, которые берут блокировку (сохранность,  | строк: 0
+P2       устояло | ac.dataset_reset (SECURITY DEFINER, TRUNCATE секции) выполняется в REPEATABLE READ
+P3 печать в REPEATABLE READ: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра и проекции, которые берут блокировку (сохранность, 
+P3       устояло | печать версии в REPEATABLE READ
+P4 TRUNCATE ролями приложения принят: нигде
+P4       устояло | TRUNCATE таблицы ядра ролью приложения
+P4b TRUNCATE владельцем в SERIALIZABLE (страж уровня оператора TRUNCATE не ловит): принято (откатано)
+P4c TRUNCATE владельцем в READ COMMITTED (append-only): принято (откатано)
+P4b      НАХОДКА | TRUNCATE таблицы ядра не проходит ни стража изоляции, ни стража append-only (только владелец/суперпользователь)
+P5 SET LOCAL до первого запроса: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра и проекции, которые б
+P5 set_config(local): ERROR:  SET TRANSACTION ISOLATION LEVEL must be called before any quer
+P5 SET SESSION CHARACTERISTICS: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра и проекции, которые б
+P5 ALTER ROLE … SET default (сеанс): ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра и проекции, которые б
+P5 READ UNCOMMITTED: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра и проекции, которые б
+P5       устояло | подмена уровня не удалась (READ UNCOMMITTED в PostgreSQL = READ COMMITTED, но страж его отвергает: отвергнут)
+P6 dossier          READ COMMITTED: ok | REPEATABLE READ: ok | RR READ ONLY: ok
+P6 custody          READ COMMITTED: ok | REPEATABLE READ: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра и проекции, | RR READ ONLY: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра и
+P6 model            READ COMMITTED: ok | REPEATABLE READ: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра и проекции, | RR READ ONLY: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра и
+P6 schema_gaps      READ COMMITTED: ok | REPEATABLE READ: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра и проекции, | RR READ ONLY: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра и
+P6 dataset_row      READ COMMITTED: ok | REPEATABLE READ: ok | RR READ ONLY: ok
+P6 dataset_subject  READ COMMITTED: ok | REPEATABLE READ: ok | RR READ ONLY: ok
+P6       НАХОДКА | проекции чтения, отвергаемые в REPEATABLE READ: ['custody', 'model', 'schema_gaps'] (остальные читаются) — заявлено «чтение не запрещено»
+P7 таблицы без стража изоляции: acd.d_c1dc3b28c1ec12492fa0dc9c4f9acc23923da7a25b10bce522953084cc81(p)
+P8 max_prepared_transactions = 0

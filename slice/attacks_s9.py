@@ -141,7 +141,7 @@ def main():
     attack("T4", "мигратор дописывает версию определения задним числом под уже записанное живое утверждение (S9R2-02)",
            as_("ac_s9_migrator", "SET LOCAL ac.historical_import = 'on';\n" + schema_sql(
                [sd("ClassDef", "sdf_taxon", 2, "DEPRECATE_CLASS", at=t_mid, deprecated=True, **taxon)])),
-           ["задним числом под уже записанные"])
+           ["TEMPORAL_ORDER_INVALID"])      # the text changed in cycle 11 (S11R-08): the rule now covers live versions too
     fresh = psql("SET SESSION AUTHORIZATION ac_s9_modeler;\n" + schema_sql([cls("sdf_fresh")]))
     e0 = entity("ent_s9_fresh", "Сейвал")
     r_fresh = psql(ingest_sql([e0, claim("ent_s9_fresh", "schema.is_a", kref("sdf_fresh"), "вид усатых китов")], {}))

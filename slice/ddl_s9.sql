@@ -215,17 +215,24 @@ END $$;
 -- Время версии — с точностью до секунды (как все времена записей набора): утверждение, записанное в ту же секунду,
 -- что и версия, видит её. Историю схемы нельзя дописывать задним числом под уже записанные утверждения схемы tenant
 -- (S9R2-02): новая версия определения при историческом импорте — позже последнего такого утверждения.
+-- the latest recorded_at among the claims of the tenant that use its schema (read for the modeler, who cannot read claims)
+CREATE FUNCTION ac.schema_claims_max(tn text) RETURNS timestamptz LANGUAGE sql STABLE SECURITY DEFINER SET search_path = ac, pg_temp AS $$
+  SELECT max(c.recorded_at) FROM ac.claims c JOIN ac.projects p USING (project_id)
+  WHERE p.tenant_id = tn AND (c.predicate = 'schema.is_a' OR c.predicate ~ '^x\.' OR c.body->'object'->'literal'->>'scheme' ~ '^x\.') $$;
+REVOKE EXECUTE ON FUNCTION ac.schema_claims_max(text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION ac.schema_claims_max(text) TO ac_modeler, ac_migrator;
+
 CREATE FUNCTION ac.schema_version_guard(kind text, tn text, ver int, last_ver int, last_at timestamptz, supplied timestamptz,
                                         prev jsonb, cur jsonb, declared text) RETURNS timestamptz LANGUAGE plpgsql AS $$
 DECLARE t timestamptz;
 BEGIN
   t := date_trunc('second', ac.guarded_time(supplied));
-  IF ver > 1 AND ac.historical() THEN               -- только мигратор (он читает утверждения); вживую время — «сейчас»
-    IF t <= (SELECT max(c.recorded_at) FROM ac.claims c JOIN ac.projects p USING (project_id)
-              WHERE p.tenant_id = tn AND (c.predicate = 'schema.is_a' OR c.predicate ~ '^x\.'
-                    OR c.body->'object'->'literal'->>'scheme' ~ '^x\.')) THEN
-      PERFORM ac.fail('TEMPORAL_ORDER_INVALID', 'версия определения задним числом под уже записанные утверждения схемы tenant');
-    END IF;
+  -- Время версии — целая секунда; утверждение, записанное в ТУ ЖЕ секунду до изменения, по правилу «схема своего
+  -- времени» читалось бы уже по новой версии (S11R-08). Поэтому версия (и вживую, и при историческом импорте) должна
+  -- быть строго позже последнего утверждения схемы tenant: вживую это ожидание до следующей секунды.
+  IF ver > 1 AND t <= ac.schema_claims_max(tn) THEN
+    PERFORM ac.fail('TEMPORAL_ORDER_INVALID', 'версия определения не позже уже записанного утверждения схемы tenant '
+                    '(вживую — повторите в следующую секунду)');
   END IF;
   IF ver IS DISTINCT FROM coalesce(last_ver, 0) + 1 THEN
     PERFORM ac.fail('SCHEMA_DEF_INVALID', 'версии определения идут подряд с 1: ожидается ' || (coalesce(last_ver, 0) + 1));
@@ -417,6 +424,7 @@ BEGIN
     RETURN NEW;                                   -- проект/субъект отвергнут внешними ключами таблицы
   END IF;
   -- запись утверждения и изменение схемы tenant не пересекаются: читатель схемы берёт разделяемую блокировку
+  PERFORM ac.require_read_committed();
   PERFORM pg_advisory_xact_lock_shared(hashtextextended('schema:' || tn, 7));
 
   IF lit->>'type' = 'IDENTIFIER' AND lit->>'scheme' ~ '^x\.' THEN
@@ -582,6 +590,7 @@ BEGIN
   IF clr IS NULL OR tn IS NULL THEN
     RAISE EXCEPTION 'ACCESS_DENIED: нет допуска' USING ERRCODE = 'insufficient_privilege';
   END IF;
+  PERFORM ac.require_read_committed();
   PERFORM pg_advisory_xact_lock_shared(hashtextextended('schema:' || tn, 7));
   as_of := least(as_of, clock_timestamp());
   res := jsonb_build_object('projection', 'model/0.1', 'project_id', p, 'as_of', as_of,
@@ -629,6 +638,7 @@ BEGIN
   IF clr IS NULL OR tn IS NULL THEN
     RAISE EXCEPTION 'ACCESS_DENIED: нет допуска' USING ERRCODE = 'insufficient_privilege';
   END IF;
+  PERFORM ac.require_read_committed();
   PERFORM pg_advisory_xact_lock_shared(hashtextextended('schema:' || tn, 7));
   as_of := least(as_of, clock_timestamp());
   SELECT coalesce(jsonb_agg(g ORDER BY g->>'entity_id', g->>'predicate_id'), '[]') INTO res FROM (

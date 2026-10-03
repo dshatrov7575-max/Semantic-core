@@ -1,0 +1,9 @@
+миров 300, сравнено 300, пропущено 0
+валидатор принял / база приняла: 231
+оба отвергли: 69
+РАСХОЖДЕНИЙ отказ/приём: 0
+принятых обоими: 231 | с предупреждением валидатора: 22 | с флагом базы: 16
+РАСХОЖДЕНИЙ предупреждение/флаг: 6 | из них в мире есть сущность с маркировкой выше утверждения: 6 | без такой: 0
+   {"n": 77, "subj_ids": ["ogrn", "lei"], "subject": ["lei", "inn", "ogrn"], "quote": ["address", "inn"], "others": [{"id": "ent_k_oth0", "project": "prj_compliance", "type": "ORGANIZATION", "ids": ["inn"], "created": "2026-09-05T12:00:00Z", "hidden": true, "status": "ACTIVE", "changed": "2026-09-20T10:00:00Z"}, {"id": "ent_k_oth1", "project": "prj_compliance", "type": "ORGANIZATION", "ids": ["other_inn"], "created": "2026-09-05T12:00:00Z", "hidden": false, "status": "MERGED_THIRD", "changed": "2026-09-27T13:00:00Z"}], "warn": 1, "flags": 0}
+   {"n": 103, "subj_ids": ["inn"], "subject": ["lei", "inn", "ogrn"], "quote": ["address", "inn", "lei"], "others": [{"id": "ent_k_oth0", "project": "prj_compliance", "type": "ORGANIZATION", "ids": ["lei"], "created": "2026-09-05T12:00:00Z", "hidden": true, "status": "ACTIVE", "changed": "2026-09-27T13:00:00Z"}], "warn": 1, "flags": 0}
+   {"n": 154, "subj_ids": ["ogrn", "lei"], "subject": ["ogrn", "inn"], "quote": ["address", "inn", "lei"], "others": [{"id": "ent_k_oth0", "project": "prj_compliance", "type": "ORGANIZATION", "ids": ["inn"], "created": "2026-09-27T12:00:00Z", "hidden": true, "status": "RETIRED", "changed": "2026-09-27T13:00:00Z"}], "warn": 1, "flags": 0}

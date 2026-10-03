@@ -644,6 +644,10 @@ VECTORS += [
       pre=_qualify("idd_xx", "prj_wiki_whales", "ent_wk_blue_colour", disambiguator="zzz")),
     V("N422", ["IDENTITY_DECISION_INVALID"], "второе уточнение той же сущности",
       pre=_qualify("idd_xx", "prj_wiki_whales", "ent_wk_blue", disambiguator="whale-2")),
+    V("N42A", ["IDENTITY_DECISION_INVALID"], "уточнение места события с символом, не назначенным в Юникоде валидатора (S11R5-01)",
+      pre=_qualify("idd_xx", "prj_compliance", "ent_k_tender", place="Гр\U0001E030")),
+    V("P42A", [], "то же уточнение без такого символа — контроль к N42A",
+      pre=_qualify("idd_xx", "prj_compliance", "ent_k_tender", place="Гра"), warn=None),
     V("N423", ["IDENTITY_DECISION_INVALID"], "уточнение понятия местом (поле не того типа)",
       pre=_qualify("idd_xx", "prj_wiki_whales", "ent_wk_baleen", place="Атлантика")),
     V("N424", ["IDENTITY_DECISION_INVALID"], "уточнение слитой сущности",
@@ -1531,6 +1535,63 @@ _ROWS13 = [{"ogrn": "10%011d" % n, "inn": None, "name": "Запись %d" % n, "
 MI, RI = ["DATASET_MANIFEST_INVALID"], ["EVIDENCE_ROW_INVALID"]
 
 
+def _inn_elsewhere(state=None, marking=None):
+    """the developer of the compliance project is known by OGRN only; ANOTHER organization of the project carries the INN
+    that the registry row gives for that OGRN; state = (status, merged_into, changed_at) of that other organization"""
+    def f(W):
+        W["ent_k_developer"]["identity"].pop("inn")
+        add_entity("ent_k_other", "prj_compliance", "ORGANIZATION", {"name": "ООО «Заречье»", "jurisdiction": "RU", "inn": INN_DEV},
+                   marking or CONF_CS, *(state or ()))(W)
+    return f
+
+
+def _lei_rows(lei, subject=("ogrn", "inn", "lei")):
+    """the registry with a column of a foreign identifier; the row of the developer carries `lei`"""
+    return regds(columns=cols_with({"name": "lei", "type": "STRING", "marking": PUB, "identifier_scheme": "lei"}),
+                 rows=[dict(r, lei=lei if n == 0 else None) for n, r in enumerate(REGISTRY_ROWS)], subject=subject)
+
+
+def _cadastral_claim(number):
+    """the registry also names the land plot of each company by its cadastral number as the source writes it; c50 states
+    «the developer owns the plot» — the plot of the compliance project keeps the number in the normal form"""
+    def f(W):
+        col = {"name": "plot", "type": "STRING", "marking": PUB, "identifier_scheme": "ru.cadastral", "predicate": "prop.owns"}
+        regds(columns=cols_with(col), rows=[dict(r, plot=number if n == 0 else None) for n, r in enumerate(REGISTRY_ROWS)])(W)
+        W["c50"].update(predicate="prop.owns", object={"entity": "ent_k_land"})
+        rowev([OGRN_DEV], ["plot"])(W)
+    return f
+
+
+def _owned_thing(scheme, identity, value):
+    """the registry names a thing of each company by an identifier of this scheme; c50 states «the developer owns it» —
+    the thing of the compliance project carries the identifier as an entity key, the row writes `value`"""
+    def f(W):
+        add_entity("ent_k_thing", "prj_compliance", "MOVABLE_PROPERTY", identity, CONF_CS)(W)
+        col = {"name": "thing", "type": "STRING", "marking": PUB, "identifier_scheme": scheme, "predicate": "prop.owns"}
+        regds(columns=cols_with(col), rows=[dict(r, thing=value if n == 0 else None) for n, r in enumerate(REGISTRY_ROWS)])(W)
+        W["c50"].update(predicate="prop.owns", object={"entity": "ent_k_thing"})
+        rowev([OGRN_DEV], ["thing"])(W)
+    return f
+
+
+def _ip_row(value):
+    """the registry names the sole proprietor behind each record by OGRNIP (a subject identifier); c50 is about the
+    proprietor of the compliance project"""
+    def f(W):
+        add_entity("ent_k_ip", "prj_compliance", "PERSON", {"surname": "Ломова", "given_name": "Ирина", "patronymic": "Петровна",
+                                                           "birth_date": "1975-11-02", "ogrnip": OGRNIP_IP}, CONF_CS_PD)(W)
+        col = {"name": "ogrnip", "type": "STRING", "marking": PUB, "identifier_scheme": "ru.ogrnip"}
+        regds(columns=cols_with(col), rows=[dict(r, ogrnip=value if n == 0 else None) for n, r in enumerate(REGISTRY_ROWS)], subject=("ogrnip",))(W)
+        W["c50"].update(subject="ent_k_ip", marking=CONF_CS_PD)
+        rowev([OGRN_DEV], ["address", "ogrnip"])(W)
+    return f
+
+
+_VIN, _IMO = "12345678901234567", "9074729"
+_CAR = {"subtype": "VEHICLE", "vin": _VIN, "description": "грузовой автомобиль"}
+_SHIP = {"subtype": "VESSEL", "imo": _IMO, "description": "сухогруз"}
+
+
 def refile(fn, n=0, fix_root=False, **kw):
     """the row file n of the version is rewritten by fn(list of row dicts {h,k,s,v}) -> list of lines (dicts or bytes);
     the manifest takes the new address and length (and, with fix_root, the root of the new rows) — everything else stays"""
@@ -1805,6 +1866,8 @@ VECTORS += [
       pre=_rival_merged("2026-09-27T10:00:00Z")),
     V("PR27", [], "колонка дат подтверждает литерал-дату (S10R-09)", pre=_birth_claim),
     V("NR7C", RI, "колонка дат: в утверждении другая дата", pre=seq(_birth_claim, obj50(type="DATE", value="1971-03-15"))),
+    V("NR67", ["EVIDENCE_ROW_INVALID", "REF_UNRESOLVED"], "набор без subject и неизвестный субъект: строка такого набора не подтверждает ничего — отказ и без субъекта",
+      pre=seq(regds(subject=()), setk("c50", "subject", "ent_no_such_entity"))),
     V("NR66", ["REF_UNRESOLVED"], "утверждение на строке о неизвестном субъекте: одна ошибка — неизвестный субъект (S10R-09)",
       pre=setk("c50", "subject", "ent_no_such_entity")),
     V("NR7D", ["REF_UNRESOLVED"], "утверждение на строке с неизвестной сущностью-объектом: одна ошибка (S10R-09)",
@@ -1868,6 +1931,109 @@ VECTORS += [
       pre=refile(lambda rows: [_rehash(_set(rows[0], v=rows[0]["v"][:7]))] + rows[1:], fix_root=True)),
     V("NRFK", MI, "секрет строки — 15 байт, хэши согласованы",
       pre=refile(lambda rows: [_rehash(_set(rows[0], s=rows[0]["s"][:30]))] + rows[1:], fix_root=True)),
+
+    # ---------------- cycle 11: the conflict of strong keys of a row (D27.3) — a warning; identifiers in normal form ----------------
+    V("WS01", [], "ОГРН строки — у субъекта, ИНН строки — у ДРУГОЙ организации проекта: по строке одна сущность, в проекте две",
+      pre=seq(_inn_elsewhere(), rowev([OGRN_DEV], ["address", "inn"])), warn=["ROW_SUBJECT_CONFLICT"] + WARN0),
+    V("WS02", [], "другая организация создана ПОЗЖЕ утверждения — конфликт есть: это состояние проекта, а не дефект утверждения",
+      pre=seq(_inn_elsewhere(), setk("ent_k_other", "created_at", "2026-09-27T12:00:00Z"), rowev([OGRN_DEV], ["address", "inn"])),
+      warn=["ROW_SUBJECT_CONFLICT"] + WARN0),
+    V("WS03", [], "другая организация выведена из употребления (RETIRED) — ключ остаётся её, конфликт остаётся",
+      pre=seq(_inn_elsewhere(("RETIRED", None, "2026-09-20T10:00:00Z")), rowev([OGRN_DEV], ["address", "inn"])),
+      warn=["ROW_SUBJECT_CONFLICT"] + WARN0),
+    V("WS04", [], "другая организация влита в ТРЕТЬЮ — ключом владеет третья, конфликт остаётся",
+      pre=seq(_inn_elsewhere(("MERGED", "ent_k_third", "2026-09-20T10:00:00Z")),
+              add_entity("ent_k_third", "prj_compliance", "ORGANIZATION", {"name": "ООО «Третье»", "jurisdiction": "RU",
+                                                                         "ogrn": REGISTRY_ROWS[4]["ogrn"]}, CONF_CS),
+              rowev([OGRN_DEV], ["address", "inn"])), warn=["ROW_SUBJECT_CONFLICT"] + WARN0),
+    V("WS05", [], "тот же номер несёт другая ОРГАНИЗАЦИЯ проекта (иностранный идентификатор, записан с дефисами и заглавными)",
+      pre=seq(_lei_rows("5493-00AB-CD12"),
+              add_entity("ent_k_foreign", "prj_compliance", "ORGANIZATION", {"name": "Zarechye Ltd", "jurisdiction": "CY",
+                                                                             "foreign_ids": [{"scheme": "lei", "value": "549300abcd12"}]}, CONF_CS),
+              rowev([OGRN_DEV], ["address", "lei"])), warn=["ROW_SUBJECT_CONFLICT"] + WARN0),
+    V("WS06", [], "другая организация маркирована СТРОЖЕ утверждения (ПД): конфликт есть — валидатор видит весь мир, база показывает "
+      "флаг читателю с допуском к обеим (S11R2-04)",
+      pre=seq(_inn_elsewhere(marking=CONF_CS_PD), rowev([OGRN_DEV], ["address", "inn"])), warn=["ROW_SUBJECT_CONFLICT"] + WARN0),
+    V("PS01", [], "другая организация влита в субъект — конфликта нет",
+      pre=seq(_inn_elsewhere(("MERGED", "ent_k_developer", "2026-09-20T10:00:00Z")), rowev([OGRN_DEV], ["address", "inn"])), warn=WARN0),
+    V("PS02", [], "идентификатор строки с тем же значением несёт сущность ДРУГОГО типа (регистрационный номер прицепа) — не конфликт",
+      pre=seq(_lei_rows("549300123456"),
+              add_entity("ent_k_trailer", "prj_compliance", "MOVABLE_PROPERTY", {"subtype": "OTHER", "description": "прицеп",
+                                                                               "registration": {"scheme": "lei", "value": "549300123456"}}, CONF_CS),
+              rowev([OGRN_DEV], ["address", "lei"])), warn=WARN0),
+    V("PS03", [], "ИНН строки не процитирован — чужой ИНН в проекте не виден из утверждения", pre=_inn_elsewhere(), warn=WARN0),
+    V("PS04", [], "ИНН строки несёт организация ДРУГОГО проекта — не конфликт",
+      pre=seq(lambda W: W["ent_k_developer"]["identity"].pop("inn"), rowev([OGRN_DEV], ["address", "inn"])), warn=WARN0),
+    V("PS05", [], "субъект утверждения сам влит в девелопера; идентификаторы строки — девелопера: конфликта нет",
+      pre=seq(add_entity("ent_k_dup", "prj_compliance", "ORGANIZATION", {"name": "ООО «Заречье-Девелопмент» (дубль)", "jurisdiction": "RU",
+                                                                        "ogrn": REGISTRY_ROWS[3]["ogrn"], "inn": REGISTRY_ROWS[3]["inn"]}, CONF_CS,
+                         "MERGED", "ent_k_developer", "2026-09-20T10:00:00Z"), setk("c50", "subject", "ent_k_dup"),
+              rowev([OGRN_DEV], ["address", "inn"])), warn=WARN0),
+    V("PS06", [], "идентификатор субъекта в строке записан с дефисами и заглавными буквами, у сущности — в нормальной форме: это он (S11R-09)",
+      pre=seq(_lei_rows("5493-00AB-CD12", subject=("lei",)),
+              lambda W: W["ent_k_developer"]["identity"].__setitem__("foreign_ids", [{"scheme": "lei", "value": "549300abcd12"}]),
+              rowev([OGRN_DEV], ["address", "lei"])), warn=WARN0),
+    V("NS01", RI, "идентификатор субъекта в строке — другой номер (нормальные формы различны)",
+      pre=seq(_lei_rows("5493-00AB-CD13", subject=("lei",)),
+              lambda W: W["ent_k_developer"]["identity"].__setitem__("foreign_ids", [{"scheme": "lei", "value": "549300abcd12"}]),
+              rowev([OGRN_DEV], ["address", "lei"]))),
+    V("PS07", [], "объект-сущность: ячейка называет её иностранный идентификатор в другой записи (S11R-09)",
+      pre=seq(_rival_claim(rival="5493-00AB-CD12", col=dict(RIVAL_COL, identifier_scheme="lei")),
+              lambda W: W["ent_k_trub"]["identity"].__setitem__("foreign_ids", [{"scheme": "lei", "value": "549300abcd12"}])), warn=WARN0),
+    V("PS08", [], "кадастровый номер в строке с ведущими нулями — тот же объект",
+      pre=_cadastral_claim("50:12:0101001:0245"), warn=WARN0),
+    V("NS02", RI, "кадастровый номер в строке — другой участок", pre=_cadastral_claim("50:12:0101001:246")),
+    V("NS03", RI, "ИНН субъекта записан в строке с пробелом: национальные номера сравниваются как записаны, это не номер сущности",
+      pre=seq(regds(rows=rows_with(0, inn=INN_DEV[:4] + " " + INN_DEV[4:]), subject=("inn",)), rowev([OGRN_DEV], ["address", "inn"]))),
+    V("NS04", RI, "доказательство-строка неверно (значение утверждения не из строки): предупреждение о конфликте по ней не выводится",
+      pre=seq(_inn_elsewhere(), rowev([OGRN_DEV], ["address", "inn"]),
+              setk("c50", "object", {"literal": {"type": "STRING", "value": "г. Тверь, ул. Иная, д. 1"}})), warn=WARN0),
+    # round 2 of the review: each scheme «as written», the branches of the cadastral number, blanks, Unicode versions
+    V("PS10", [], "ОГРНИП в строке записан как у сущности", pre=_ip_row(OGRNIP_IP), warn=WARN0),
+    V("PS11", [], "VIN в строке записан как у сущности", pre=_owned_thing("vin", _CAR, _VIN), warn=WARN0),
+    V("PS12", [], "IMO в строке записан как у сущности", pre=_owned_thing("imo", _SHIP, _IMO), warn=WARN0),
+    V("NS08", RI, "ОГРН субъекта записан в строке с пробелом: сравнивается как записан",
+      pre=seq(regds(rows=rows_with(0, ogrn=OGRN_DEV[:4] + " " + OGRN_DEV[4:]), subject=("ogrn",)),
+              rowev([OGRN_DEV[:4] + " " + OGRN_DEV[4:]], ["address", "ogrn"]))),
+    V("NS09", RI, "ОГРНИП субъекта записан в строке с дефисом: сравнивается как записан", pre=_ip_row(OGRNIP_IP[:3] + "-" + OGRNIP_IP[3:])),
+    V("NS10", RI, "VIN объекта записан в строке с дефисом: сравнивается как записан", pre=_owned_thing("vin", _CAR, _VIN[:4] + "-" + _VIN[4:])),
+    V("NS11", RI, "IMO объекта записан в строке с дефисом: сравнивается как записан", pre=_owned_thing("imo", _SHIP, _IMO[:3] + "-" + _IMO[3:])),
+    V("NS12", RI, "кадастровый номер с переводом строки в конце — не по форме: сравнивается как записан, к нормальной форме не приводится",
+      pre=_cadastral_claim("50:12:0101001:0245\n")),
+    V("NS13", RI, "кадастровый номер не по форме (пробел внутри) сравнивается как записан, а не без разделителей",
+      pre=_cadastral_claim("50:12:101001:2 45")),
+    V("NS05", RI, "идентификатор строки с символом, не назначенным в Юникоде валидатора: сравнивается как записан (S11R2-01)",
+      pre=seq(_lei_rows("\U0001E030" + "1", subject=("lei",)),
+              lambda W: W["ent_k_developer"]["identity"].__setitem__("foreign_ids", [{"scheme": "lei", "value": "а1"}]),
+              rowev([OGRN_DEV], ["address", "lei"]))),
+    V("PS09", [], "в колонке идентификатора субъекта прочерк: это не идентификатор, строка субъекту не противоречит (S11R2-09)",
+      pre=seq(_lei_rows("-"),
+              lambda W: W["ent_k_developer"]["identity"].__setitem__("foreign_ids", [{"scheme": "lei", "value": "549300abcd12"}]),
+              rowev([OGRN_DEV], ["address", "lei"])), warn=WARN0),
+    V("NS06", ["ENTITY_IDENTITY_INSUFFICIENT"], "иностранный идентификатор организации — прочерк: нормальная форма пуста, это не идентификатор",
+      pre=lambda W: W["ent_k_developer"]["identity"].__setitem__("foreign_ids", [{"scheme": "lei", "value": "-"}])),
+    V("NS14", ["ENTITY_IDENTITY_INSUFFICIENT"], "иностранный идентификатор организации с символом, не назначенным в Юникоде валидатора (S11R3-02)",
+      pre=lambda W: W["ent_k_developer"]["identity"].__setitem__("foreign_ids", [{"scheme": "lei", "value": "ab\U0001E030"}])),
+    V("NS15", ["ENTITY_IDENTITY_INSUFFICIENT"], "регистрационный номер имущества с неназначенным символом",
+      pre=add_entity("ent_k_trailer", "prj_compliance", "MOVABLE_PROPERTY", {"subtype": "OTHER", "description": "прицеп",
+                                                                           "registration": {"scheme": "lei", "value": "ab\U0001E030"}}, CONF_CS)),
+    V("NS17", ["ENTITY_IDENTITY_INSUFFICIENT"], "название неформальной организации с неназначенным символом Юникода (S11R4-01)",
+      pre=lambda W: W["ent_w_initiative"]["identity"].__setitem__("name", "Гр\U0001E030")),
+    V("NS18", ["ENTITY_IDENTITY_INSUFFICIENT", "EVIDENCE_ROW_INVALID"],
+      "у неформальной организации название с неназначенным символом; строка называет её ключ в другом регистре: identity отвергнута, "
+      "а значение строки с неназначенным символом сравнивается как записано и ключом не признаётся (свидетель рецензии против MS23)",
+      pre=seq(regds(columns=cols_with({"name": "oid", "type": "STRING", "marking": PUB, "identifier_scheme": "org.informal"}),
+                    rows=[dict(r, oid="ГР\U0001E030|ddd" if n == 0 else None) for n, r in enumerate(REGISTRY_ROWS)], subject=("oid",)),
+              add_entity("ent_k_group", "prj_compliance", "ORGANIZATION", {"name": "Гр\U0001E030", "jurisdiction": "RU", "informal": True,
+                                                                         "disambiguator": "ddd"}, CONF_CS),
+              setk("c50", "subject", "ent_k_group"), rowev([OGRN_DEV], ["address", "oid"]))),
+    V("NS16", RI, "в строке «AB»+неназначенный символ, у субъекта «ab1»: значение с неназначенным символом ни с чем не совпадает",
+      pre=seq(_lei_rows("AB\U0001E030", subject=("lei",)),
+              lambda W: W["ent_k_developer"]["identity"].__setitem__("foreign_ids", [{"scheme": "lei", "value": "ab1"}]),
+              rowev([OGRN_DEV], ["address", "lei"]))),
+    V("NS07", ["ENTITY_IDENTITY_INSUFFICIENT"], "регистрационный номер имущества — из одних разделителей",
+      pre=add_entity("ent_k_trailer", "prj_compliance", "MOVABLE_PROPERTY", {"subtype": "OTHER", "description": "прицеп",
+                                                                           "registration": {"scheme": "lei", "value": "./-"}}, CONF_CS)),
 
     # ---------------- marking, time, tenant ----------------
     V("NR80", ["MARKING_BROADER_THAN_INPUT"], "процитирована колонка с персональными данными, а утверждение без этой категории",

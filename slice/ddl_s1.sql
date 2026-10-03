@@ -44,8 +44,58 @@ CREATE FUNCTION ac.historical() RETURNS boolean LANGUAGE sql STABLE AS $$
 
 -- S23-10: writers that can change what a closed Check rests on are serialised by advisory locks, taken in key order;
 -- the system time of a guarded write is read AFTER the lock (clock_timestamp), not at transaction start
-CREATE FUNCTION ac.lock_keys(keys text[]) RETURNS void LANGUAGE sql AS $$
-  SELECT pg_advisory_xact_lock(hashtextextended(k, 7)) FROM (SELECT DISTINCT k FROM unnest(keys) k WHERE k IS NOT NULL ORDER BY k) x $$;
+-- Cycle 11 (class S10R-20): every guard of the form «take a lock, then read what others committed» needs a snapshot
+-- taken AFTER the lock. REPEATABLE READ and SERIALIZABLE keep the snapshot of the first statement, so two such
+-- transactions (or one of them against a READ COMMITTED one) do not see each other and both pass the guard.
+-- Guarded writes are therefore accepted in READ COMMITTED only.
+CREATE FUNCTION ac.require_read_committed() RETURNS void LANGUAGE plpgsql AS $$
+BEGIN
+  IF current_setting('transaction_isolation') <> 'read committed' THEN
+    RAISE EXCEPTION 'ISOLATION_LEVEL_UNSUPPORTED: записи ядра и проекции, которые берут блокировку (сохранность, модель, пробелы схемы), выполняются только в READ COMMITTED (стражам нужен снимок, взятый после блокировки)'
+      USING ERRCODE = 'check_violation';
+  END IF;
+END $$;
+
+CREATE FUNCTION ac.isolation_guard() RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+  PERFORM ac.require_read_committed();
+  RETURN NULL;
+END $$;
+
+CREATE FUNCTION ac.lock_keys_shared(keys text[]) RETURNS void LANGUAGE plpgsql AS $$
+BEGIN
+  PERFORM ac.require_read_committed();
+  PERFORM pg_advisory_xact_lock_shared(hashtextextended(k, 7)) FROM (SELECT DISTINCT k FROM unnest(keys) k WHERE k IS NOT NULL ORDER BY k) x;
+END $$;
+
+CREATE FUNCTION ac.lock_keys(keys text[]) RETURNS void LANGUAGE plpgsql AS $$
+BEGIN
+  PERFORM ac.require_read_committed();
+  PERFORM pg_advisory_xact_lock(hashtextextended(k, 7)) FROM (SELECT DISTINCT k FROM unnest(keys) k WHERE k IS NOT NULL ORDER BY k) x;
+END $$;
+
+-- Keys 'entity:' (S11R2-05). EXCLUSIVE — only by what changes the entity itself: its merge or retirement, its insert as
+-- MERGED, an identity decision about it. SHARED — by everything that only relies on its state: a claim about it, a
+-- Check of it (opening, rows, closing), a merge INTO it. Two writers that rely on one entity never wait for each
+-- other, so a transaction that writes a claim about an entity and then a Check row or a merge into it does not
+-- deadlock with its twin. A transaction that first RELIES on an entity and then CHANGES it (a claim about X and then a
+-- decision about the identity of X, or its merge) can still deadlock with its twin, and so can two sessions that merge
+-- into two targets in opposite orders (S11R4-03): the loader repeats a transaction refused with 40P01 (S11R3-04). Merges into one target are serialised by the separate key 'merge-into:' (S11R3-01).
+-- One call takes the keys in one order: all in the order of the key, exclusive before shared
+-- for the same key.
+CREATE FUNCTION ac.lock_entities(excl text[], shared text[]) RETURNS void LANGUAGE plpgsql AS $$
+DECLARE r record;
+BEGIN
+  PERFORM ac.require_read_committed();
+  FOR r IN SELECT k, bool_or(x) AS x FROM (SELECT unnest(excl) AS k, true AS x UNION ALL SELECT unnest(shared), false) u
+           WHERE k IS NOT NULL GROUP BY k ORDER BY k LOOP
+    IF r.x THEN
+      PERFORM pg_advisory_xact_lock(hashtextextended('entity:' || r.k, 7));
+    ELSE
+      PERFORM pg_advisory_xact_lock_shared(hashtextextended('entity:' || r.k, 7));
+    END IF;
+  END LOOP;
+END $$;
 
 -- D13: history is sealed after an import; later historical writes may only land after the last seal
 CREATE TABLE ac.history_seals (
@@ -255,6 +305,10 @@ BEGIN
     IF NEW.status <> 'ACTIVE' THEN
       NEW.status_changed_at := ac.system_time(NEW.status_changed_at);
     END IF;
+    IF NEW.status = 'MERGED' THEN                -- S11R-05: serialised with a merge of the target itself
+      PERFORM ac.lock_keys(ARRAY['merge-into:' || NEW.merged_into]);      -- S11R3-01: merges into one target go one by one
+      PERFORM ac.lock_entities(ARRAY[NEW.entity_id], ARRAY[NEW.merged_into]);
+    END IF;
     IF NEW.status = 'MERGED' AND NOT ac.merge_ok(NEW) THEN
       PERFORM ac.fail('ENTITY_MERGE_INVALID', NEW.entity_id || ': цель того же проекта и типа, ACTIVE на момент слияния, не шире по маркировке');
     END IF;
@@ -269,8 +323,16 @@ BEGIN
   IF OLD.status <> 'ACTIVE' OR NEW.status = 'ACTIVE' THEN
     PERFORM ac.fail('ENTITY_STATUS_TRANSITION', 'допустим только один переход ACTIVE -> MERGED|RETIRED');
   END IF;
-  PERFORM ac.lock_keys(ARRAY['entity:' || NEW.entity_id, 'entity:' || NEW.merged_into]);
+  -- S11R3-01: merges into one target go one by one (each must see what the other merged: «различны», moved keys);
+  -- the key 'entity:' of the target stays shared, so claims about it and its Checks do not wait
+  PERFORM ac.lock_keys(ARRAY['merge-into:' || NEW.merged_into]);
+  PERFORM ac.lock_entities(ARRAY[NEW.entity_id], ARRAY[NEW.merged_into]);
   NEW.status_changed_at := clock_timestamp();
+  -- S11R2-03: the subject of an open Check is ACTIVE (validator: CHECK_SUBJECT_INVALID) — first close or cancel the Check;
+  -- the opening of a Check takes the same key, so it either sees this change or is seen here
+  IF EXISTS (SELECT 1 FROM ac.checks k WHERE k.subject_entity_id = NEW.entity_id AND k.status NOT IN ('COMPLETED', 'CANCELLED')) THEN
+    PERFORM ac.fail('CHECK_SUBJECT_INVALID', NEW.entity_id || ': у сущности открыта Проверка — сначала закройте или отмените её');
+  END IF;
   IF NEW.status = 'MERGED' AND EXISTS (SELECT 1 FROM ac.entities d WHERE d.merged_into = NEW.entity_id) THEN
     PERFORM ac.fail('ENTITY_MERGE_INVALID', NEW.entity_id || ': в неё уже слиты дубли — цепочки слияний запрещены');
   END IF;
@@ -342,6 +404,7 @@ BEGIN
   END IF;
   IF NEW.strength IN ('WEAK', 'SOFT') THEN
     -- RS-10: serialize writers of the same weak/soft key; the checks then see the other's committed row
+    PERFORM ac.require_read_committed();
     PERFORM pg_advisory_xact_lock(hashtextextended(NEW.project_id || '|' || NEW.entity_type || '|' || NEW.scheme || '|' || NEW.value, 0));
   END IF;
   IF NEW.strength = 'WEAK' THEN
@@ -407,6 +470,7 @@ BEGIN
   IF NEW.decision = 'DISTINCT' THEN
     RETURN NEW;                         -- checked at COMMIT: its entities may be written in the same transaction
   END IF;
+  PERFORM ac.lock_keys(ARRAY['entity:' || NEW.entity_a]);      -- S11R2-02: a merge of this entity holds the key until it commits
   SELECT * INTO e FROM ac.entities WHERE entity_id = NEW.entity_a;
   IF e.entity_id IS NULL OR e.project_id <> NEW.project_id THEN
     PERFORM ac.fail('CROSS_SCOPE_REFERENCE', 'уточняемая сущность не найдена в проекте решения');
@@ -418,6 +482,9 @@ BEGIN
      OR EXISTS (SELECT 1 FROM ac.identity_decisions d WHERE d.entity_a = NEW.entity_a AND d.decision = 'QUALIFY') THEN
     PERFORM ac.fail('IDENTITY_DECISION_INVALID', NEW.entity_a || ': уточнение допустимо один раз, только недостающего '
                     || NEW.field || ' у слабого ключа (ФИО+дата, событие, конфликт, понятие), не для слитой');
+  END IF;
+  IF ac.has_unassigned(NEW.value) THEN        -- S11R5-01: the qualifier joins the weak key through NFKC
+    PERFORM ac.fail('IDENTITY_DECISION_INVALID', NEW.entity_a || ': уточнение с символом, не назначенным в Юникоде валидатора');
   END IF;
   IF NEW.decided_at < e.created_at THEN
     PERFORM ac.fail('TEMPORAL_ORDER_INVALID', 'решение раньше создания сущности');
@@ -438,6 +505,8 @@ BEGIN
   IF NEW.decision <> 'DISTINCT' THEN
     RETURN NULL;
   END IF;
+  -- S11R-06: a merge of this pair holds the same keys until it commits; what it did is read after the lock
+  PERFORM ac.lock_keys(ARRAY['entity:' || NEW.entity_a, 'entity:' || NEW.entity_b]);
   SELECT * INTO a FROM ac.entities WHERE entity_id = NEW.entity_a AND project_id = NEW.project_id;
   SELECT * INTO b FROM ac.entities WHERE entity_id = NEW.entity_b AND project_id = NEW.project_id;
   IF a.entity_id IS NULL OR b.entity_id IS NULL THEN
@@ -509,6 +578,7 @@ BEGIN
   NEW.ingested_at := clock_timestamp();
   NEW.recorded_at := (NEW.body->>'recorded_at')::timestamptz;
   PERFORM ac.check_supplied_time(NEW.recorded_at);
+  PERFORM ac.lock_keys_shared(ARRAY['entity:' || NEW.subject, 'entity:' || NEW.object_entity]);     -- S11R-04
   SELECT * INTO s FROM ac.entities WHERE entity_id = NEW.subject;
   SELECT * INTO o FROM ac.entities WHERE entity_id = NEW.object_entity;
   IF (s.status = 'MERGED' AND NEW.recorded_at >= s.status_changed_at)
@@ -728,11 +798,11 @@ BEGIN
     -- S24 Г-1: first the Check itself (every writer of its rows holds it), THEN the set it rests on is read — after
     -- the lock, so rows committed by a concurrent writer are seen; order check < claim < entity < source is global
     PERFORM ac.lock_keys(ARRAY['check:' || NEW.check_id]);
-    PERFORM ac.lock_keys(ARRAY['entity:' || NEW.subject_entity_id]
-      || ARRAY(SELECT 'claim:' || x.claim_id FROM ac.check_finding_claims x WHERE x.check_id = NEW.check_id)
-      || ARRAY(SELECT 'entity:' || e FROM ac.check_finding_claims x JOIN ac.claims c USING (claim_id), unnest(ARRAY[c.subject, c.object_entity]) e
-               WHERE x.check_id = NEW.check_id)
-      || ARRAY(SELECT 'source:' || ev.source_id FROM ac.check_finding_claims x JOIN ac.claim_evidence ev USING (claim_id)
+    PERFORM ac.lock_keys(ARRAY(SELECT 'claim:' || x.claim_id FROM ac.check_finding_claims x WHERE x.check_id = NEW.check_id));
+    PERFORM ac.lock_entities(NULL, ARRAY[NEW.subject_entity_id]             -- shared: a merge of any of them holds it exclusively
+      || ARRAY(SELECT e FROM ac.check_finding_claims x JOIN ac.claims c USING (claim_id), unnest(ARRAY[c.subject, c.object_entity]) e
+               WHERE x.check_id = NEW.check_id));
+    PERFORM ac.lock_keys(ARRAY(SELECT 'source:' || ev.source_id FROM ac.check_finding_claims x JOIN ac.claim_evidence ev USING (claim_id)
                WHERE x.check_id = NEW.check_id));
   END IF;
   IF NEW.status = 'CANCELLED' AND (TG_OP = 'INSERT' OR OLD.status <> 'CANCELLED') THEN
@@ -740,6 +810,9 @@ BEGIN
   END IF;
   IF (SELECT product FROM ac.projects WHERE project_id = NEW.project_id) <> 'COMPLIANCE' THEN
     PERFORM ac.fail('CHECK_PROJECT_NOT_COMPLIANCE', NEW.check_id);
+  END IF;
+  IF NEW.status NOT IN ('COMPLETED','CANCELLED') THEN       -- S11R2-03: with a merge or retirement of the subject
+    PERFORM ac.lock_keys_shared(ARRAY['entity:' || NEW.subject_entity_id]);
   END IF;
   SELECT * INTO s FROM ac.entities WHERE entity_id = NEW.subject_entity_id;
   IF NEW.previous_check_id IS NOT NULL AND NOT EXISTS (
@@ -816,8 +889,9 @@ DECLARE k ac.checks; c ac.claims;
 BEGIN
   SELECT * INTO c FROM ac.claims WHERE claim_id = NEW.claim_id;
   PERFORM ac.lock_keys(ARRAY['check:' || NEW.check_id]);
-  PERFORM ac.lock_keys(ARRAY['claim:' || NEW.claim_id, 'entity:' || c.subject, 'entity:' || c.object_entity]
-                       || ARRAY(SELECT 'source:' || ev.source_id FROM ac.claim_evidence ev WHERE ev.claim_id = NEW.claim_id));
+  PERFORM ac.lock_keys(ARRAY['claim:' || NEW.claim_id]);
+  PERFORM ac.lock_entities(NULL, ARRAY[c.subject, c.object_entity]);
+  PERFORM ac.lock_keys(ARRAY(SELECT 'source:' || ev.source_id FROM ac.claim_evidence ev WHERE ev.claim_id = NEW.claim_id));
   SELECT * INTO k FROM ac.checks WHERE check_id = NEW.check_id;
   IF c.project_id <> k.project_id OR NEW.project_id <> k.project_id THEN
     PERFORM ac.fail('CROSS_SCOPE_REFERENCE', 'утверждение другого проекта в Проверке');

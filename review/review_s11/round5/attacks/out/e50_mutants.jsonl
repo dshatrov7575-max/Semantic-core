@@ -1,0 +1,18 @@
+{"id": "MS08", "result": "KILLED by WS05", "desc": "идентификатор строки не приводится к нормальной форме"}
+{"id": "MS13", "result": "KILLED by NS03", "desc": "номер схемы ru.inn приводится как прочие (id_norm)"}
+{"id": "MS14", "result": "KILLED by NS08", "desc": "номер схемы ru.ogrn приводится как прочие (id_norm)"}
+{"id": "MS15", "result": "KILLED by NS09", "desc": "номер схемы ru.ogrnip приводится как прочие (id_norm)"}
+{"id": "MS16", "result": "KILLED by NS10", "desc": "номер схемы vin приводится как прочие (id_norm)"}
+{"id": "MS17", "result": "KILLED by NS11", "desc": "номер схемы imo приводится как прочие (id_norm)"}
+{"id": "MS18", "result": "KILLED by NS12", "desc": "кадастровый номер: форма проверяется по началу строки"}
+{"id": "MS19", "result": "KILLED by NS13", "desc": "кадастровый номер не по форме приводится как прочие (id_norm)"}
+{"id": "MS20", "result": "KILLED by PS09", "desc": "прочерк в колонке идентификатора субъекта считается идентификатором"}
+{"id": "MS21", "result": "KILLED by NS06", "desc": "иностранный идентификатор с пустой нормальной формой принимается"}
+{"id": "MS22", "result": "KILLED by NS07", "desc": "регистрационный номер с пустой нормальной формой принимается"}
+{"id": "MS23", "result": "KILLED by NS18", "desc": "значение с неназначенным символом приводится через id_norm"}
+{"id": "MS24", "result": "KILLED by NS14", "desc": "identity сущности с неназначенным символом принимается"}
+{"id": "MS25", "result": "KILLED by NS14", "desc": "identity: неназначенный символ ищется только в строках верхнего уровня (не во вложенных foreign_ids, registration)"}
+{"id": "MS26", "result": "KILLED by NS14", "desc": "identity: неназначенный символ ищется только во вложенных полях (не в названии)"}
+{"id": "Z01", "result": "KILLED by NS14", "desc": "неназначенный символ: только если ВСЕ знаки не назначены (any -> all в _has_unassigned)"}
+{"id": "Q01", "result": "KILLED by NS14", "desc": "identity: списки не просматриваются"}
+{"id": "Z02", "result": "KILLED by NS06", "desc": "пустой иностранный идентификатор: проверяется сырая строка, а не нормальная форма"}

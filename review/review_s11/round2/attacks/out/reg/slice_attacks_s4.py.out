@@ -1,0 +1,51 @@
+L1     held | законная: полный прогон адаптера (артефакт, модель, 4 утверждения, receipt) | принято
+L2     held | законная: артефакт с неотображаемым отношением сохраняется (installed-on) | принято
+D401   held | адрес артефакта не равен sha256 байтов | ERROR:  new row for relation "artifacts" violates check constraint "artifact_address"
+D402   held | байты не JSON | ERROR:  ARTIFACT_INVALID: артефакт не JSON в UTF-8
+D403   held | неизвестный профиль | ERROR:  ARTIFACT_INVALID: неизвестный семантический профиль артефакта
+D404   held | вход артефакта — источник, которого нет в tenant | ERROR:  ARTIFACT_INVALID: вход артефакта не найден среди байтов источников tenant
+D405   held | якорь за концом источника | ERROR:  ARTIFACT_INVALID: якорь узла v4 не попадает в байты источника
+D406   held | якорь режет символ UTF-8 | ERROR:  ARTIFACT_INVALID: якорь узла v4 режет символ UTF-8
+D407   held | якорь в источнике tenant, но вне входов артефакта | ERROR:  ARTIFACT_INVALID: якорь узла v4: источник не во входах артефакта
+D408   held | отношение к несуществующему узлу | ERROR:  ARTIFACT_INVALID: отношение r1: ссылка на несуществующий узел (или условие не CONDITION)
+D409   held | has-parameter с действием вместо величины | ERROR:  ARTIFACT_INVALID: отношение r3 (has-parameter): аргументы или уточнение не по профилю
+D410   held | has-parameter без parameter | ERROR:  ARTIFACT_INVALID: отношение r3 (has-parameter): аргументы или уточнение не по профилю
+D411   held | условие указывает на величину | ERROR:  ARTIFACT_INVALID: отношение r4: ссылка на несуществующий узел (или условие не CONDITION)
+D412   held | повтор id узла | ERROR:  ARTIFACT_INVALID: узлы: объекты с уникальными id
+D413   held | лишнее поле верхнего уровня | ERROR:  ARTIFACT_INVALID: артефакт не по форме umr-artifact/0.3
+D413b  held | лишнее поле узла | ERROR:  ARTIFACT_INVALID: узел v1: лишние поля
+D413c  held | дробная граница якоря | ERROR:  ARTIFACT_INVALID: узел v1: якорь {source_id, start, end}
+D413d  held | площадка узла не по шаблону | ERROR:  ARTIFACT_INVALID: узел v1: тип или идентичность сущности
+D413e  held | отношение без якоря | ERROR:  ARTIFACT_INVALID: узел r1 без якоря
+D413f  held | входы с повтором | ERROR:  ARTIFACT_INVALID: входы артефакта: адреса источников без повторов
+D414   held | изменение байтов сохранённого артефакта | ERROR:  permission denied for table artifacts
+D415   held | удаление артефакта | ERROR:  permission denied for table artifacts
+D416   held | прямая вставка узла графа | ERROR:  permission denied for table artifact_nodes
+D417   held | тело артефакта подано параметром, а не разобрано базой | ERROR:  permission denied for table artifacts
+D418   held | receipt называет артефакт, которого нет в хранилище | ERROR:  ARTIFACT_INVALID: нет артефакта receipt в хранилище tenant (RR-07)
+D419   held | receipt другого запуска, чем артефакт | ERROR:  ARTIFACT_INVALID: артефакт не совпадает с receipt: формат, профиль, служба, запуск или входы
+D420   held | у receipt лишний вход | ERROR:  ARTIFACT_INVALID: артефакт не совпадает с receipt: формат, профиль, служба, запуск или входы
+D420b  held | receipt другой версии службы | ERROR:  ARTIFACT_INVALID: артефакт не совпадает с receipt: формат, профиль, служба, запуск или входы
+D421   held | узел графа, которого нет (атака RR-07) | ERROR:  GRAPH_NODE_INVALID: узла no-such-node-999 нет в сохранённом артефакте tenant или это не отношение
+D422   held | узел — сущность, а не отношение | ERROR:  GRAPH_NODE_INVALID: узла v1 нет в сохранённом артефакте tenant или это не отношение
+D423   held | фрагмент доказательства вне якоря узла | ERROR:  GRAPH_NODE_INVALID: фрагмент доказательства вне якоря узла r1
+D424   held | субъект — соседняя задвижка К-11/2 (тот же скелет, другой строгий ключ) | ERROR:  GRAPH_NODE_INVALID: узел r3: субъект не совпадает с узлом-аргументом
+D425   held | значение 2.5 вместо 1.6 | ERROR:  GRAPH_NODE_INVALID: узел r3: объект не совпадает с узлом-аргументом
+D426   held | уточнение другого параметра | ERROR:  GRAPH_NODE_INVALID: узел r3: уточнения не совпадают с узлом
+D427   held | отношение part-of выдано за instance-of | ERROR:  GRAPH_NODE_INVALID: узел r2: предикат не совпадает с ролью узла
+D428   held | второе утверждение на тот же узел | ERROR:  duplicate key value violates unique constraint "claim_evidence_one_node"
+D429   held | утверждение receipt без узла графа | ERROR:  GRAPH_NODE_INVALID: clm:sha256:c2a7eeedda523dcaf8e73918a3c5dc780051568758351e5e84418764b82cadf2: доказательство 
+D430   held | утверждение аналитика с узлом графа | ERROR:  RECEIPT_CLAIM_BINDING_INVALID: узел графа допустим только у PIPELINE-утверждения
+D431   held | узел n12 чужого артефакта (НС-2) у утверждения о задвижке | ERROR:  GRAPH_NODE_INVALID: фрагмент доказательства вне якоря узла n12
+D432   held | артефакт сохранён только в другом tenant | ERROR:  GRAPH_NODE_INVALID: узла r1 нет в сохранённом артефакте tenant или это не отношение
+D433   held | утверждение из артефакта со сроком действия (S4R-01) | ERROR:  GRAPH_NODE_INVALID: узел r3: у отношения нет срока действия, а у утверждения есть
+D434   held | лишнее доказательство без узла (S4R-07) | ERROR:  GRAPH_NODE_INVALID: clm:sha256:423505d4558aa57f530070fc740d30ec3608fda4c32ba8df444ec6ce9bc32d40: доказательство 
+D435   held | повтор того же запуска другими байтами артефакта (S4R-08) | ERROR:  duplicate key value violates unique constraint "artifacts_one_per_run"
+D436   held | TAB в теге узла (S4R-03) | ERROR:  ARTIFACT_INVALID: управляющий символ в структурном поле или строка длиннее 2000 (S4R-03)
+D436b  held | строка длиннее 2000 в описании узла (S4R-03) | ERROR:  ARTIFACT_INVALID: управляющий символ в структурном поле или строка длиннее 2000 (S4R-03)
+L3     held | законная: узел назван ключом слитой сущности, утверждения — о выжившей (S4R-02) | принято
+D437   held | узел назван ключом сущности, слитой в другую (станцию), утверждение — о задвижке | ERROR:  GRAPH_NODE_INVALID: узел r1: субъект не совпадает с узлом-аргументом
+D438   held | артефакт без receipt фиксируется отдельной транзакцией (S4R-13) | ERROR:  ARTIFACT_INVALID: артефакт без receipt в той же транзакции (S4R-13)
+
+attacks=48 findings=0
+S4_ATTACKS=PASS

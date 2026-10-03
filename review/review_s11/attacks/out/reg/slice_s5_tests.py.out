@@ -1,0 +1,15 @@
+LOAD: OK artifact_nodes=10 artifacts=1 checks=4 claims=38 class_closure=7 class_defs=5 decisions=2 entities=28 entity_keys=45 evidence=41 identifier_defs=1 link_defs=1 projects=6 receipts=1 reviews=8 schema_predicates=4 seals=1 sources=17
+KEYS PARITY (DB-derived == validator): OK rows=45
+S5-01  PASS | мир: одна публикация, три источника-рендеринга выводятся базой (= валидатор), адрес агрегатора — не рендеринг | renditions=3 urls=['https://m.news.example/zarechye', 'https://news.example/amp/zarechye', 'https://news.example/zarechye', 'https://www.news.example/zarechye?utm_source=telegram']
+S5-02  PASS | лента застройщика: статья, полученная трижды, — одна позиция; одно упоминание из двух утверждений; в позиции — только две версии, на которые ссылаются утверждения (S5R-05) | items=1 renditions=[2]
+S5-03  PASS | живой повторный забор с другими пробелами и меткой присоединился сам (рендерингов 3 → 4, записи публикации не нужно); упоминание по нему — та же позиция | db=OK derived=3->4 feed now=[3] before=[2] publications=1
+S5-04  PASS | отредактированная статья — другой текст: сначала отдельная позиция по источнику, после своей записи — отдельная публикация | before=['pub', 'src'] after=['pub', 'pub'] 
+S5-05  PASS | ключ поддержки: все рендеринги статьи — одна публикация; источник вне изданий — сам источник | pub:sha256:ff0901688ec16821186… / src:sha256:d16654f6ee054be2ad3…
+S5-06  PASS | конфиденциальная публикация не видна публичному читателю (ни заголовка, ни адреса, ни id); упоминание остаётся позицией по источнику | db=OK
+S5-07  PASS | отчёты закрытых Проверок не изменились после новых рендерингов и публикаций (D16) | chk_express_1==,chk_full_1==,chk_social_lomov==
+S5-08  PASS | без допуска, неизвестная сущность, чужой проект — один и тот же отказ | [True, True, True]
+S5-09  PASS | фильтр по дате: с 03.09.2026 позиций до забора нет
+S5-10  PASS | одинаковый as_of — одинаковый digest | sha256:ff9721eb9e9463f4b
+
+s5_tests=10 passed=10
+S5_RESULT=PASS

@@ -1,0 +1,19 @@
+1) мёртвая конструкция в ac.row_evidence_error (ddl_s10.sql):
+388:  IF true THEN
+2) ac.row_currency читает поле previous?
+0
+3) номера мутантов цикла: MS04, MS05 отсутствуют:
+"MS01" "MS02" "MS03" "MS07" "MS06" 
+4) векторы цикла 11:
+V("NS01" V("PS01" V("NS02" V("PS02" V("NS03" V("PS04" V("PS03" 
+5) файл вывода исследования в снимке:
+-rw-r--r-- 1 root root 2021 Oct  3 10:29 /home/claude/as/review/review_s11/snapshot/research/dataset_delta_bench.out
+6) предел числа файлов манифеста:
+161:  IF jsonb_typeof(m->'files') <> 'array' OR jsonb_array_length(m->'files') > 100000 THEN RETURN 'files'; END IF;
+7) стражи изоляции в чтении:
+/home/claude/as/review/review_s11/snapshot/slice/ddl_s9.sql:420:  PERFORM ac.require_read_committed();
+/home/claude/as/review/review_s11/snapshot/slice/ddl_s9.sql:586:  PERFORM ac.require_read_committed();
+/home/claude/as/review/review_s11/snapshot/slice/ddl_s9.sql:634:  PERFORM ac.require_read_committed();
+99:  PERFORM ac.lock_keys(ARRAY['object:' || NEW.tenant_id || '/' || NEW.original_object]);
+152:  PERFORM ac.lock_keys(ARRAY(SELECT 'source:' || s FROM unnest(coalesce(src_ids, ARRAY[]::text[])) s));
+155:  PERFORM ac.lock_keys(coalesce(obj_keys, ARRAY[]::text[]));

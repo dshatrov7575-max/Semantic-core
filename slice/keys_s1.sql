@@ -70,6 +70,11 @@ CREATE FUNCTION ac.identity_keys(t text, i jsonb) RETURNS TABLE (scheme text, va
 LANGUAGE plpgsql IMMUTABLE AS $$
 DECLARE fio text; f jsonb; n int := 0; need text; ns text;
 BEGIN
+  -- S11R4-01: keys are built with NFKC and casefold; for a code point unassigned in the validator's Unicode version they
+  -- differ between Unicode versions — such an identity is refused as a whole (any string field)
+  IF EXISTS (SELECT 1 FROM jsonb_path_query(i, 'strict $.** ? (@.type() == "string")') v WHERE ac.has_unassigned(v #>> '{}')) THEN
+    PERFORM ac.fail('ENTITY_IDENTITY_INSUFFICIENT', 'identity с символом, не назначенным в Юникоде валидатора');
+  END IF;
   IF t = 'PERSON' THEN
     fio := ac.skel(concat_ws(' ', i->>'surname', i->>'given_name', nullif(i->>'patronymic', '')));
     IF i ? 'inn' THEN
@@ -106,7 +111,9 @@ BEGIN
       IF i->>'jurisdiction' = 'RU' AND NOT i ?| array['ogrn', 'inn'] THEN PERFORM ac.fail('ENTITY_IDENTITY_INSUFFICIENT', 'организация РФ без ОГРН и ИНН'); END IF;
     END IF;
     FOR f IN SELECT * FROM jsonb_array_elements(coalesce(i->'foreign_ids', '[]')) LOOP
-      scheme := f->>'scheme'; value := ac.id_norm(f->>'value'); strength := 'STRONG'; qual := NULL; RETURN NEXT; n := n + 1;
+      scheme := f->>'scheme'; value := ac.id_norm(f->>'value'); strength := 'STRONG'; qual := NULL;
+      IF value = '' THEN PERFORM ac.fail('ENTITY_IDENTITY_INSUFFICIENT', 'иностранный идентификатор без единого значащего знака'); END IF;   -- S11R2-09
+      RETURN NEXT; n := n + 1;
     END LOOP;
     IF n = 0 AND i->>'jurisdiction' <> 'RU' THEN PERFORM ac.fail('ENTITY_IDENTITY_INSUFFICIENT', 'иностранная организация без идентификатора'); END IF;
   ELSIF t = 'REAL_ESTATE' THEN
@@ -119,7 +126,9 @@ BEGIN
       scheme := 'imo'; value := i->>'imo'; strength := 'STRONG'; qual := NULL; RETURN NEXT; n := n + 1;
     END IF;
     IF i ? 'registration' THEN
-      scheme := i->'registration'->>'scheme'; value := ac.id_norm(i->'registration'->>'value'); strength := 'STRONG'; qual := NULL; RETURN NEXT; n := n + 1;
+      scheme := i->'registration'->>'scheme'; value := ac.id_norm(i->'registration'->>'value'); strength := 'STRONG'; qual := NULL;
+      IF value = '' THEN PERFORM ac.fail('ENTITY_IDENTITY_INSUFFICIENT', 'регистрационный номер без единого значащего знака'); END IF;   -- S11R2-09
+      RETURN NEXT; n := n + 1;
     END IF;
     IF (need IS NOT NULL AND NOT i ? need) OR n = 0 THEN PERFORM ac.fail('ENTITY_IDENTITY_INSUFFICIENT', 'нет обязательного идентификатора имущества'); END IF;
   ELSIF t = 'EVENT' THEN

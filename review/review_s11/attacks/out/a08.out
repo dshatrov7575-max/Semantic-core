@@ -1,0 +1,16 @@
+H1 скелеты READ COMMITTED / READ COMMITTED, паузы 3.0/0.0: зафиксировано 1; 1: (принято) | 2: ERROR:  POSSIBLE_DUPLICATE: skel:concept: ent_r8_b1 и ent_r8
+H1 скелеты READ COMMITTED / READ COMMITTED, паузы 0.0/3.0: зафиксировано 1; 1: (принято) | 2: ERROR:  POSSIBLE_DUPLICATE: skel:concept: ent_r8_b2 и ent_r8
+H1 скелеты READ COMMITTED / REPEATABLE READ, паузы 3.0/0.0: зафиксировано 1; 1: (принято) | 2: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра пишутся тол
+H1 скелеты READ COMMITTED / REPEATABLE READ, паузы 0.0/3.0: зафиксировано 1; 1: (принято) | 2: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра пишутся тол
+H1 скелеты REPEATABLE READ / READ COMMITTED, паузы 3.0/0.0: зафиксировано 1; 1: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра пишутся тол | 2: (принято)
+H1 скелеты REPEATABLE READ / READ COMMITTED, паузы 0.0/3.0: зафиксировано 1; 1: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра пишутся тол | 2: (принято)
+H1 скелеты SERIALIZABLE / SERIALIZABLE, паузы 3.0/0.0: зафиксировано 0; 1: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра пишутся тол | 2: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра пишутся тол
+H1 скелеты SERIALIZABLE / SERIALIZABLE, паузы 0.0/3.0: зафиксировано 0; 1: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра пишутся тол | 2: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра пишутся тол
+H1       устояло | два понятия с одним скелетом без решения аналитика: зафиксировано ['1', '1', '1', '1', '1', '1', '0', '0']
+H1 контроль (последовательно): (принято) | ERROR:  POSSIBLE_DUPLICATE: skel:concept: ent_r8_s2 и ent_r8_s1 совпадают по скелету — нуж
+H3 слабые ключи READ COMMITTED / REPEATABLE READ: зафиксировано 1
+H3 слабые ключи REPEATABLE READ / READ COMMITTED: зафиксировано 1
+H3 слабые ключи SERIALIZABLE / READ COMMITTED: зафиксировано 1
+H3 слабые ключи READ COMMITTED / SERIALIZABLE: зафиксировано 1
+H3 слабые ключи READ COMMITTED / READ COMMITTED: зафиксировано 1
+H3       устояло | два физлица с одним ФИО и датой рождения: ['1', '1', '1', '1', '1']

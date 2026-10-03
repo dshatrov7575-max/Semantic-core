@@ -112,7 +112,7 @@ ERROR_CODES = [
     "DATASET_MANIFEST_INVALID", "EVIDENCE_ROW_INVALID",
     "VALIDATOR_INTERNAL_ERROR",
 ]
-WARNING_CODES = ["CONTRADICTION_SINGLE_VALUED", "POSSIBLE_DUPLICATE", "REQUIRED_ATTRIBUTE_MISSING"]
+WARNING_CODES = ["CONTRADICTION_SINGLE_VALUED", "POSSIBLE_DUPLICATE", "REQUIRED_ATTRIBUTE_MISSING", "ROW_SUBJECT_CONFLICT"]
 
 FREE_TEXT_KEYS = {"content_inline", "quote", "note"}
 MAX_SAFE = 2**53 - 1
@@ -260,6 +260,20 @@ def norm(s: str, nfkc=True) -> str:
     if nfkc:
         s = unicodedata.normalize("NFKC", s)
     return base_key(_drop_marks(s).translate(_CONFUSABLE)).translate(_CONFUSABLE_LOW).replace("ё", "е")
+
+
+def _has_unassigned(v: str) -> bool:
+    return any(unicodedata.category(ch) == "Cn" for ch in v)
+
+
+def _identity_has_unassigned(x) -> bool:
+    if isinstance(x, str):
+        return _has_unassigned(x)
+    if isinstance(x, dict):
+        return any(_identity_has_unassigned(v) for v in x.values())
+    if isinstance(x, list):
+        return any(_identity_has_unassigned(v) for v in x)
+    return False
 
 
 def id_norm(v: str) -> str:
@@ -417,6 +431,10 @@ def entity_identifiers(e, R, ref):
     soft:   skeleton keys whose collision is only a POSSIBLE_DUPLICATE warning (equipment tags, models, concepts)."""
     t, i = e["entity_type"], e["identity"]
     strong, weak, soft = [], [], []
+    # S11R4-01: keys are built with NFKC and casefold; for a code point unassigned in this Unicode version they differ
+    # between Unicode versions (the database normalises by a newer one) — such an identity is refused as a whole
+    if _identity_has_unassigned(i):
+        R.err("ENTITY_IDENTITY_INSUFFICIENT", ref, "identity с символом, не назначенным в Юникоде валидатора")
     if t == "PERSON":
         fio = norm(" ".join(x for x in (i["surname"], i["given_name"], i.get("patronymic", "")) if x))
         for f, ok, scheme in (("inn", inn_ok, "ru.inn"), ("ogrnip", ogrnip_ok, "ru.ogrnip")):
@@ -457,6 +475,8 @@ def entity_identifiers(e, R, ref):
                 if i["jurisdiction"] == "RU" and not ({"ogrn", "inn"} & i.keys()):
                     R.err("ENTITY_IDENTITY_INSUFFICIENT", ref, "организация РФ без ОГРН и ИНН")
             for f in i.get("foreign_ids", []):
+                if not id_norm(f["value"]):
+                    R.err("ENTITY_IDENTITY_INSUFFICIENT", ref, "иностранный идентификатор без единого значащего знака")
                 strong.append((f["scheme"], id_norm(f["value"])))
             if not strong and i["jurisdiction"] != "RU":
                 R.err("ENTITY_IDENTITY_INSUFFICIENT", ref, "иностранная организация без регистрационного идентификатора")
@@ -471,6 +491,8 @@ def entity_identifiers(e, R, ref):
                 R.err("IDENTIFIER_CHECKSUM_INVALID", ref, "IMO: контрольная цифра")
             strong.append(("imo", i["imo"]))
         if "registration" in i:
+            if not id_norm(i["registration"]["value"]):
+                R.err("ENTITY_IDENTITY_INSUFFICIENT", ref, "регистрационный номер без единого значащего знака")
             strong.append((i["registration"]["scheme"], id_norm(i["registration"]["value"])))
         if (need and need not in i) or not strong:
             R.err("ENTITY_IDENTITY_INSUFFICIENT", ref, f"{i['subtype']}: нет обязательного идентификатора")
@@ -660,6 +682,31 @@ def dataset_file_error(m, f, b, seen):
     return None
 
 
+RAW_ID_SCHEMES = {"ru.inn", "ru.ogrn", "ru.ogrnip", "vin", "imo"}
+_CADASTRAL_RE = re.compile(r"[0-9]{1,18}(:[0-9]{1,18})*", re.ASCII)
+
+
+def row_id(scheme, value):
+    """an identifier taken from a cell of a row, as the strong key of an entity: (scheme, value in the normal form in
+    which entity_identifiers keeps keys of that scheme) — registration numbers of other schemes are compared without
+    case and separators (id_norm), cadastral numbers without leading zeros, national numbers as written"""
+    if scheme == "ru.cadastral":            # digits and colons only; anything else is compared as written
+        return scheme, cadastral_norm(value) if _CADASTRAL_RE.fullmatch(value) else value
+    # a code point unassigned in this Unicode version: its normal form differs between Unicode versions, so such a
+    # value is compared as written — like in text_digest (S5R-02, S11R2-01)
+    if scheme in RAW_ID_SCHEMES or _has_unassigned(value):
+        return scheme, value
+    return scheme, id_norm(value)
+
+
+def row_subject_ids(ev, m):
+    """the identifiers of the row's subject that the evidence quotes, as entity keys"""
+    scheme = {col["name"]: col.get("identifier_scheme") for col in m["columns"]}
+    quoted = {x["name"]: x["value"] for x in ev["cells"] if "salt" in x}
+    ids = {row_id(scheme[n], quoted[n]) for n in m.get("subject", ()) if isinstance(quoted.get(n), str)}
+    return {x for x in ids if x[1]}        # «-» and the empty string are not identifiers: registries use them as blanks (S11R2-09)
+
+
 def row_evidence_error(ev, m, c, lit, subj_keys, obj_keys):
     """None if the ROW evidence proves a row of the version with manifest m and the claim says what the row says.
     subj_keys / obj_keys: the strong identifiers (scheme, value) of the claim's subject / entity-object at the time of
@@ -697,7 +744,7 @@ def row_evidence_error(ev, m, c, lit, subj_keys, obj_keys):
     if "subject" not in m:
         return "набор не объявляет субъект строки (subject) — его строка не может подтверждать утверждение о сущности"
     if subj_keys is not None:
-        ids = {(scheme[n], quoted[n]) for n in m["subject"] if quoted.get(n) is not None}
+        ids = row_subject_ids(ev, m)
         if not ids & subj_keys:
             return "строка не о субъекте утверждения: ни один процитированный идентификатор субъекта строки не принадлежит ему"
         mine = {sch for sch, _ in subj_keys}
@@ -709,7 +756,7 @@ def row_evidence_error(ev, m, c, lit, subj_keys, obj_keys):
             continue
         v = quoted[col["name"]]
         if "entity" in c["object"]:
-            if obj_keys is None or (scheme[col["name"]], v) in obj_keys:
+            if obj_keys is None or (isinstance(v, str) and scheme[col["name"]] is not None and row_id(scheme[col["name"]], v) in obj_keys):
                 return None
         elif "identifier_scheme" in col:
             if lit["type"] == "IDENTIFIER" and lit["scheme"] == col["identifier_scheme"] and lit["value"] == v:
@@ -1150,6 +1197,9 @@ def _semantic(ds, keys, content, R):
             R.err("IDENTITY_DECISION_INVALID", did, f"{eid}: уточнение допустимо один раз, только недостающего {field} "
                                                     "у слабого ключа (ФИО+дата, событие, конфликт, понятие), не для слитой")
             continue
+        if _has_unassigned(d[field]):        # the qualifier joins the weak key through NFKC (S11R5-01)
+            R.err("IDENTITY_DECISION_INVALID", did, f"{eid}: уточнение с символом, не назначенным в Юникоде валидатора")
+            continue
         qualify[eid] = {field: d[field]}
         qual_at[eid] = (norm(d[field]) if field == "place" else d[field], d["decided_at"])
 
@@ -1250,6 +1300,12 @@ def _semantic(ds, keys, content, R):
             if x["entity_id"] == owner or (merged_by(x, t) and x["merged_into"] == owner):
                 group |= ent_keys(x["entity_type"], x["identity"])
         return group
+
+    # who carries a strong key: (project, entity type, key) -> the entities it belongs to NOW (merged ones — their survivor)
+    carriers = defaultdict(set)
+    for eid, e in E.items():
+        for k in ent_keys(e["entity_type"], e["identity"]):
+            carriers[(e["project_id"], e["entity_type"], k)].add(resolve(eid))
 
     # ---- claims
     for cid, c in C.items():
@@ -1383,6 +1439,18 @@ def _semantic(ds, keys, content, R):
                                          group_keys(obj_ent, t_rec) if obj_ent is not None else None)
                 if why:
                     R.err("EVIDENCE_ROW_INVALID", cid, why)
+                elif subj is not None:
+                    # The conflict of strong keys of a row (D27.3): by the row its identifiers name ONE entity; if one of
+                    # them belongs to another entity of the project, the project holds two entities where the row has
+                    # one. It is a state of the project, not a defect of the claim — it can arise after the claim was
+                    # written (the other entity is created later) and it ends with a merge (D11); so it is a warning
+                    # computed from the present state, like POSSIBLE_DUPLICATE, and not a refusal at writing.
+                    me = resolve(subj["entity_id"])
+                    others = set().union(*(carriers.get((subj["project_id"], subj["entity_type"], k), set())
+                                           for k in row_subject_ids(ev, m))) - {me}
+                    if others:
+                        R.warn("ROW_SUBJECT_CONFLICT", cid, "идентификаторы строки принадлежат и субъекту утверждения, и другой "
+                               f"сущности проекта ({', '.join(sorted(others))}): по строке это одна сущность — нужно слияние")
                 cols = {x["name"]: x for x in m["columns"]}
                 for cell in ev["cells"]:
                     if "salt" in cell and cell["name"] in cols and not dominates(c["marking"], cols[cell["name"]]["marking"]):

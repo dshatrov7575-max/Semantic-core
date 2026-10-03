@@ -1,0 +1,46 @@
+    WS01 | ACCEPTED | 
+    WS02 | ACCEPTED | 
+    WS03 | ACCEPTED | 
+    WS04 | ACCEPTED | 
+    WS05 | ACCEPTED | 
+    WS06 | ACCEPTED | 
+    PS01 | ACCEPTED | 
+    PS02 | ACCEPTED | 
+    PS03 | ACCEPTED | 
+    PS04 | ACCEPTED | 
+    PS05 | REFUSED | ~ ERROR:  CLAIM_ABOUT_MERGED_ENTITY: после слияния утверждения пишутся о выжившей сущности
+    PS06 | ACCEPTED | 
+    NS01 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: строка не о субъекте утверждения: ни один процитированный идентификатор субъекта строки не принадлеж
+    PS07 | ACCEPTED | 
+    PS08 | ACCEPTED | 
+    NS02 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+    NS03 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: строка не о субъекте утверждения: ни один процитированный идентификатор субъекта строки не принадлеж
+    NS04 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+    PS10 | ACCEPTED | 
+    PS11 | ACCEPTED | 
+    PS12 | ACCEPTED | 
+    NS08 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: строка не о субъекте утверждения: ни один процитированный идентификатор субъекта строки не принадлеж
+    NS09 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: строка не о субъекте утверждения: ни один процитированный идентификатор субъекта строки не принадлеж
+    NS10 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+    NS11 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+    NS12 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+    NS13 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: ни одна процитированная колонка не объявлена для предиката утверждения с этим значением
+    NS05 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: строка не о субъекте утверждения: ни один процитированный идентификатор субъекта строки не принадлеж
+    PS09 | ACCEPTED | 
+    NS06 | REFUSED | = ERROR:  ENTITY_IDENTITY_INSUFFICIENT: иностранный идентификатор без единого значащего знака
+    NS14 | REFUSED | = ERROR:  ENTITY_IDENTITY_INSUFFICIENT: identity с символом, не назначенным в Юникоде валидатора
+    NS15 | REFUSED | = ERROR:  ENTITY_IDENTITY_INSUFFICIENT: identity с символом, не назначенным в Юникоде валидатора
+    NS17 | REFUSED | = ERROR:  ENTITY_IDENTITY_INSUFFICIENT: identity с символом, не назначенным в Юникоде валидатора
+    NS18 | REFUSED | = ERROR:  ENTITY_IDENTITY_INSUFFICIENT: identity с символом, не назначенным в Юникоде валидатора
+    NS16 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: строка не о субъекте утверждения: ни один процитированный идентификатор субъекта строки не принадлеж
+    NS07 | REFUSED | = ERROR:  ENTITY_IDENTITY_INSUFFICIENT: регистрационный номер без единого значащего знака
+S11-PARITY PASS | паритет с валидатором на векторах цикла 11: отвергнутое валидатором база отвергает, принятое — принимает | векторов=36 отвергнуто=19 (тем же кодом 18; другим ['PS05']) принято=17 не представимо в базе=0 (файлы строк 23, конверт 1) строже базы по своему правилу=['PR28', 'PS05'] расхождений=0 []
+LOAD: OK artifact_nodes=10 artifacts=1 checks=4 claims=38 class_closure=7 class_defs=5 decisions=2 entities=28 entity_keys=45 evidence=41 identifier_defs=1 link_defs=1 projects=6 receipts=1 reviews=8 schema_predicates=4 seals=1 sources=17
+KEYS PARITY (DB-derived == validator): OK rows=45
+S11-01     PASS | о ком строка в проекте: никто / одна сущность / конфликт (ОГРН у одной, ИНН у другой) — по владельцам, видимым читателю (закрытый второй владелец не превращает ONE в CONFLICT); утверждение с чужим ИНН принято и показано с subject_conflict, после слияния флаг снят | девелопер: ONE; Альфа: NONE; Бета: CONFLICT -> после слияния ONE; Гамма читателю без ПД: ONE, с ПД: CONFLICT; флаг до слияния True, после None
+S11-02     PASS | актуальность строки: нет следующих версий — CURRENT; следующая версия без строк — NOT_LOADED; в новой версии: адрес изменён — CHANGED [address], строка та же — UNCHANGED, исключена — ABSENT, изменился только скрытый руководитель — CHANGED_ELSEWHERE; на прошлый момент — CURRENT; колонка, ставшая ПД, по значению не сравнивается; версии выше маркировки утверждения для проекции нет; две следующие версии у одной — BRANCHED; другой ключ — INCOMPARABLE | {'dev': 'CHANGED', 'beta': 'UNCHANGED', 'alfa': 'ABSENT', 'trub': 'CHANGED_ELSEWHERE'}; на прошлый момент CURRENT; в досье ['CHANGED']; адрес стал ПД: CHANGED_ELSEWHERE; после закрытой версии: CHANGED_ELSEWHERE; ветви: BRANCHED; другой ключ: INCOMPARABLE
+S11-06     PASS | флаг конфликта — по допуску читателя: читатель без ПД флага не видит, читатель с ПД видит (вторая сущность закрыта ПД); закрытая версия в середине цепочки проходится без упоминания, ответ — по следующей доступной; идентификатор строки приводится валидатором и базой одинаково, значение с неназначенным символом Юникода — как записано | флаг: без ПД ['None'], с ПД ['True']; только закрытая следующая: CURRENT; через закрытую: CHANGED H3; пар идентификаторов 3205, расхождений 0 []
+S11-03     PASS | каждая таблица ядра отвергает запись в REPEATABLE READ и SERIALIZABLE; в READ COMMITTED тот же оператор проходит | таблиц 41, открытых 0 []; READ COMMITTED: (принято)
+S11-04     PASS | гонка двух физлиц с одним ФИО и датой рождения на всех парах уровней изоляции (18 гонок): зафиксировано не больше одного | зафиксировано: READ/READ/0.5=1 READ/READ/0.0=1 READ/REPE/0.5=1 READ/REPE/0.0=1 READ/SERI/0.5=1 READ/SERI/0.0=1 REPE/READ/0.5=1 REPE/READ/0.0=1 REPE/REPE/0.5=0 REPE/REPE/0.0=0 REPE/SERI/0.5=0 REPE/SERI/0.0=0 SERI/READ/0.5=1 SERI/READ/0.0=1 SERI/REPE/0.5=0 SERI/REPE/0.0=0 SERI/SERI/0.5=0 SERI/SERI/0.0=0
+S11-05     PASS | предупреждение валидатора ROW_SUBJECT_CONFLICT и флаг базы subject_conflict совпадают на каждом векторе цикла | векторов 17, с конфликтом 6, расхождений 0 []
+ALL PASS

@@ -1,0 +1,3 @@
+M1 address в v2 — ПД, значение то же: currency = UNCHANGED | ac.dataset_row(v2) читателю без ПД: видит ['code', 'ogrn'] скрыто ['address', 'director']
+M2 в v3 изменён только директор (ПД): CHANGED_ELSEWHERE
+M1       НАХОДКА | UNCHANGED раскрывает читателю утверждения, что закрытая для него в новой версии ячейка равна известному ему значению; CHANGED_ELSEWHERE (CHANGED_ELSEWHERE) — что изменилась скрытая ячейка

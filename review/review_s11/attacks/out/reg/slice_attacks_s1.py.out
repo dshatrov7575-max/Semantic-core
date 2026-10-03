@@ -1,0 +1,92 @@
+DB-A01 REJECTED | вторая карточка той же организации: ключи выводит сама база (RS-01) | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: ru.ogrn уже принадлежит другой сущности проекта
+DB-A02 REJECTED | тёзка с той же ФИО+датой: пометка только у одного, без ИНН (RR-03c) | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: person.fio_dob совпадает у ent_d_lomov и ent_dup_lomov
+DB-A03 REJECTED | приложение пишет ключ идентичности напрямую (RS-01) | ERROR:  permission denied for table entity_keys
+DB-A04 REJECTED | изменение идентичности сущности | ERROR:  permission denied for table entities
+DB-A05 REJECTED | слияние в сущность другого типа | ERROR:  ENTITY_MERGE_INVALID: ent_d_lomov: в неё уже слиты дубли — цепочки слияний запрещены
+DB-A06 REJECTED | слияние в выведенную из оборота сущность (RR-13) | ERROR:  ENTITY_MERGE_INVALID: ent_dup_org2: цель того же проекта и типа, ACTIVE на момент слияния, не шире по маркировке
+DB-A07 REJECTED | воскрешение: RETIRED -> ACTIVE | ERROR:  ENTITY_STATUS_TRANSITION: допустим только один переход ACTIVE -> MERGED|RETIRED
+DB-A08 REJECTED | удаление сущности | ERROR:  permission denied for table entities
+DB-A09 REJECTED | физлицо без категории PERSONAL_DATA | ERROR:  new row for relation "entities" violates check constraint "person_has_pd"
+DB-A10 REJECTED | утверждение о субъекте другого проекта | ERROR:  insert or update on table "claims" violates foreign key constraint "claims_project_id_subject_fkey"
+DB-A11 REJECTED | подложный хэш цитаты | ERROR:  EVIDENCE_SPAN_INVALID: sha256 фрагмента не совпадает
+DB-A12 REJECTED | фрагмент режет символ UTF-8, хэш пересчитан | ERROR:  EVIDENCE_SPAN_INVALID: фрагмент режет символ UTF-8
+DB-A13 REJECTED | доказательство из источника чужого tenant | ERROR:  CROSS_SCOPE_REFERENCE: источник не найден в tenant утверждения
+DB-A14 REJECTED | прямая запись доказательства в обход утверждения | ERROR:  permission denied for table claim_evidence
+DB-A15 REJECTED | перенаправление доказательства на другую цитату (ONT-03 DB-R07a) | ERROR:  permission denied for table claim_evidence
+DB-A16 REJECTED | удаление доказательства | ERROR:  permission denied for table claim_evidence
+DB-A17 REJECTED | удаление утверждения (ONT-03 DB-R07b) | ERROR:  permission denied for table claims
+DB-A18 REJECTED | изменение тела утверждения | ERROR:  permission denied for table claims
+DB-A19 REJECTED | утверждение без доказательств (ONT-03 DB-R07c) | ERROR:  new row for relation "claims" violates check constraint "claim_has_evidence"
+DB-A20 REJECTED | колонки расходятся с телом утверждения | ERROR:  new row for relation "claims" violates check constraint "claim_columns_match_body"
+DB-A21 REJECTED | утверждение задним числом в живом режиме | ERROR:  TEMPORAL_ORDER_INVALID: время записи 2026-01-01 03:00:00+03 вне окна системного времени
+DB-A22 REJECTED | самовольный исторический режим без роли ac_migrator | ERROR:  TEMPORAL_ORDER_INVALID: время записи 2026-01-01 03:00:00+03 вне окна системного времени
+DB-A23 REJECTED | утверждение из будущего | ERROR:  TEMPORAL_ORDER_INVALID: время записи 2099-01-01 03:00:00+03 вне окна системного времени
+DB-A24 REJECTED | маркировка утверждения уже маркировки сущности/источника | ERROR:  MARKING_BROADER_THAN_INPUT: маркировка утверждения шире маркировки сущности
+DB-A25 REJECTED | новое утверждение о слитой сущности | ERROR:  CLAIM_ABOUT_MERGED_ENTITY: после слияния утверждения пишутся о выжившей сущности
+DB-A26 REJECTED | изменение рецензии | ERROR:  permission denied for table claim_reviews
+DB-A27 REJECTED | удаление рецензии | ERROR:  permission denied for table claim_reviews
+DB-A28 REJECTED | Проверка в проекте Dossier | ERROR:  CHECK_PROJECT_NOT_COMPLIANCE: chk_x
+DB-A29 REJECTED | утверждение другого проекта в Проверке | ERROR:  CROSS_SCOPE_REFERENCE: утверждение другого проекта в Проверке
+DB-A30 REJECTED | дописать утверждение в закрытую Проверку | ERROR:  CHECK_CLOSED: в закрытую Проверку нельзя добавлять утверждения
+DB-A31 REJECTED | изменить закрытую Проверку | ERROR:  CHECK_CLOSED: закрытая Проверка не меняется
+DB-A32 REJECTED | Проверка уже маркировки утверждения (ONT-01) | ERROR:  MARKING_BROADER_THAN_INPUT: Проверка шире маркировки утверждения
+DB-A33 REJECTED | след поиска на источник без байтов (RR-08b) | ERROR:  SOURCE_CONTENT_UNAVAILABLE: у источника результата поиска нет байтов
+DB-A34 REJECTED | удалить Проверку | ERROR:  permission denied for table checks
+DB-A35 REJECTED | байты не соответствуют адресу | ERROR:  new row for relation "source_bytes" violates check constraint "source_bytes_address"
+DB-A36 REJECTED | второй receipt на то же утверждение (S4: раньше срабатывает «один запуск — один receipt») | ERROR:  duplicate key value violates unique constraint "receipts_one_per_run"
+DB-A37 REJECTED | receipt с ключом вне реестра доверия tenant (свой запуск и свой артефакт, S4) | ERROR:  insert or update on table "artifact_receipts" violates foreign key constraint "artifact_receipts_tenant_id_key_id_fkey"
+DB-A38 REJECTED | PIPELINE-утверждение без receipt (проверка при COMMIT) | ERROR:  RECEIPT_CLAIM_BINDING_INVALID: clm:sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa: PIPELINE-утверждение без receipt
+DB-A39 REJECTED | приложение пишет в реестр доверия | ERROR:  permission denied for table keys
+DB-A40 REJECTED | предикат вне реестра | ERROR:  PREDICATE_UNKNOWN: person.shoe_size (claim_predicate_known)
+DB-A41 REJECTED | организация как субъект даты рождения (domain) | ERROR:  PREDICATE_DOMAIN_VIOLATION: ORGANIZATION не в domain person.birth_date
+DB-A42 REJECTED | дата рождения строкой (range) | ERROR:  PREDICATE_RANGE_VIOLATION: person.birth_date: тип объекта вне range
+DB-A43 REJECTED | valid_from позже valid_to | ERROR:  new row for relation "claims" violates check constraint "claim_valid_time_order"
+DB-A44 REJECTED | завершить Проверку с as_of позже даты завершения | ERROR:  new row for relation "checks" violates check constraint "check_time_order"
+DB-A45 REJECTED | предыдущая Проверка по другому субъекту | ERROR:  CHECK_PREVIOUS_INVALID: предыдущая Проверка: тот же субъект и более ранняя дата
+DB-A46 REJECTED | результат FOUND без утверждений (при COMMIT) | ERROR:  CHECK_FINDING_INCONSISTENT: chk_tenders_1/TENDERS: FOUND ⇔ есть утверждения
+DB-A47 REJECTED | NOT_FOUND с риском | ERROR:  new row for relation "check_findings" violates check constraint "not_found_no_risk"
+DB-A48 REJECTED | измерение вне профиля (при COMMIT) | ERROR:  CHECK_DIMENSION_OUTSIDE_PROFILE: chk_tenders_1
+DB-A49 REJECTED | утверждение не того измерения | ERROR:  CHECK_CLAIM_DIMENSION_MISMATCH: entity.registered_address не относится к TENDERS
+DB-A50 REJECTED | утверждение не о субъекте Проверки | ERROR:  CHECK_CLAIM_NOT_ABOUT_SUBJECT: clm:sha256:1609b34ecc45f25295a29203bcd3bb46089402825d90a32559aa7fc551893e8d
+DB-A51 REJECTED | завершить Проверку без следа поиска (при COMMIT) | ERROR:  CHECK_SEARCH_MISSING: chk_n/TENDERS
+DB-A52 REJECTED | завершить Проверку без измерения профиля (при COMMIT) | ERROR:  CHECK_DIMENSION_MISSING: chk_n
+DB-A53 REJECTED | HUMAN-утверждение с узлом графа | ERROR:  RECEIPT_CLAIM_BINDING_INVALID: узел графа допустим только у PIPELINE-утверждения
+DB-A54 REJECTED | RS-01 D01: удалить ключи идентичности, чтобы освободить ОГРН | ERROR:  permission denied for table entity_keys
+DB-A55 REJECTED | RS-01 D03: подменить значение ключа | ERROR:  permission denied for table entity_keys
+DB-A56 REJECTED | RS-01: ИНН с неверной контрольной цифрой в identity (база сама считает контрольные суммы) | ERROR:  IDENTIFIER_CHECKSUM_INVALID: ru.inn физлица
+DB-A57 REJECTED | RS-01: физлицо без идентичности (нет ИНН, ОГРНИП, даты и пометки) | ERROR:  ENTITY_IDENTITY_INSUFFICIENT: PERSON без ИНН, ОГРНИП, даты рождения и disambiguator
+DB-A58 REJECTED | RS-02 D05: временная таблица с триггером для подмешивания доказательства | ERROR:  permission denied to create temporary tables in database "review11_r"
+DB-A59 REJECTED | RS-03 D09: завершить Проверку с утверждением, которое к моменту завершения опровергнуто | ERROR:  CHECK_CLAIM_NOT_ACCEPTED_AT_COMPLETION: chk_tenders_1
+DB-A60 REJECTED | RS-03 D10: понизить маркировку Проверки после привязки утверждения | ERROR:  permission denied for table checks
+DB-A61 REJECTED | RS-03 D10 (через тело): изменить маркировку в теле открытой Проверки | ERROR:  CHECK_IMMUTABLE: у Проверки меняются только статус и итог
+DB-A62 REJECTED | RS-03 D11: сменить субъект открытой Проверки | ERROR:  permission denied for table checks
+DB-A63 REJECTED | RS-04 D06: рассекретить источник (изменить маркировку) | ERROR:  permission denied for table sources
+DB-A64 REJECTED | RS-04 D07: удалить байты источника | ERROR:  permission denied for table source_bytes
+DB-A65 REJECTED | RS-05: изменить время наблюдения источника | ERROR:  permission denied for table source_observations
+DB-A66 REJECTED | RS-07: живая роль меняет реестр предикатов | ERROR:  permission denied for table predicates
+DB-A67 REJECTED | RS-07: живая роль меняет продукт проекта | ERROR:  permission denied for table projects
+DB-A68 REJECTED | RS-11: живая роль пытается стать ac_migrator | ERROR:  permission denied to set role "ac_migrator"
+DB-A69 REJECTED | RS-21: дописать след поиска в закрытую Проверку | ERROR:  CHECK_CLOSED: в закрытую Проверку нельзя дописывать след поиска
+DB-A70 REJECTED | RS-13: насос «H-101» латиницей без решения аналитика (скелет совпал, при COMMIT) | ERROR:  POSSIBLE_DUPLICATE: skel:equipment: ent_ts_h101 и ent_ts_pump совпадают по скелету — нужно решение аналитика (identity_decisions)
+DB-A71 REJECTED | RS-13: «различны» для сущностей разных типов (при COMMIT) | ERROR:  IDENTITY_DECISION_INVALID: «различны» — только для несливших сущностей одного типа
+DB-A72 REJECTED | RS-15: уточнение организации (сильный ключ) | ERROR:  IDENTITY_DECISION_INVALID: ent_d_developer: уточнение допустимо один раз, только недостающего disambiguator у слабого ключа (ФИО+дата, событие
+DB-A73 REJECTED | RS-15: повторное уточнение того же понятия | ERROR:  IDENTITY_DECISION_INVALID: ent_wk_blue: уточнение допустимо один раз, только недостающего disambiguator у слабого ключа (ФИО+дата, событие, ко
+DB-A74 REJECTED | решение об идентичности изменить задним числом | ERROR:  permission denied for table identity_decisions
+DB-A75 REJECTED | слить сущности, которые аналитик признал различными | ERROR:  IDENTITY_DECISION_INVALID: ent_ts_valve_b и ent_ts_valve_a: аналитик решил «различны»
+DB-A76 REJECTED | RS-15: омоним «Усатые киты» при неуточнённом оригинале | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: concept совпадает у ent_wk_baleen и ent_wk_baleen2
+DB-A77 REJECTED | D13: живая роль ставит печать истории | ERROR:  permission denied for table history_seals
+DB-A78 REJECTED | S21-01: тег «ｱ-9» (полуширинная катакана) после «ア-9» | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: equipment уже принадлежит другой сущности проекта
+DB-A79 REJECTED | RS-12: тёзка «Ломо́в» (U+0301) с той же датой, без ИНН | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: person.fio_dob совпадает у ent_d_lomov и ent_d_ns
+DB-A80 REJECTED | RS-14: «К 1.12» — та же задвижка, что «К-1/12» | ERROR:  ENTITY_DUPLICATE_IN_PROJECT: equipment уже принадлежит другой сущности проекта
+DB-A81 REJECTED | D13: ac_migrator пишет рецензию «задним числом» до печати истории | ERROR:  TEMPORAL_ORDER_INVALID: история до 2026-10-03 10:31:45.25995+03 запечатана
+DB-A82 REJECTED | D13: ac_migrator дописывает утверждение в Проверку, закрытую до печати | ERROR:  CHECK_CLOSED: в закрытую Проверку нельзя добавлять утверждения
+OK-01 OK | новое утверждение «сейчас»: доказательство проверено по байтам | 1
+OK-02 OK | рецензия с заявленным «задним» временем: база ставит системное время | true
+OK-03 OK | ещё одна Проверка того же субъекта (Compliance: многократность) | 4
+OK-04 OK | слияние нового дубля: ключи переходят к выжившей сущности, время ставит база | ent_d_developer true
+OK-05 OK | все цитаты всех утверждений подтверждаются байтами источников | 43/43
+OK-06 OK | RS-15: уточнить оригинал «Усатые киты», затем завести омоним с другой пометкой | 2
+OK-07 OK | RS-13: насос «H-101» латиницей вместе с решением «различны» в одной транзакции | 2
+
+attacks=82 legit=7 failures=0
+S2_RESULT=PASS

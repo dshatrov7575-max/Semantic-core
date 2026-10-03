@@ -1,0 +1,13 @@
+[одна версия, 49 файлов: CURRENT] evidence_json: 3.52 мс на вызов; досье сущности (1 утверждение): 26.96 мс; currency = CURRENT
+    функции на ОДНО досье: dominates×0 (0.0 мс), strong_keys×0 (0.0 мс), jcs×0 (0.0 мс), cell_leaf×0 (0.0 мс), merkle_root×0 (0.0 мс), inclusion_root×0 (0.0 мс), group_strong_keys×0 (0.0 мс), row_evidence_error×0 (0.0 мс), row_currency×0 (0.0 мс), evidence_json×0 (0.0 мс)
+    функции на ОДИН evidence_json: dominates×0 (0.0 мс), strong_keys×0 (0.0 мс), jcs×0 (0.0 мс), cell_leaf×0 (0.0 мс), merkle_root×0 (0.0 мс), inclusion_root×0 (0.0 мс), group_strong_keys×0 (0.0 мс), row_evidence_error×0 (0.0 мс), row_currency×0 (0.0 мс), evidence_json×0 (0.0 мс)
+версия v2-4096: файлов 49, манифест 11133 байт, сборка+загрузка 26 с, {'copy_s': 0.77, 'seal_s': 4.69}
+[две версии, последняя 49 файлов] evidence_json: 4.51 мс на вызов; досье сущности (1 утверждение): 29.46 мс; currency = CHANGED
+    функции на ОДНО досье: dominates×0 (0.0 мс), strong_keys×0 (0.0 мс), jcs×0 (0.0 мс), cell_leaf×0 (0.0 мс), merkle_root×0 (0.0 мс), inclusion_root×0 (0.0 мс), group_strong_keys×0 (0.0 мс), row_evidence_error×0 (0.0 мс), dataset_table×0 (0.0 мс), row_currency×0 (0.0 мс), evidence_json×0 (0.0 мс), dataset_cells×0 (0.0 мс)
+    функции на ОДИН evidence_json: dominates×0 (0.0 мс), strong_keys×0 (0.0 мс), jcs×0 (0.0 мс), cell_leaf×0 (0.0 мс), merkle_root×0 (0.0 мс), inclusion_root×0 (0.0 мс), group_strong_keys×0 (0.0 мс), row_evidence_error×0 (0.0 мс), dataset_table×0 (0.0 мс), row_currency×0 (0.0 мс), evidence_json×0 (0.0 мс), dataset_cells×0 (0.0 мс)
+версия v3-64: файлов 3125, манифест 607679 байт, сборка+загрузка 33 с, {'copy_s': 0.71, 'seal_s': 10.22}
+[три версии, последняя порезана по 64 строки (3125 файлов)] evidence_json: 11.73 мс на вызов; досье сущности (1 утверждение): 44.65 мс; currency = CHANGED
+    функции на ОДНО досье: dominates×0 (0.0 мс), strong_keys×0 (0.0 мс), jcs×0 (0.0 мс), cell_leaf×0 (0.0 мс), merkle_root×0 (0.0 мс), inclusion_root×0 (0.0 мс), group_strong_keys×0 (0.0 мс), row_evidence_error×0 (0.0 мс), dataset_table×0 (0.0 мс), row_currency×0 (0.0 мс), evidence_json×0 (0.0 мс), dataset_cells×0 (0.0 мс)
+    функции на ОДИН evidence_json: dominates×0 (0.0 мс), strong_keys×0 (0.0 мс), jcs×0 (0.0 мс), cell_leaf×0 (0.0 мс), merkle_root×0 (0.0 мс), inclusion_root×0 (0.0 мс), group_strong_keys×0 (0.0 мс), row_evidence_error×0 (0.0 мс), dataset_table×0 (0.0 мс), row_currency×0 (0.0 мс), evidence_json×0 (0.0 мс), dataset_cells×0 (0.0 мс)
+
+итог: evidence_json 3.52 -> 4.51 -> 11.73 мс; досье 26.96 -> 29.46 -> 44.65 мс

@@ -1,0 +1,7 @@
+W1 строка «ГР»+U+1E030+«|ddd»: валидатор ['ENTITY_IDENTITY_INSUFFICIENT', 'EVIDENCE_ROW_INVALID']; мутант MS23 ['ENTITY_IDENTITY_INSUFFICIENT']; мутант Z01 (any -> all) []; ключ сущности у валидатора [('org.informal', 'гр\U0001e030|ddd')]
+S11R4-W1 НАХОДКА | MS23 не эквивалентен: свидетель — ключ сущности с неназначенным символом из поля name (org.informal)
+W2 строка «гра|ddd»: валидатор ['ENTITY_IDENTITY_INSUFFICIENT', 'EVIDENCE_ROW_INVALID'] ['identity с символом, не назначенным в Юникоде валидатора']; база ОТВЕРГЛА ERROR:  ENTITY_IDENTITY_INSUFFICIENT: identity с символом, не назначенным в Юник; ключ сущности в базе '' ([])
+S11R4-W2 устояло | база принимает мир, который валидатор отвергает ['ENTITY_IDENTITY_INSUFFICIENT', 'EVIDENCE_ROW_INVALID']: ключ сущности из названия нормализуется по разным версиям Юникода
+   строка «гр»+U+1E030+«|ddd» (как у сущности): валидатор ['ENTITY_IDENTITY_INSUFFICIENT']; база ОТВЕРГЛА ERROR:  ENTITY_IDENTITY_INSUFFICIENT: identity с символом, не назначенным в Юник
+W3 кодовых точек 1112063: не назначено по Python 14.0 — 829834, по ac.has_unassigned — 829834; расхождений 0 []
+W3       устояло | класс неназначенных символов различается у валидатора и базы

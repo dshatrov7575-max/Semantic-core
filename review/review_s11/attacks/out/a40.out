@@ -1,0 +1,11 @@
+K5 INTEGER: {"latest": {"source_id": "src:sha256:76ebea6aac317cd3782b1e7819f49a48e00bda1b86cdeba7667065a33a380757", "version_label": "v2"}, "status": "CHANGED", "
+K5 DATE: {"latest": {"source_id": "src:sha256:75b094e361230f11ec98bb84e107fa1ce9e39692824b9d0f0aaa9eee0521b5e7", "version_label": "v2"}, "status": "CHANGED", "
+K5 BOOLEAN: {"latest": {"source_id": "src:sha256:f5e038ba609cccbbb73b20df917fd18495be14ee67c24fec0fbe7e92520356c3", "version_label": "v2"}, "status": "CHANGED", "
+K5 составной (ключ исчез): {"latest": {"source_id": "src:sha256:badf0af07ba25f87a1b40c9bfcafb0ab641ab005a645e4f73e51e8cb520a5156", "version_label": "v2"}, "status": "ABSENT"}
+K5 без ключа (адрес изменён): {"latest": {"source_id": "src:sha256:31a04d1f512b618b3f59df79dc2b0209e6696f9fc2d44629e97cc57265ea77af", "version_label": "v2"}, "status": "ABSENT"}
+K5 колонка переименована (значение то же): {"latest": {"source_id": "src:sha256:498f6ba4222b931c81964b89628bc28b43a1c9c055da92223791c9a8fe0ed7f1", "version_label": "v2"}, "status": "CHANGED", "
+K5a      НАХОДКА | набор без ключа: изменённая строка — ABSENT (строку нечем найти), статус CHANGED недостижим — названо ли это в документации?
+K1 досье до: True/True; после версии с ключом INTEGER: currency = ОШИБКА: ERROR:  invalid input syntax for type bigint: "A-1"
+   ac.dossier: ERROR:  invalid input syntax for type bigint: "A-1"
+K1       НАХОДКА | новая версия набора с тем же именем ключа другого типа роняет досье сущности (любой загрузчик версии — отказ в обслуживании читателей)
+   досье на момент секунду назад: ok

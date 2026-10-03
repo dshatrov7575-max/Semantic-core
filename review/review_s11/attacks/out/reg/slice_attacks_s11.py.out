@@ -1,0 +1,30 @@
+I01    held | сущность в REPEATABLE READ | ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра пишутся только в READ COMMITTED (стражам нужен снимок, взятый
+I02    held | сущность в SERIALIZABLE | ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра пишутся только в READ COMMITTED (стражам нужен снимок, взятый
+I03    held | законная: сущность в READ COMMITTED | принято
+I04    held | утверждение в REPEATABLE READ | ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра пишутся только в READ COMMITTED (стражам нужен снимок, взятый
+I05    held | уровень изоляции по умолчанию у сеанса | ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра пишутся только в READ COMMITTED (стражам нужен снимок, взятый
+I06    held | запись в DO-блоке в SERIALIZABLE | ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра пишутся только в READ COMMITTED (стражам нужен снимок, взятый
+I07    held | подтранзакция в REPEATABLE READ | ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра пишутся только в READ COMMITTED (стражам нужен снимок, взятый
+I08    held | смена уровня после первого запроса | ERROR:  SET TRANSACTION ISOLATION LEVEL must be called before any query
+I09    held | открытие таблицы строк версии в REPEATABLE READ | ERROR:  APPEND_ONLY: таблица строк этой версии уже открыта
+I10    held | печать версии в SERIALIZABLE | ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра пишутся только в READ COMMITTED (стражам нужен снимок, взятый
+I11    held | мигратор: исторический импорт в REPEATABLE READ | ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра пишутся только в READ COMMITTED (стражам нужен снимок, взятый
+I12    held | администратор доверия в SERIALIZABLE | ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра пишутся только в READ COMMITTED (стражам нужен снимок, взятый
+I13    held | суперпользователь в REPEATABLE READ | ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра пишутся только в READ COMMITTED (стражам нужен снимок, взятый
+I14    held | законная: чтение досье в REPEATABLE READ (чтение не запрещено) | принято
+I15    held | законная: чтение строки набора в SERIALIZABLE (чтение не запрещено) | принято
+I16    held | загрузчик не может снять стража изоляции с таблицы | ERROR:  must be owner of relation claims
+I17    held | страж изоляции стоит на каждой таблице ядра | таблиц 41, стражей 41
+C01    held | утверждение цитирует ИНН строки, которым в проекте владеет другая организация | ERROR:  EVIDENCE_ROW_INVALID: строка называет идентификатор другой сущности проекта: по строке это одна сущнос
+C02    held | то же о второй организации (она владеет ИНН, ОГРН строки — у первой) | ERROR:  EVIDENCE_ROW_INVALID: строка называет идентификатор другой сущности проекта: по строке это одна сущнос
+C03    held | законная: ИНН не процитирован — утверждение об адресе принимается (конфликт виден в ac.dataset_subject) | принято
+C04    held | вторая организация выведена из употребления (RETIRED), но ключ остаётся её — конфликт остаётся | ERROR:  EVIDENCE_ROW_INVALID: строка называет идентификатор другой сущности проекта: по строке это одна сущнос
+C05    held | проекция «о ком строка» показывает конфликт | CONFLICT ['ent_a_beta', 'ent_a_beta_inn']
+C06    held | о ком строка — читателю без допуска | ERROR:  ACCESS_DENIED: нет допуска
+C07    held | о ком строка несуществующей версии | ERROR:  ACCESS_DENIED: нет допуска
+C08    held | о ком строка: идентификатор субъекта — персональные данные, у читателя нет этой категории | ERROR:  CLEARANCE_INSUFFICIENT: допуск читателя ниже маркировки ключа или идентификаторов субъекта строки
+K01    held | читатель вызывает ac.row_currency напрямую | ERROR:  permission denied for table datasets
+K02    held | читатель вызывает ac.evidence_json напрямую | ERROR:  permission denied for table claim_evidence
+K03    held | в «актуальности строки» нет значений ячеек | {"latest": {"source_id": "src:sha256:bacdaa076730acd2cea3890f922dfb7bc50a8785d7ce65218c7c35d4034a472b", "version_label":
+
+attacks=28 findings=0

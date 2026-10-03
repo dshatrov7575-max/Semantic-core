@@ -1,0 +1,6 @@
+пар (схема, значение): 21567; расхождений validator.row_id / ac.row_id: 0
+Traceback (most recent call last):
+  File "/home/claude/as/review/review_s11/round3/attacks/r2/b21_row_id_fuzz.py", line 40, in <module>
+    json.dump(bad, open(Path(__file__).parent / "out" / "b21_mismatch.json", "w"), ensure_ascii=False)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/claude/as/review/review_s11/round3/attacks/r2/out/b21_mismatch.json'

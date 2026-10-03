@@ -1,0 +1,15 @@
+    NS01 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: строка называет идентификатор другой сущности проекта: по строке это одна сущность, в проекте — две 
+    PS01 | ACCEPTED | 
+    NS02 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: строка называет идентификатор другой сущности проекта: по строке это одна сущность, в проекте — две 
+    PS02 | ACCEPTED | 
+    NS03 | REFUSED | = ERROR:  EVIDENCE_ROW_INVALID: строка называет идентификатор другой сущности проекта: по строке это одна сущность, в проекте — две 
+    PS04 | ACCEPTED | 
+    PS03 | ACCEPTED | 
+S11-PARITY PASS | паритет с валидатором на векторах цикла 11: отвергнутое валидатором база отвергает, принятое — принимает | векторов=7 отвергнуто=3 (тем же кодом 3; другим []) принято=4 не представимо в базе=0 (файлы строк 23, конверт 1) строже базы по своему правилу=['PR28'] расхождений=0 []
+LOAD: OK artifact_nodes=10 artifacts=1 checks=4 claims=38 class_closure=7 class_defs=5 decisions=2 entities=28 entity_keys=45 evidence=41 identifier_defs=1 link_defs=1 projects=6 receipts=1 reviews=8 schema_predicates=4 seals=1 sources=17
+KEYS PARITY (DB-derived == validator): OK rows=45
+S11-01     PASS | о ком строка в проекте: никто / одна сущность / конфликт (ОГРН у одной, ИНН у другой); утверждение с чужим ИНН отвергнуто, после слияния принято; владелец выше допуска читателю не называется | девелопер: ONE; Гамма: NONE; Бета: CONFLICT -> после слияния ONE; отказ: ERROR:  EVIDENCE_ROW_INVALID: строка называет идентификатор другой сущ
+S11-02     PASS | актуальность строки: до загрузки строк — NOT_LOADED; своя версия — CURRENT; в новой версии: адрес изменён — CHANGED [address], строка та же — UNCHANGED, исключена — ABSENT, изменился только скрытый руководитель — CHANGED_ELSEWHERE; на прошлый момент — CURRENT; колонка, ставшая ПД, по значению не сравнивается; версия выше маркировки утверждения — NOT_AVAILABLE | {'dev': 'CHANGED', 'beta': 'UNCHANGED', 'alfa': 'ABSENT', 'trub': 'CHANGED_ELSEWHERE'}; на прошлый момент CURRENT; в досье ['CHANGED']; адрес стал ПД: CHANGED_ELSEWHERE; закрытая версия: NOT_AVAILABLE
+S11-03     PASS | каждая таблица ядра отвергает запись в REPEATABLE READ и SERIALIZABLE; в READ COMMITTED тот же оператор проходит | таблиц 41, открытых 0 []; READ COMMITTED: (принято)
+S11-04     PASS | гонка двух физлиц с одним ФИО и датой рождения на всех парах уровней изоляции (18 гонок): зафиксировано не больше одного | зафиксировано: READ/READ/0.5=1 READ/READ/0.0=1 READ/REPE/0.5=1 READ/REPE/0.0=1 READ/SERI/0.5=1 READ/SERI/0.0=1 REPE/READ/0.5=1 REPE/READ/0.0=1 REPE/REPE/0.5=0 REPE/REPE/0.0=0 REPE/SERI/0.5=0 REPE/SERI/0.0=0 SERI/READ/0.5=1 SERI/READ/0.0=1 SERI/REPE/0.5=0 SERI/REPE/0.0=0 SERI/SERI/0.5=0 SERI/SERI/0.0=0
+ALL PASS

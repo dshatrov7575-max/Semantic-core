@@ -1,0 +1,7 @@
+R1 слияние: COMMIT; утверждение о сливаемой: ERROR:  CLAIM_ABOUT_MERGED_ENTITY: после слияния утверждения пишутся о выжившей сущности
+S11R-04  устояло | READ COMMITTED: утверждение о слитой сущности записано после слияния (страж CLAIM_ABOUT_MERGED_ENTITY читает без блокировки)
+R2 вставка D (MERGED -> A): COMMIT; слияние A -> B: ERROR:  ENTITY_MERGE_INVALID: ent_r5_a: в неё уже слиты дубли — цепочки слияний запрещены
+S11R-05  устояло | READ COMMITTED: цепочка слияний D->A->B зафиксирована; валидатор: None
+R3 слияние пары: COMMIT; решение «различны» о ней же: ERROR:  IDENTITY_DECISION_INVALID: «различны» — только для несливших сущностей одного типа
+S11R-06  устояло | READ COMMITTED: пара и слита, и решена «различны»; валидатор: None
+контроль запрета: слияние/вывод в REPEATABLE READ: ERROR:  ISOLATION_LEVEL_UNSUPPORTED: записи ядра и проекции, которые берут блокировку (сох
