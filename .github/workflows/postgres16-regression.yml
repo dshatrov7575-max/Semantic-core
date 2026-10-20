@@ -1,0 +1,81 @@
+name: PostgreSQL 16 regression
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5436:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Use Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Use Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install existing test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install jsonschema cryptography requests
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client socat
+
+      - name: Run existing core tests and v0.10 slice regression
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          sudo mkdir -p /home/claude/pg_ac
+          sudo chown -R "$USER:$USER" /home/claude
+          ln -s "$GITHUB_WORKSPACE" /home/claude/as
+
+          socat UNIX-LISTEN:/home/claude/pg_ac/.s.PGSQL.5436,fork,unlink-early TCP:127.0.0.1:5436 >/tmp/pg-socat.log 2>&1 &
+          SOCAT_PID=$!
+          trap 'kill "$SOCAT_PID" 2>/dev/null || true' EXIT
+
+          for _ in {1..30}; do
+            if pg_isready -q -h /home/claude/pg_ac -p 5436 -U postgres; then
+              break
+            fi
+            sleep 1
+          done
+          pg_isready -h /home/claude/pg_ac -p 5436 -U postgres
+
+          (cd core && python3 tests.py)
+          ./run_v10.sh fast fresh
+
+      - name: Upload regression logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-logs
+          if-no-files-found: ignore
+          path: |
+            runs/v10_summary.txt
+            slice/RUN_*.stdout.txt
+            store/RUN_STORE.stdout.txt
